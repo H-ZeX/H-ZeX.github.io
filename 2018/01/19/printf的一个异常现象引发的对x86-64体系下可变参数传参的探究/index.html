@@ -9,23 +9,23 @@
 <meta name="keywords" content="printf,操作系统,底层,CSAPP">
 <meta property="og:type" content="article">
 <meta property="og:title" content="printf的一个异常现象引发的对x86-64体系下可变参数传参的探究">
-<meta property="og:url" content="http://yoursite.com/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/index.html">
+<meta property="og:url" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="x86-64体系下的传参方式使得可变参数的传递出现了一些特别的情况">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://yoursite.com/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p6.png">
-<meta property="og:image" content="http://yoursite.com/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p1.png">
-<meta property="og:image" content="http://yoursite.com/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p2.png">
-<meta property="og:image" content="http://yoursite.com/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p4.png">
-<meta property="og:image" content="http://yoursite.com/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p3.png">
-<meta property="og:image" content="http://yoursite.com/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p5.png">
-<meta property="og:image" content="http://yoursite.com/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p8.png">
-<meta property="og:image" content="http://yoursite.com/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p7.png">
+<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p6.png">
+<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p1.png">
+<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p2.png">
+<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p4.png">
+<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p3.png">
+<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p5.png">
+<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p8.png">
+<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p7.png">
 <meta property="og:updated_time" content="2018-05-26T07:25:32.798Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="printf的一个异常现象引发的对x86-64体系下可变参数传参的探究">
 <meta name="twitter:description" content="x86-64体系下的传参方式使得可变参数的传递出现了一些特别的情况">
-<meta name="twitter:image" content="http://yoursite.com/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p6.png">
+<meta name="twitter:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p6.png">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -68,7 +68,7 @@
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://h-zex.github.io"></form>
       </div>
     </div>
   </div>
@@ -189,7 +189,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/" data-id="cjjzt64fs000e6bg4bfu7sml1" class="article-share-link">Share</a>
+      <a data-url="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/" data-id="cjjzti6r6000fyug4wr76ptn6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CSAPP/">CSAPP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/printf/">printf</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/底层/">底层</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/操作系统/">操作系统</a></li></ul>
