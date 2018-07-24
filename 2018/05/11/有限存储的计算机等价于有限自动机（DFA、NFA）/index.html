@@ -1,309 +1,61 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  
-  <title>有限存储的计算机等价于有限自动机（DFA、NFA） | Hexo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="区别于图灵机的无限纸带，现实的计算机只有有限存储，所以其不是TM，而是DFA/NFA">
-<meta name="keywords" content="DFA,NFA,有限自动机,计算理论">
-<meta property="og:type" content="article">
-<meta property="og:title" content="有限存储的计算机等价于有限自动机（DFA、NFA）">
-<meta property="og:url" content="https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/index.html">
-<meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="区别于图灵机的无限纸带，现实的计算机只有有限存储，所以其不是TM，而是DFA/NFA">
-<meta property="og:locale" content="en">
-<meta property="og:image" content="https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/有限存储的计算机等价于有限自动机（DFA、NFA）/1.png">
-<meta property="og:updated_time" content="2018-05-26T07:25:32.797Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="有限存储的计算机等价于有限自动机（DFA、NFA）">
-<meta name="twitter:description" content="区别于图灵机的无限纸带，现实的计算机只有有限存储，所以其不是TM，而是DFA/NFA">
-<meta name="twitter:image" content="https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/有限存储的计算机等价于有限自动机（DFA、NFA）/1.png">
-  
-    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
-  <link rel="stylesheet" href="/css/style.css">
-  
+extends base
 
-</head>
+block title
+  title= page.title + ' | ' + config.title
 
-<body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://h-zex.github.io"></form>
-      </div>
-    </div>
-  </div>
-</header>
-      <div class="outer">
-        <section id="main"><article id="post-有限存储的计算机等价于有限自动机（DFA、NFA）" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/" class="article-date">
-  <time datetime="2018-05-11T08:13:18.000Z" itemprop="datePublished">2018-05-11</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/计算理论/">计算理论</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      有限存储的计算机等价于有限自动机（DFA、NFA）
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="B-0-n1-n-n-ge0"><a href="#B-0-n1-n-n-ge0" class="headerlink" title="$B=\{0^n1^n|n\ge0\}$"></a>$B=\{0^n1^n|n\ge0\}$</h3><ul>
-<li>Michael Sipser 的 <em>Introduction to the Theory of Computation</em> 的1.4提到一个非正则语言的例子，$B=\{0^n1^n|n\ge0\}$ ，并用Pumping lemma证明了其是非正则的，无法被DFA识别</li>
-<li>但是我们的计算机似乎可以识别以上语言，所以，为什么我们的计算机还是DFA呢</li>
-<li>事实上，我们的计算机只能识别n处于一定范围的B，而不能识别n为任意值的B。如果n过大，我们的计算机的存储单元无法表达，则会发生溢出，导致识别了另一个语言 $C=\{0^n1^m|n\ mod\ max=m\ mod\ max\}$ ，其中，max是我们的计算机的存储单元可以表达的最大值</li>
-<li>如果是n处于一定范围内，容易构造出一台DFA识别B：<ul>
-<li>设有两个变量a、b，a、b都可以取值$[0,1000]$ ，a表示0的数量，b表示1的数量</li>
-<li>那么，a、b的所有笛卡尔积组成的集合的一个子集就是该DFA的状态集</li>
-<li>转移方程为<ul>
-<li>首先： $&lt;0,0&gt;\rightarrow&lt;1,0&gt;\rightarrow&lt;2,0&gt;\rightarrow…\rightarrow&lt;1000,0&gt;$</li>
-<li>然后：从任意$&lt;n,0&gt;$ 都可以转移到 $&lt;n,1&gt;$</li>
-<li>然后：一旦转移到 $&lt;n,1&gt;$ ，就不能转移到 $&lt;n+k,m&gt;, (k&gt;0)$ ，也就是不能增长n的值</li>
-<li>最后：一旦转移到 $&lt;n, n&gt;$ 就accept</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="为什么现实中的计算机有可能是DFA"><a href="#为什么现实中的计算机有可能是DFA" class="headerlink" title="为什么现实中的计算机有可能是DFA"></a>为什么现实中的计算机有可能是DFA</h3><ul>
-<li>计算机只有有限存储，such as，某计算机有$2^{32}$ 个8bit的cell，每个cell有 $2^8$ 种取值，所以，所有存储的取值有 $(2^8)^{2^{32}}$ 种，也就是，这台计算机的存储只能有 $(2^8)^{2^{32}}$ 种状态，这就使得把计算机转为DFA变为可能</li>
-</ul>
-<h3 id="对任意一段代码构造等价的NFA"><a href="#对任意一段代码构造等价的NFA" class="headerlink" title="对任意一段代码构造等价的NFA"></a>对任意一段代码构造等价的NFA</h3><h5 id="NFA构造方法描述"><a href="#NFA构造方法描述" class="headerlink" title="NFA构造方法描述"></a>NFA构造方法描述</h5><ul>
-<li>假设该段代码的运行过程会改变的存储cell有c1、c2、c3、c4、c5，其中，c1到c5的取值范围都是[0,0xFF]，那么就可以构造$(2^8)^5$ 个$&lt;c1,c2,c3,c4,c5&gt;$ ，作为该NFA的状态集合。（注意，cs:ip 寄存器的值必然是这五个cell中的一个）</li>
-</ul>
-<ul>
-<li>输入字符表是$\{0,1\}$ ，将所有计算机接受的输入全部编码成bit 串后读入该DFA，每次读一个0或者一个1。</li>
-</ul>
-<ul>
-<li>假设该代码起始时，c1到c5的取值为$0,0,0,0,0$ ，则$&lt;0,0,0,0,0&gt;$ 就是起始态</li>
-<li>假设该段代码处于accept状态时，c1到c5的取值分别为$1,2,3,4,5$ ，那么，$&lt;1,2,3,4,5&gt;$ 就是该NFA的accept state</li>
-<li>该代码可以有输入，也可以无输入，可以在多个时候输入，也可以只在一个时候输入。假设其某次输入处于$&lt;d1,d2,d3,d4,d5&gt;$ ，输入后处于 $&lt;d6,d7,d8,d9,d10&gt;$ ，则在从$&lt;d1,d2,d3,d4,d5&gt;$ 到 $&lt;d6,d7,d8,d9,d10&gt;$ 是一个转移，转移使用的字符就是读入的字符。该代码也可以在无输入情况下由cpu作用，从一个状态转移到另一个状态，则在这两个状态之间使用$\varepsilon$ </li>
-</ul>
-<h5 id="为什么该NFA只接受允许的字符串，而不会接受多余的字符串"><a href="#为什么该NFA只接受允许的字符串，而不会接受多余的字符串" class="headerlink" title="为什么该NFA只接受允许的字符串，而不会接受多余的字符串"></a>为什么该NFA只接受允许的字符串，而不会接受多余的字符串</h5><ul>
-<li>首先，可以使用以上方法对于每个接受的字符串都构造NFA，则该NFA只接受允许的那个字符串</li>
-<li>设置一个新的起始态，该起始态有$\varepsilon$ 到所有为每个字符串构造的NFA</li>
-<li>则最终的NFA只接受允许的字符串</li>
-</ul>
-<h5 id="是否会出现情况：代码两次处于某状态但是行为不一样"><a href="#是否会出现情况：代码两次处于某状态但是行为不一样" class="headerlink" title="是否会出现情况：代码两次处于某状态但是行为不一样"></a>是否会出现情况：代码两次处于某状态但是行为不一样</h5><ul>
-<li>答案是肯定不会</li>
-<li>计算机的行为由当前状态决定——下一步要执行什么代码，取决于正在被执行的代码段，以及ip寄存器的值，如果text段的内容相同，cs:ip寄存器的相同，指令使用的值也相同，那么下一步的行为就是确定的</li>
-</ul>
-<h3 id="对任意一台计算机构造等价的DFA"><a href="#对任意一台计算机构造等价的DFA" class="headerlink" title="对任意一台计算机构造等价的DFA"></a>对任意一台计算机构造等价的DFA</h3><ul>
-<li>对于一台确定的计算机可以构造出确定的DFA，执行该计算机可以做的任何计算</li>
-<li>先说明一些前置情况：<ul>
-<li>现实中计算机使用源码处理特定的输入</li>
-<li>把现实中计算机处理该输入的源码编码成确定长度（统一取最大长度M——M是该计算机可以存储的最长比特串长度，比如$2^{40}$比特）的字符串，每个字符表示一个指令——这个其实等价于把源码编译成机器码（每个机器指令由一样的长度的比特串表示），然后把这个比特串补全成统一长度M</li>
-</ul>
-</li>
-<li>因为源码是M比特长，所以最多有$2^M$ 种不同的源码，根据上文，可以为每种源码构造一个DFA</li>
-<li>然后开始构造DFA<ul>
-<li>该DFA分为两个部分：第一个部分解释输入的源码字符串，第二个部分实际运行输入的源码来跑输入的数据——即实际运行$2^M$ 个不同的DFA中的一个</li>
-<li>DFA第一个部分，其读入长度M的字符串（也就是源码），从而把该台DFA导向某个状态，这个状态是$2^M$ 个实际运行代码的DFA中的一个的起始态</li>
-<li>第二部分就是那$2^M$ 台DFA，其接受输入，并最终停在某个状态——accept态或者是其他状态</li>
-</ul>
-</li>
-<li>从而该DFA接受$\cup A_i$ ，其中$A_i$ 是该计算机可以运行的任意一段代码接受的字符串集合</li>
-</ul>
-<h3 id="计算机可以死循环，DFA不会死循环，为什么"><a href="#计算机可以死循环，DFA不会死循环，为什么" class="headerlink" title="计算机可以死循环，DFA不会死循环，为什么"></a>计算机可以死循环，DFA不会死循环，为什么</h3><ul>
-<li>consider that，死循环指的是无输入情况下，不停机，而不是无限输入导致的不停机。</li>
-</ul>
-<ul>
-<li><p>因为计算机的状态是有限的，所以，如果计算机死循环，那么其必然会重复处于某个状态，进而导致行为的重复——因为计算机的当前状态唯一确定了以后的行为。</p>
-</li>
-<li><p>在NFA，这种情况死循环的状况也会发生——一组状态以$\varepsilon$ 连接在一起形成环，从而导致无限读入$\varepsilon$ ，无限循环</p>
-</li>
-<li><p>截断导致NFA死循环的那个环，并不会影响接受的语言。假设该环是s1、s2、s3、s1，那么我们可以把其变成三条路：“s1、s2、s3”，“s2、s3、s1”，“s3、s1、s2” ，非形式化来说，因为这不会改变该图的连通性，所以接受的字符串集合不变</p>
-</li>
-<li><p>而按照<em>Introduction to the Theory of Computation</em> 的1.2节的<em>EQUIVALENCE OF NFAS AND DFAS</em>DFA 描述的方法，其正是去掉了这种$\varepsilon$ 环，所以不会死循环，具体去掉的方法如下（截图来自书本英文第三版P56）：</p>
-<p><img src="./有限存储的计算机等价于有限自动机（DFA、NFA）/1.png" alt=""></p>
-<p>$E(R)$ 是一个集合，集合中元素不重复，而$\varepsilon$ 环所到达的状态必然是重复的，所以就把$\varepsilon$ 环断开了</p>
-</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/" data-id="cjjzti6rj000uyug4mvkqgt49" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DFA/">DFA</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NFA/">NFA</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/有限自动机/">有限自动机</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/计算理论/">计算理论</a></li></ul>
-
-    </footer>
-  </div>
-  
-    
-<nav id="article-nav">
-  
-    <a href="/2018/05/13/天梯L3-007-天梯地图/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          天梯L3 007 天梯地图
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2018/03/20/n元逆序对数量求解/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">n元逆序对数量求解</div>
-    </a>
-  
-</nav>
-
-  
-</article>
-
-</section>
-        
-          <aside id="sidebar">
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Categories</h3>
-    <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSAPP/">CSAPP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发/">开发</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数学/">数学</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法/">算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算理论/">计算理论</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/运维/">运维</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
-    <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACM/">ACM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSAPP/">CSAPP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSAPP-Homework/">CSAPP Homework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSAPP-Lab/">CSAPP Lab</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DFA/">DFA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Dijstra最短路/">Dijstra最短路</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GUI/">GUI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Leetcode/">Leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NFA/">NFA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Qt/">Qt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/clipboard/">clipboard</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/printf/">printf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xterm-clipboard/">xterm_clipboard</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/天梯赛/">天梯赛</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/底层/">底层</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/操作系统/">操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日历/">日历</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/时间戳/">时间戳</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/有限自动机/">有限自动机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/树状数组/">树状数组</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/汇编/">汇编</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/系统剪切板/">系统剪切板</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/组合数/">组合数</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算理论/">计算理论</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/递归/">递归</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/错排/">错排</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/ACM/" style="font-size: 20px;">ACM</a> <a href="/tags/CSAPP/" style="font-size: 10px;">CSAPP</a> <a href="/tags/CSAPP-Homework/" style="font-size: 10px;">CSAPP Homework</a> <a href="/tags/CSAPP-Lab/" style="font-size: 16.67px;">CSAPP Lab</a> <a href="/tags/DFA/" style="font-size: 10px;">DFA</a> <a href="/tags/Dijstra最短路/" style="font-size: 10px;">Dijstra最短路</a> <a href="/tags/GUI/" style="font-size: 10px;">GUI</a> <a href="/tags/Leetcode/" style="font-size: 10px;">Leetcode</a> <a href="/tags/NFA/" style="font-size: 10px;">NFA</a> <a href="/tags/Qt/" style="font-size: 10px;">Qt</a> <a href="/tags/clipboard/" style="font-size: 10px;">clipboard</a> <a href="/tags/printf/" style="font-size: 10px;">printf</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a> <a href="/tags/xterm-clipboard/" style="font-size: 10px;">xterm_clipboard</a> <a href="/tags/动态规划/" style="font-size: 10px;">动态规划</a> <a href="/tags/天梯赛/" style="font-size: 10px;">天梯赛</a> <a href="/tags/底层/" style="font-size: 10px;">底层</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数学/" style="font-size: 10px;">数学</a> <a href="/tags/日历/" style="font-size: 10px;">日历</a> <a href="/tags/时间戳/" style="font-size: 10px;">时间戳</a> <a href="/tags/有限自动机/" style="font-size: 10px;">有限自动机</a> <a href="/tags/树状数组/" style="font-size: 10px;">树状数组</a> <a href="/tags/汇编/" style="font-size: 10px;">汇编</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/系统剪切板/" style="font-size: 10px;">系统剪切板</a> <a href="/tags/组合数/" style="font-size: 10px;">组合数</a> <a href="/tags/计算理论/" style="font-size: 10px;">计算理论</a> <a href="/tags/递归/" style="font-size: 10px;">递归</a> <a href="/tags/错排/" style="font-size: 10px;">错排</a>
-    </div>
-  </div>
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2018/07/20/LeetCode-11-Container-With-Most-Water/">LeetCode 11.Container With Most Water</a>
-          </li>
-        
-          <li>
-            <a href="/2018/06/05/vim不支持系统剪切板的解决方案/">vim 不支持系统剪切板的解决方案</a>
-          </li>
-        
-          <li>
-            <a href="/2018/05/20/洛谷2577-午餐/">洛谷2577 午餐</a>
-          </li>
-        
-          <li>
-            <a href="/2018/05/17/洛谷2320-鬼谷子的钱袋-形式化证明/">洛谷2320 鬼谷子的钱袋 形式化证明</a>
-          </li>
-        
-          <li>
-            <a href="/2018/05/14/组合数之错排数/">组合数之错排数</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
-      </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2018 John Doe<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
-    </div>
-  </div>
-</footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-
-
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
-
-
-<script src="/js/script.js"></script>
-
-  </div>
-</body>
-</html>
+block content
+  .post
+    h1.post-title= page.title
+    .post-meta= page.date.format('ll')
+      if page.categories.length > 0
+        span= ' | '
+        span.category
+          for category in page.categories.toArray()
+            a(href=url_for(category.path))= category.name
+      if theme.busuanzi == true
+        script(src='https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js', async)
+        span#busuanzi_container_page_pv= ' | '
+          span#busuanzi_value_page_pv
+          span= ' ' + __('Hits')
+    if theme.duoshuo
+      a.ds-thread-count(data-thread-key=page.path, href=url_for(page.path) + '#comments')
+    if theme.disqus
+      a.disqus-comment-count(data-disqus-identifier=page.path, href=url_for(page.path) + '#disqus_thread')
+    if theme.gentie
+      a.ds-thread-count(class='cloud-tie-join-count', href=url_for(page.path) + '#comments')
+        span.join-count(style='font-size: 15px; color: #6E7173;') 0
+        span= ' ' + __('Discuss')
+    if theme.changyan
+      a.ds-thread-count(href=url_for(page.path) + '#SOHUCS')
+        span#changyan_count_unit(style='font-size: 15px; color: #6E7173;') 0
+        span= ' ' + __('Comment')
+      script(src='https://assets.changyan.sohu.com/upload/plugins/plugins.count.js', async)
+    if page.toc
+      div(class='clear')
+        div(id='toc' class='toc-article')
+          div(class='toc-title')= __('contents')
+          != toc(page.content, {list_number: theme.toc_number})
+    .post-content
+      != page.content
+    if theme.shareto == true
+      script(type='text/javascript', src=url_for(theme.js) + '/share.js' + '?v=' + theme.version, async)
+      a.article-share-link(data-url='#{page.permalink}', data-id='#{page._id}')= __('shareto')
+    include _partial/tag
+    include _partial/post_nav
+    if theme.duoshuo
+      div(class='ds-share flat' data-thread-key=page.path, data-title=page.title, data-url=page.permalink)
+         .ds-share-inline
+            ul.ds-share-icons-16
+              li(data-toggle='ds-share-icons-more')
+                a(class='ds-more' href='javascript:void(0);') 分享到：
+              li
+                a(class='ds-weibo' href='javascript:void(0);' data-service='weibo') 微博
+              li
+                a(class='ds-qzone' href='javascript:void(0);' data-service='qzone') QQ空间
+              li
+                a(class='ds-qqt' href='javascript:void(0);' data-service='qqt') 腾讯微博
+              li
+                a(class='ds-wechat' href='javascript:void(0);' data-service='wechat') 微信
+            .ds-share-icons-more
+    if page.comments
+      include _partial/comments

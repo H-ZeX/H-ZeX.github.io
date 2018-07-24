@@ -1,228 +1,61 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  
-  <title>LeetCode 11.Container With Most Water | Hexo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="solution">
-<meta name="keywords" content="Leetcode,ACM">
-<meta property="og:type" content="article">
-<meta property="og:title" content="LeetCode 11.Container With Most Water">
-<meta property="og:url" content="https://h-zex.github.io/2018/07/20/LeetCode-11-Container-With-Most-Water/index.html">
-<meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="solution">
-<meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-07-20T15:08:49.363Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="LeetCode 11.Container With Most Water">
-<meta name="twitter:description" content="solution">
-  
-    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
-  <link rel="stylesheet" href="/css/style.css">
-  
+extends base
 
-</head>
+block title
+  title= page.title + ' | ' + config.title
 
-<body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://h-zex.github.io"></form>
-      </div>
-    </div>
-  </div>
-</header>
-      <div class="outer">
-        <section id="main"><article id="post-LeetCode-11-Container-With-Most-Water" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/07/20/LeetCode-11-Container-With-Most-Water/" class="article-date">
-  <time datetime="2018-07-20T15:08:49.363Z" itemprop="datePublished">2018-07-20</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/算法/">算法</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      LeetCode 11.Container With Most Water
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="O-NlgN-解法"><a href="#O-NlgN-解法" class="headerlink" title="$O(NlgN)$解法"></a>$O(NlgN)$解法</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 思路：</span></span><br><span class="line"><span class="comment"> * 对于第i根柱子，求出它左边比他高或者相同高度的柱子中最远的那根的位置</span></span><br><span class="line"><span class="comment"> * 方法是递推</span></span><br><span class="line"><span class="comment"> * 首先，map是红黑树实现的，所以其是有序的</span></span><br><span class="line"><span class="comment"> * 然后，每次求出第i根柱子后，把 &lt;height[i], &lt;i, result&gt;&gt; push到map里</span></span><br><span class="line"><span class="comment"> * 可以从map中取出已经加进map的（也就是在第i根柱子左边的柱子）中，height</span></span><br><span class="line"><span class="comment"> * 刚好大于或者等于height[i]的，设为p，然后，柱子p的result就是柱子i的result</span></span><br><span class="line"><span class="comment"> * 反证法：假设不是，而是q，那么q应当是大于等于p并且在p的左边——否则i的result就还是p，因为p更左边。</span></span><br><span class="line"><span class="comment"> * 既然q大于等于p并且在左边，那么p的result应该是q</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line">  <span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">typedef</span> pair&lt;<span class="keyword">int</span>, <span class="keyword">int</span>&gt; PII;</span><br><span class="line">    <span class="built_in">multimap</span>&lt;<span class="keyword">int</span>, PII, greater&lt;<span class="keyword">int</span>&gt;&gt; tree;</span><br><span class="line">    <span class="built_in">multimap</span>&lt;<span class="keyword">int</span>, PII, greater&lt;<span class="keyword">int</span>&gt;&gt; rtree;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">ct</span><span class="params">(<span class="keyword">const</span> <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;height)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span> it = height.begin(); it != height.end(); ++it, ++i) &#123;</span><br><span class="line">            <span class="keyword">auto</span> p = tree.insert(pair&lt;<span class="keyword">int</span>, PII&gt;(*it, PII(i, i)));</span><br><span class="line">            <span class="keyword">if</span> (p != tree.begin()) &#123;</span><br><span class="line">                <span class="keyword">auto</span> k = (--p)-&gt;second;</span><br><span class="line">                (++p)-&gt;second = PII(i, k.second);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">crt</span><span class="params">(<span class="keyword">const</span> <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;height)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> i = height.size();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span> it = height.rbegin(); it != height.rend(); ++it, --i) &#123;</span><br><span class="line">            <span class="keyword">auto</span> p = rtree.insert(pair&lt;<span class="keyword">int</span>, PII&gt;(*it, PII(i, i)));</span><br><span class="line">            <span class="keyword">if</span> (p != rtree.begin()) &#123;</span><br><span class="line">                <span class="keyword">auto</span> k = (--p)-&gt;second;</span><br><span class="line">                (++p)-&gt;second = PII(i, k.second);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">maxArea</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;height)</span> </span>&#123;</span><br><span class="line">        ct(height);</span><br><span class="line">        crt(height);</span><br><span class="line">        <span class="keyword">int</span> ans = <span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span> it = tree.begin(); it != tree.end(); ++it) &#123;</span><br><span class="line">            <span class="keyword">int</span> p = (it-&gt;first) * (it-&gt;second.first - it-&gt;second.second);</span><br><span class="line">            ans = ans &lt; p ? p : ans;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span> it = rtree.begin(); it != rtree.end(); ++it) &#123;</span><br><span class="line">            <span class="keyword">int</span> p = (it-&gt;first) * (it-&gt;second.second - it-&gt;second.first);</span><br><span class="line">            ans = ans &lt; p ? p : ans;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://h-zex.github.io/2018/07/20/LeetCode-11-Container-With-Most-Water/" data-id="cjjzti6r2000ayug4qkgwjrqq" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ACM/">ACM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Leetcode/">Leetcode</a></li></ul>
-
-    </footer>
-  </div>
-  
-    
-<nav id="article-nav">
-  
-  
-    <a href="/2018/06/05/vim不支持系统剪切板的解决方案/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">vim 不支持系统剪切板的解决方案</div>
-    </a>
-  
-</nav>
-
-  
-</article>
-
-</section>
-        
-          <aside id="sidebar">
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Categories</h3>
-    <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSAPP/">CSAPP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发/">开发</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数学/">数学</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法/">算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算理论/">计算理论</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/运维/">运维</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
-    <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACM/">ACM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSAPP/">CSAPP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSAPP-Homework/">CSAPP Homework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSAPP-Lab/">CSAPP Lab</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DFA/">DFA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Dijstra最短路/">Dijstra最短路</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GUI/">GUI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Leetcode/">Leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NFA/">NFA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Qt/">Qt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/clipboard/">clipboard</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/printf/">printf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xterm-clipboard/">xterm_clipboard</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/天梯赛/">天梯赛</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/底层/">底层</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/操作系统/">操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日历/">日历</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/时间戳/">时间戳</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/有限自动机/">有限自动机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/树状数组/">树状数组</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/汇编/">汇编</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/系统剪切板/">系统剪切板</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/组合数/">组合数</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算理论/">计算理论</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/递归/">递归</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/错排/">错排</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/ACM/" style="font-size: 20px;">ACM</a> <a href="/tags/CSAPP/" style="font-size: 10px;">CSAPP</a> <a href="/tags/CSAPP-Homework/" style="font-size: 10px;">CSAPP Homework</a> <a href="/tags/CSAPP-Lab/" style="font-size: 16.67px;">CSAPP Lab</a> <a href="/tags/DFA/" style="font-size: 10px;">DFA</a> <a href="/tags/Dijstra最短路/" style="font-size: 10px;">Dijstra最短路</a> <a href="/tags/GUI/" style="font-size: 10px;">GUI</a> <a href="/tags/Leetcode/" style="font-size: 10px;">Leetcode</a> <a href="/tags/NFA/" style="font-size: 10px;">NFA</a> <a href="/tags/Qt/" style="font-size: 10px;">Qt</a> <a href="/tags/clipboard/" style="font-size: 10px;">clipboard</a> <a href="/tags/printf/" style="font-size: 10px;">printf</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a> <a href="/tags/xterm-clipboard/" style="font-size: 10px;">xterm_clipboard</a> <a href="/tags/动态规划/" style="font-size: 10px;">动态规划</a> <a href="/tags/天梯赛/" style="font-size: 10px;">天梯赛</a> <a href="/tags/底层/" style="font-size: 10px;">底层</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数学/" style="font-size: 10px;">数学</a> <a href="/tags/日历/" style="font-size: 10px;">日历</a> <a href="/tags/时间戳/" style="font-size: 10px;">时间戳</a> <a href="/tags/有限自动机/" style="font-size: 10px;">有限自动机</a> <a href="/tags/树状数组/" style="font-size: 10px;">树状数组</a> <a href="/tags/汇编/" style="font-size: 10px;">汇编</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/系统剪切板/" style="font-size: 10px;">系统剪切板</a> <a href="/tags/组合数/" style="font-size: 10px;">组合数</a> <a href="/tags/计算理论/" style="font-size: 10px;">计算理论</a> <a href="/tags/递归/" style="font-size: 10px;">递归</a> <a href="/tags/错排/" style="font-size: 10px;">错排</a>
-    </div>
-  </div>
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2018/07/20/LeetCode-11-Container-With-Most-Water/">LeetCode 11.Container With Most Water</a>
-          </li>
-        
-          <li>
-            <a href="/2018/06/05/vim不支持系统剪切板的解决方案/">vim 不支持系统剪切板的解决方案</a>
-          </li>
-        
-          <li>
-            <a href="/2018/05/20/洛谷2577-午餐/">洛谷2577 午餐</a>
-          </li>
-        
-          <li>
-            <a href="/2018/05/17/洛谷2320-鬼谷子的钱袋-形式化证明/">洛谷2320 鬼谷子的钱袋 形式化证明</a>
-          </li>
-        
-          <li>
-            <a href="/2018/05/14/组合数之错排数/">组合数之错排数</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
-      </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2018 John Doe<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
-    </div>
-  </div>
-</footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-
-
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
-
-
-<script src="/js/script.js"></script>
-
-  </div>
-</body>
-</html>
+block content
+  .post
+    h1.post-title= page.title
+    .post-meta= page.date.format('ll')
+      if page.categories.length > 0
+        span= ' | '
+        span.category
+          for category in page.categories.toArray()
+            a(href=url_for(category.path))= category.name
+      if theme.busuanzi == true
+        script(src='https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js', async)
+        span#busuanzi_container_page_pv= ' | '
+          span#busuanzi_value_page_pv
+          span= ' ' + __('Hits')
+    if theme.duoshuo
+      a.ds-thread-count(data-thread-key=page.path, href=url_for(page.path) + '#comments')
+    if theme.disqus
+      a.disqus-comment-count(data-disqus-identifier=page.path, href=url_for(page.path) + '#disqus_thread')
+    if theme.gentie
+      a.ds-thread-count(class='cloud-tie-join-count', href=url_for(page.path) + '#comments')
+        span.join-count(style='font-size: 15px; color: #6E7173;') 0
+        span= ' ' + __('Discuss')
+    if theme.changyan
+      a.ds-thread-count(href=url_for(page.path) + '#SOHUCS')
+        span#changyan_count_unit(style='font-size: 15px; color: #6E7173;') 0
+        span= ' ' + __('Comment')
+      script(src='https://assets.changyan.sohu.com/upload/plugins/plugins.count.js', async)
+    if page.toc
+      div(class='clear')
+        div(id='toc' class='toc-article')
+          div(class='toc-title')= __('contents')
+          != toc(page.content, {list_number: theme.toc_number})
+    .post-content
+      != page.content
+    if theme.shareto == true
+      script(type='text/javascript', src=url_for(theme.js) + '/share.js' + '?v=' + theme.version, async)
+      a.article-share-link(data-url='#{page.permalink}', data-id='#{page._id}')= __('shareto')
+    include _partial/tag
+    include _partial/post_nav
+    if theme.duoshuo
+      div(class='ds-share flat' data-thread-key=page.path, data-title=page.title, data-url=page.permalink)
+         .ds-share-inline
+            ul.ds-share-icons-16
+              li(data-toggle='ds-share-icons-more')
+                a(class='ds-more' href='javascript:void(0);') 分享到：
+              li
+                a(class='ds-weibo' href='javascript:void(0);' data-service='weibo') 微博
+              li
+                a(class='ds-qzone' href='javascript:void(0);' data-service='qzone') QQ空间
+              li
+                a(class='ds-qqt' href='javascript:void(0);' data-service='qqt') 腾讯微博
+              li
+                a(class='ds-wechat' href='javascript:void(0);' data-service='wechat') 微信
+            .ds-share-icons-more
+    if page.comments
+      include _partial/comments

@@ -1,273 +1,61 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  
-  <title>初学GUI的一些理解（瞎猜） | Hexo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="应该把整个程序运行过程分解为：  描述一个界面(前端)   show出来 进入无限循环 在循环里按照刷新频率show这个界面 每次循环里还检测是否有输入，如果没有，就继续下一次循环 如果有，就像控制台程序一样，接受输入，给出输出 当遇到销毁窗口的输入时，退出循环(从而不再show，也不再处理输入，并且从main return回去，被操作系统回收了申请的内存以及画笔权限之类的资源)   也就是说，">
-<meta name="keywords" content="GUI,Qt">
-<meta property="og:type" content="article">
-<meta property="og:title" content="初学GUI的一些理解（瞎猜）">
-<meta property="og:url" content="https://h-zex.github.io/2017/08/11/初学GUI的一些理解（瞎猜）/index.html">
-<meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="应该把整个程序运行过程分解为：  描述一个界面(前端)   show出来 进入无限循环 在循环里按照刷新频率show这个界面 每次循环里还检测是否有输入，如果没有，就继续下一次循环 如果有，就像控制台程序一样，接受输入，给出输出 当遇到销毁窗口的输入时，退出循环(从而不再show，也不再处理输入，并且从main return回去，被操作系统回收了申请的内存以及画笔权限之类的资源)   也就是说，">
-<meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-05-26T07:25:32.799Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="初学GUI的一些理解（瞎猜）">
-<meta name="twitter:description" content="应该把整个程序运行过程分解为：  描述一个界面(前端)   show出来 进入无限循环 在循环里按照刷新频率show这个界面 每次循环里还检测是否有输入，如果没有，就继续下一次循环 如果有，就像控制台程序一样，接受输入，给出输出 当遇到销毁窗口的输入时，退出循环(从而不再show，也不再处理输入，并且从main return回去，被操作系统回收了申请的内存以及画笔权限之类的资源)   也就是说，">
-  
-    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
-  <link rel="stylesheet" href="/css/style.css">
-  
+extends base
 
-</head>
+block title
+  title= page.title + ' | ' + config.title
 
-<body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://h-zex.github.io"></form>
-      </div>
-    </div>
-  </div>
-</header>
-      <div class="outer">
-        <section id="main"><article id="post-初学GUI的一些理解（瞎猜）" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/08/11/初学GUI的一些理解（瞎猜）/" class="article-date">
-  <time datetime="2017-08-11T10:15:36.000Z" itemprop="datePublished">2017-08-11</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/开发/">开发</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      初学GUI的一些理解（瞎猜）
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ul>
-<li><p>应该把整个程序运行过程分解为：</p>
-<ol>
-<li>描述一个界面(前端)</li>
-</ol>
-<ul>
-<li>show出来</li>
-<li>进入无限循环</li>
-<li>在循环里按照刷新频率show这个界面</li>
-<li>每次循环里还检测是否有输入，如果没有，就继续下一次循环</li>
-<li>如果有，就像控制台程序一样，接受输入，给出输出</li>
-<li>当遇到销毁窗口的输入时，退出循环(从而不再show，也不再处理输入，并且从main return回去，被操作系统回收了申请的内存以及画笔权限之类的资源)</li>
-</ul>
-</li>
-<li><p>也就是说，我把一个窗口程序分解为</p>
-<ol>
-<li>定义图形</li>
-<li>重复画图</li>
-<li>对输入给出输出的类似控制台程序</li>
-</ol>
-</li>
-</ul>
-<ul>
-<li>在main函数，我在栈上(或者堆上)申请了几个类变量，这些变量是我的窗口的组件，设置他们的各种属性(比如外观)，设置他们的从属关系，然后把他们用layout布局好，用show函数显示出来。显示出来的是一个图形，当然，类不止有外观方面的属性，所以这其实是一个前端</li>
-<li>进入消息循环，这个图形一直显示着(不知道是不是按照刷新频率不断地执行show函数)</li>
-<li>以上就完成了在屏幕上一直显示一个图形的任务，然后，接下来的任务就是这个程序接受输入，然后输出结果的过程。</li>
-<li>接受的输入有: 键盘、鼠标等等的输入，又或者说这些输入设备他们的状态持续性(被读取的时间点是离散的)、间歇性地被系统函数读取，然后，如果我们的鼠标点击了我们写的这个窗口程序的某个按钮，就会把这个状态PUSH进我们的程序的消息队列，而因为我们的程序在消息循环中一直扫描该队列，所以主程序可以读到输入，并把输入分发给组件(也就是调用组件的函数，把输入作为参数传给函数)</li>
-<li>如果前后端不分离，那么我们可以直接在组件里定义函数，这些函数对输入给出输出，然后直接输出来</li>
-<li>但是，这样程序就不解耦了，这样我们要对输入到输出的映射进行修改就需要修改这个组件的类成员函数</li>
-<li>如果我们换一种实现方式，组件接收到输入(也就是自己接受输入的函数被调用)后把自己的状态的变化发射出去(用SIGNAL函数)</li>
-<li>所谓发射出去，我猜测如下<ol>
-<li>GoF观察者模式的经典实现(就是每个组件的消息接收函数都调用一次)</li>
-<li>组件也有消息循环(这或许需要多线程，毕竟主程序在进行消息循环，如果组件也无线循环那要跑哪个循环)</li>
-<li>把该消息放在共享的那块内存，然后每个组件都执行一次消息循环</li>
-</ol>
-</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://h-zex.github.io/2017/08/11/初学GUI的一些理解（瞎猜）/" data-id="cjjzti6rb000myug42zm8nad1" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GUI/">GUI</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Qt/">Qt</a></li></ul>
-
-    </footer>
-  </div>
-  
-    
-<nav id="article-nav">
-  
-    <a href="/2017/09/13/CSAPP-Data-Lab/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          CSAPP Data Lab
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2017/08/06/汇编相关/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">汇编相关</div>
-    </a>
-  
-</nav>
-
-  
-</article>
-
-</section>
-        
-          <aside id="sidebar">
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Categories</h3>
-    <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSAPP/">CSAPP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发/">开发</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数学/">数学</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法/">算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算理论/">计算理论</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/运维/">运维</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
-    <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACM/">ACM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSAPP/">CSAPP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSAPP-Homework/">CSAPP Homework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSAPP-Lab/">CSAPP Lab</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DFA/">DFA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Dijstra最短路/">Dijstra最短路</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GUI/">GUI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Leetcode/">Leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NFA/">NFA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Qt/">Qt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/clipboard/">clipboard</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/printf/">printf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xterm-clipboard/">xterm_clipboard</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/天梯赛/">天梯赛</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/底层/">底层</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/操作系统/">操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日历/">日历</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/时间戳/">时间戳</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/有限自动机/">有限自动机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/树状数组/">树状数组</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/汇编/">汇编</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/系统剪切板/">系统剪切板</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/组合数/">组合数</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算理论/">计算理论</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/递归/">递归</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/错排/">错排</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/ACM/" style="font-size: 20px;">ACM</a> <a href="/tags/CSAPP/" style="font-size: 10px;">CSAPP</a> <a href="/tags/CSAPP-Homework/" style="font-size: 10px;">CSAPP Homework</a> <a href="/tags/CSAPP-Lab/" style="font-size: 16.67px;">CSAPP Lab</a> <a href="/tags/DFA/" style="font-size: 10px;">DFA</a> <a href="/tags/Dijstra最短路/" style="font-size: 10px;">Dijstra最短路</a> <a href="/tags/GUI/" style="font-size: 10px;">GUI</a> <a href="/tags/Leetcode/" style="font-size: 10px;">Leetcode</a> <a href="/tags/NFA/" style="font-size: 10px;">NFA</a> <a href="/tags/Qt/" style="font-size: 10px;">Qt</a> <a href="/tags/clipboard/" style="font-size: 10px;">clipboard</a> <a href="/tags/printf/" style="font-size: 10px;">printf</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a> <a href="/tags/xterm-clipboard/" style="font-size: 10px;">xterm_clipboard</a> <a href="/tags/动态规划/" style="font-size: 10px;">动态规划</a> <a href="/tags/天梯赛/" style="font-size: 10px;">天梯赛</a> <a href="/tags/底层/" style="font-size: 10px;">底层</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数学/" style="font-size: 10px;">数学</a> <a href="/tags/日历/" style="font-size: 10px;">日历</a> <a href="/tags/时间戳/" style="font-size: 10px;">时间戳</a> <a href="/tags/有限自动机/" style="font-size: 10px;">有限自动机</a> <a href="/tags/树状数组/" style="font-size: 10px;">树状数组</a> <a href="/tags/汇编/" style="font-size: 10px;">汇编</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/系统剪切板/" style="font-size: 10px;">系统剪切板</a> <a href="/tags/组合数/" style="font-size: 10px;">组合数</a> <a href="/tags/计算理论/" style="font-size: 10px;">计算理论</a> <a href="/tags/递归/" style="font-size: 10px;">递归</a> <a href="/tags/错排/" style="font-size: 10px;">错排</a>
-    </div>
-  </div>
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2018/07/20/LeetCode-11-Container-With-Most-Water/">LeetCode 11.Container With Most Water</a>
-          </li>
-        
-          <li>
-            <a href="/2018/06/05/vim不支持系统剪切板的解决方案/">vim 不支持系统剪切板的解决方案</a>
-          </li>
-        
-          <li>
-            <a href="/2018/05/20/洛谷2577-午餐/">洛谷2577 午餐</a>
-          </li>
-        
-          <li>
-            <a href="/2018/05/17/洛谷2320-鬼谷子的钱袋-形式化证明/">洛谷2320 鬼谷子的钱袋 形式化证明</a>
-          </li>
-        
-          <li>
-            <a href="/2018/05/14/组合数之错排数/">组合数之错排数</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
-      </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2018 John Doe<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
-    </div>
-  </div>
-</footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-
-
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
-
-
-<script src="/js/script.js"></script>
-
-  </div>
-</body>
-</html>
+block content
+  .post
+    h1.post-title= page.title
+    .post-meta= page.date.format('ll')
+      if page.categories.length > 0
+        span= ' | '
+        span.category
+          for category in page.categories.toArray()
+            a(href=url_for(category.path))= category.name
+      if theme.busuanzi == true
+        script(src='https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js', async)
+        span#busuanzi_container_page_pv= ' | '
+          span#busuanzi_value_page_pv
+          span= ' ' + __('Hits')
+    if theme.duoshuo
+      a.ds-thread-count(data-thread-key=page.path, href=url_for(page.path) + '#comments')
+    if theme.disqus
+      a.disqus-comment-count(data-disqus-identifier=page.path, href=url_for(page.path) + '#disqus_thread')
+    if theme.gentie
+      a.ds-thread-count(class='cloud-tie-join-count', href=url_for(page.path) + '#comments')
+        span.join-count(style='font-size: 15px; color: #6E7173;') 0
+        span= ' ' + __('Discuss')
+    if theme.changyan
+      a.ds-thread-count(href=url_for(page.path) + '#SOHUCS')
+        span#changyan_count_unit(style='font-size: 15px; color: #6E7173;') 0
+        span= ' ' + __('Comment')
+      script(src='https://assets.changyan.sohu.com/upload/plugins/plugins.count.js', async)
+    if page.toc
+      div(class='clear')
+        div(id='toc' class='toc-article')
+          div(class='toc-title')= __('contents')
+          != toc(page.content, {list_number: theme.toc_number})
+    .post-content
+      != page.content
+    if theme.shareto == true
+      script(type='text/javascript', src=url_for(theme.js) + '/share.js' + '?v=' + theme.version, async)
+      a.article-share-link(data-url='#{page.permalink}', data-id='#{page._id}')= __('shareto')
+    include _partial/tag
+    include _partial/post_nav
+    if theme.duoshuo
+      div(class='ds-share flat' data-thread-key=page.path, data-title=page.title, data-url=page.permalink)
+         .ds-share-inline
+            ul.ds-share-icons-16
+              li(data-toggle='ds-share-icons-more')
+                a(class='ds-more' href='javascript:void(0);') 分享到：
+              li
+                a(class='ds-weibo' href='javascript:void(0);' data-service='weibo') 微博
+              li
+                a(class='ds-qzone' href='javascript:void(0);' data-service='qzone') QQ空间
+              li
+                a(class='ds-qqt' href='javascript:void(0);' data-service='qqt') 腾讯微博
+              li
+                a(class='ds-wechat' href='javascript:void(0);' data-service='wechat') 微信
+            .ds-share-icons-more
+    if page.comments
+      include _partial/comments
