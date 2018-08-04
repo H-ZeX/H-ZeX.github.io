@@ -1,61 +1,563 @@
-extends base
+<!DOCTYPE html>
+<html>
+<head>
+    
 
-block title
-  title= page.title + ' | ' + config.title
+    
 
-block content
-  .post
-    h1.post-title= page.title
-    .post-meta= page.date.format('ll')
-      if page.categories.length > 0
-        span= ' | '
-        span.category
-          for category in page.categories.toArray()
-            a(href=url_for(category.path))= category.name
-      if theme.busuanzi == true
-        script(src='https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js', async)
-        span#busuanzi_container_page_pv= ' | '
-          span#busuanzi_value_page_pv
-          span= ' ' + __('Hits')
-    if theme.duoshuo
-      a.ds-thread-count(data-thread-key=page.path, href=url_for(page.path) + '#comments')
-    if theme.disqus
-      a.disqus-comment-count(data-disqus-identifier=page.path, href=url_for(page.path) + '#disqus_thread')
-    if theme.gentie
-      a.ds-thread-count(class='cloud-tie-join-count', href=url_for(page.path) + '#comments')
-        span.join-count(style='font-size: 15px; color: #6E7173;') 0
-        span= ' ' + __('Discuss')
-    if theme.changyan
-      a.ds-thread-count(href=url_for(page.path) + '#SOHUCS')
-        span#changyan_count_unit(style='font-size: 15px; color: #6E7173;') 0
-        span= ' ' + __('Comment')
-      script(src='https://assets.changyan.sohu.com/upload/plugins/plugins.count.js', async)
-    if page.toc
-      div(class='clear')
-        div(id='toc' class='toc-article')
-          div(class='toc-title')= __('contents')
-          != toc(page.content, {list_number: theme.toc_number})
-    .post-content
-      != page.content
-    if theme.shareto == true
-      script(type='text/javascript', src=url_for(theme.js) + '/share.js' + '?v=' + theme.version, async)
-      a.article-share-link(data-url='#{page.permalink}', data-id='#{page._id}')= __('shareto')
-    include _partial/tag
-    include _partial/post_nav
-    if theme.duoshuo
-      div(class='ds-share flat' data-thread-key=page.path, data-title=page.title, data-url=page.permalink)
-         .ds-share-inline
-            ul.ds-share-icons-16
-              li(data-toggle='ds-share-icons-more')
-                a(class='ds-more' href='javascript:void(0);') 分享到：
-              li
-                a(class='ds-weibo' href='javascript:void(0);' data-service='weibo') 微博
-              li
-                a(class='ds-qzone' href='javascript:void(0);' data-service='qzone') QQ空间
-              li
-                a(class='ds-qqt' href='javascript:void(0);' data-service='qqt') 腾讯微博
-              li
-                a(class='ds-wechat' href='javascript:void(0);' data-service='wechat') 微信
-            .ds-share-icons-more
-    if page.comments
-      include _partial/comments
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>有限存储的计算机等价于有限自动机（DFA、NFA） | H-ZeX | H-ZeX&#39;s Coding Life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="DFA,NFA,有限自动机,计算理论">
+    <meta name="description" content="区别于图灵机的无限纸带，现实的计算机只有有限存储，所以其不是TM，而是DFA/NFA">
+<meta name="keywords" content="DFA,NFA,有限自动机,计算理论">
+<meta property="og:type" content="article">
+<meta property="og:title" content="有限存储的计算机等价于有限自动机（DFA、NFA）">
+<meta property="og:url" content="https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/index.html">
+<meta property="og:site_name" content="H-ZeX">
+<meta property="og:description" content="区别于图灵机的无限纸带，现实的计算机只有有限存储，所以其不是TM，而是DFA/NFA">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/有限存储的计算机等价于有限自动机（DFA、NFA）/1.png">
+<meta property="og:updated_time" content="2018-05-26T07:25:32.797Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="有限存储的计算机等价于有限自动机（DFA、NFA）">
+<meta name="twitter:description" content="区别于图灵机的无限纸带，现实的计算机只有有限存储，所以其不是TM，而是DFA/NFA">
+<meta name="twitter:image" content="https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/有限存储的计算机等价于有限自动机（DFA、NFA）/1.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="H-ZeX" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">H-ZeX</h5>
+          <a href="mailto:hzx20112012@gmail.com" title="hzx20112012@gmail.com" class="mail">hzx20112012@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">有限存储的计算机等价于有限自动机（DFA、NFA）</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">有限存储的计算机等价于有限自动机（DFA、NFA）</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2018-05-11T08:13:18.000Z" itemprop="datePublished" class="page-time">
+  2018-05-11
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/计算理论/">计算理论</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#B-0-n1-n-n-ge0"><span class="post-toc-number">1.</span> <span class="post-toc-text">$B=\{0^n1^n|n\ge0\}$</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#为什么现实中的计算机有可能是DFA"><span class="post-toc-number">2.</span> <span class="post-toc-text">为什么现实中的计算机有可能是DFA</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#对任意一段代码构造等价的NFA"><span class="post-toc-number">3.</span> <span class="post-toc-text">对任意一段代码构造等价的NFA</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#NFA构造方法描述"><span class="post-toc-number">3.0.1.</span> <span class="post-toc-text">NFA构造方法描述</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#为什么该NFA只接受允许的字符串，而不会接受多余的字符串"><span class="post-toc-number">3.0.2.</span> <span class="post-toc-text">为什么该NFA只接受允许的字符串，而不会接受多余的字符串</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#是否会出现情况：代码两次处于某状态但是行为不一样"><span class="post-toc-number">3.0.3.</span> <span class="post-toc-text">是否会出现情况：代码两次处于某状态但是行为不一样</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#对任意一台计算机构造等价的DFA"><span class="post-toc-number">4.</span> <span class="post-toc-text">对任意一台计算机构造等价的DFA</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#计算机可以死循环，DFA不会死循环，为什么"><span class="post-toc-number">5.</span> <span class="post-toc-text">计算机可以死循环，DFA不会死循环，为什么</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-有限存储的计算机等价于有限自动机（DFA、NFA）"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">有限存储的计算机等价于有限自动机（DFA、NFA）</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2018-05-11 16:13:18" datetime="2018-05-11T08:13:18.000Z"  itemprop="datePublished">2018-05-11</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/计算理论/">计算理论</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h3 id="B-0-n1-n-n-ge0"><a href="#B-0-n1-n-n-ge0" class="headerlink" title="$B=\{0^n1^n|n\ge0\}$"></a>$B=\{0^n1^n|n\ge0\}$</h3><ul>
+<li>Michael Sipser 的 <em>Introduction to the Theory of Computation</em> 的1.4提到一个非正则语言的例子，$B=\{0^n1^n|n\ge0\}$ ，并用Pumping lemma证明了其是非正则的，无法被DFA识别</li>
+<li>但是我们的计算机似乎可以识别以上语言，所以，为什么我们的计算机还是DFA呢</li>
+<li>事实上，我们的计算机只能识别n处于一定范围的B，而不能识别n为任意值的B。如果n过大，我们的计算机的存储单元无法表达，则会发生溢出，导致识别了另一个语言 $C=\{0^n1^m|n\ mod\ max=m\ mod\ max\}$ ，其中，max是我们的计算机的存储单元可以表达的最大值</li>
+<li>如果是n处于一定范围内，容易构造出一台DFA识别B：<ul>
+<li>设有两个变量a、b，a、b都可以取值$[0,1000]$ ，a表示0的数量，b表示1的数量</li>
+<li>那么，a、b的所有笛卡尔积组成的集合的一个子集就是该DFA的状态集</li>
+<li>转移方程为<ul>
+<li>首先： $&lt;0,0&gt;\rightarrow&lt;1,0&gt;\rightarrow&lt;2,0&gt;\rightarrow…\rightarrow&lt;1000,0&gt;$</li>
+<li>然后：从任意$&lt;n,0&gt;$ 都可以转移到 $&lt;n,1&gt;$</li>
+<li>然后：一旦转移到 $&lt;n,1&gt;$ ，就不能转移到 $&lt;n+k,m&gt;, (k&gt;0)$ ，也就是不能增长n的值</li>
+<li>最后：一旦转移到 $&lt;n, n&gt;$ 就accept</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="为什么现实中的计算机有可能是DFA"><a href="#为什么现实中的计算机有可能是DFA" class="headerlink" title="为什么现实中的计算机有可能是DFA"></a>为什么现实中的计算机有可能是DFA</h3><ul>
+<li>计算机只有有限存储，such as，某计算机有$2^{32}$ 个8bit的cell，每个cell有 $2^8$ 种取值，所以，所有存储的取值有 $(2^8)^{2^{32}}$ 种，也就是，这台计算机的存储只能有 $(2^8)^{2^{32}}$ 种状态，这就使得把计算机转为DFA变为可能</li>
+</ul>
+<h3 id="对任意一段代码构造等价的NFA"><a href="#对任意一段代码构造等价的NFA" class="headerlink" title="对任意一段代码构造等价的NFA"></a>对任意一段代码构造等价的NFA</h3><h5 id="NFA构造方法描述"><a href="#NFA构造方法描述" class="headerlink" title="NFA构造方法描述"></a>NFA构造方法描述</h5><ul>
+<li>假设该段代码的运行过程会改变的存储cell有c1、c2、c3、c4、c5，其中，c1到c5的取值范围都是[0,0xFF]，那么就可以构造$(2^8)^5$ 个$&lt;c1,c2,c3,c4,c5&gt;$ ，作为该NFA的状态集合。（注意，cs:ip 寄存器的值必然是这五个cell中的一个）</li>
+</ul>
+<ul>
+<li>输入字符表是$\{0,1\}$ ，将所有计算机接受的输入全部编码成bit 串后读入该DFA，每次读一个0或者一个1。</li>
+</ul>
+<ul>
+<li>假设该代码起始时，c1到c5的取值为$0,0,0,0,0$ ，则$&lt;0,0,0,0,0&gt;$ 就是起始态</li>
+<li>假设该段代码处于accept状态时，c1到c5的取值分别为$1,2,3,4,5$ ，那么，$&lt;1,2,3,4,5&gt;$ 就是该NFA的accept state</li>
+<li>该代码可以有输入，也可以无输入，可以在多个时候输入，也可以只在一个时候输入。假设其某次输入处于$&lt;d1,d2,d3,d4,d5&gt;$ ，输入后处于 $&lt;d6,d7,d8,d9,d10&gt;$ ，则在从$&lt;d1,d2,d3,d4,d5&gt;$ 到 $&lt;d6,d7,d8,d9,d10&gt;$ 是一个转移，转移使用的字符就是读入的字符。该代码也可以在无输入情况下由cpu作用，从一个状态转移到另一个状态，则在这两个状态之间使用$\varepsilon$ </li>
+</ul>
+<h5 id="为什么该NFA只接受允许的字符串，而不会接受多余的字符串"><a href="#为什么该NFA只接受允许的字符串，而不会接受多余的字符串" class="headerlink" title="为什么该NFA只接受允许的字符串，而不会接受多余的字符串"></a>为什么该NFA只接受允许的字符串，而不会接受多余的字符串</h5><ul>
+<li>首先，可以使用以上方法对于每个接受的字符串都构造NFA，则该NFA只接受允许的那个字符串</li>
+<li>设置一个新的起始态，该起始态有$\varepsilon$ 到所有为每个字符串构造的NFA</li>
+<li>则最终的NFA只接受允许的字符串</li>
+</ul>
+<h5 id="是否会出现情况：代码两次处于某状态但是行为不一样"><a href="#是否会出现情况：代码两次处于某状态但是行为不一样" class="headerlink" title="是否会出现情况：代码两次处于某状态但是行为不一样"></a>是否会出现情况：代码两次处于某状态但是行为不一样</h5><ul>
+<li>答案是肯定不会</li>
+<li>计算机的行为由当前状态决定——下一步要执行什么代码，取决于正在被执行的代码段，以及ip寄存器的值，如果text段的内容相同，cs:ip寄存器的相同，指令使用的值也相同，那么下一步的行为就是确定的</li>
+</ul>
+<h3 id="对任意一台计算机构造等价的DFA"><a href="#对任意一台计算机构造等价的DFA" class="headerlink" title="对任意一台计算机构造等价的DFA"></a>对任意一台计算机构造等价的DFA</h3><ul>
+<li>对于一台确定的计算机可以构造出确定的DFA，执行该计算机可以做的任何计算</li>
+<li>先说明一些前置情况：<ul>
+<li>现实中计算机使用源码处理特定的输入</li>
+<li>把现实中计算机处理该输入的源码编码成确定长度（统一取最大长度M——M是该计算机可以存储的最长比特串长度，比如$2^{40}$比特）的字符串，每个字符表示一个指令——这个其实等价于把源码编译成机器码（每个机器指令由一样的长度的比特串表示），然后把这个比特串补全成统一长度M</li>
+</ul>
+</li>
+<li>因为源码是M比特长，所以最多有$2^M$ 种不同的源码，根据上文，可以为每种源码构造一个DFA</li>
+<li>然后开始构造DFA<ul>
+<li>该DFA分为两个部分：第一个部分解释输入的源码字符串，第二个部分实际运行输入的源码来跑输入的数据——即实际运行$2^M$ 个不同的DFA中的一个</li>
+<li>DFA第一个部分，其读入长度M的字符串（也就是源码），从而把该台DFA导向某个状态，这个状态是$2^M$ 个实际运行代码的DFA中的一个的起始态</li>
+<li>第二部分就是那$2^M$ 台DFA，其接受输入，并最终停在某个状态——accept态或者是其他状态</li>
+</ul>
+</li>
+<li>从而该DFA接受$\cup A_i$ ，其中$A_i$ 是该计算机可以运行的任意一段代码接受的字符串集合</li>
+</ul>
+<h3 id="计算机可以死循环，DFA不会死循环，为什么"><a href="#计算机可以死循环，DFA不会死循环，为什么" class="headerlink" title="计算机可以死循环，DFA不会死循环，为什么"></a>计算机可以死循环，DFA不会死循环，为什么</h3><ul>
+<li>consider that，死循环指的是无输入情况下，不停机，而不是无限输入导致的不停机。</li>
+</ul>
+<ul>
+<li><p>因为计算机的状态是有限的，所以，如果计算机死循环，那么其必然会重复处于某个状态，进而导致行为的重复——因为计算机的当前状态唯一确定了以后的行为。</p>
+</li>
+<li><p>在NFA，这种情况死循环的状况也会发生——一组状态以$\varepsilon$ 连接在一起形成环，从而导致无限读入$\varepsilon$ ，无限循环</p>
+</li>
+<li><p>截断导致NFA死循环的那个环，并不会影响接受的语言。假设该环是s1、s2、s3、s1，那么我们可以把其变成三条路：“s1、s2、s3”，“s2、s3、s1”，“s3、s1、s2” ，非形式化来说，因为这不会改变该图的连通性，所以接受的字符串集合不变</p>
+</li>
+<li><p>而按照<em>Introduction to the Theory of Computation</em> 的1.2节的<em>EQUIVALENCE OF NFAS AND DFAS</em>DFA 描述的方法，其正是去掉了这种$\varepsilon$ 环，所以不会死循环，具体去掉的方法如下（截图来自书本英文第三版P56）：</p>
+<p><img src="./有限存储的计算机等价于有限自动机（DFA、NFA）/1.png" alt=""></p>
+<p>$E(R)$ 是一个集合，集合中元素不重复，而$\varepsilon$ 环所到达的状态必然是重复的，所以就把$\varepsilon$ 环断开了</p>
+</li>
+</ul>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2018-05-26T07:25:32.797Z" itemprop="dateUpdated">2018-05-26 15:25:32</time>
+</span><br>
+
+
+        
+        这里可以写作者留言，标签和 hexo 中所有变量及辅助函数等均可调用，示例：<a href="/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/" target="_blank" rel="external">https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/</a>
+        
+    </div>
+    
+    <footer>
+        <a href="https://h-zex.github.io">
+            <img src="/img/avatar.jpg" alt="H-ZeX">
+            H-ZeX
+        </a>
+    </footer>
+</blockquote>
+
+        
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DFA/">DFA</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NFA/">NFA</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/有限自动机/">有限自动机</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/计算理论/">计算理论</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/&title=《有限存储的计算机等价于有限自动机（DFA、NFA）》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/&title=《有限存储的计算机等价于有限自动机（DFA、NFA）》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《有限存储的计算机等价于有限自动机（DFA、NFA）》 — H-ZeX&url=https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2018/05/13/天梯L3-007-天梯地图/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">天梯L3 007 天梯地图</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2018/03/20/n元逆序对数量求解/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">n元逆序对数量求解</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitment_thread"></div>
+    <link rel="stylesheet" href="//unpkg.com/gitment/style/default.css">
+    <script src="//unpkg.com/gitment/dist/gitment.browser.js"></script>
+    <script>
+        var gitment = new Gitment({
+            owner: 'H-ZeX',
+            repo: 'H-ZeX.github.io',
+            oauth: {
+                client_id: '77f9acb63af0afe6c8e9',
+                client_secret: 'e8b9218dee631709a296069a209bad5bb89e6eb3',
+            },
+        })
+        gitment.render('comments')
+    </script>
+</section>
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>H-ZeX &copy; 2017 - 2018</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/&title=《有限存储的计算机等价于有限自动机（DFA、NFA）》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/&title=《有限存储的计算机等价于有限自动机（DFA、NFA）》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《有限存储的计算机等价于有限自动机（DFA、NFA）》 — H-ZeX&url=https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: false };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

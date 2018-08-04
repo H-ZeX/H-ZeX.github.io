@@ -1,61 +1,599 @@
-extends base
+<!DOCTYPE html>
+<html>
+<head>
+    
 
-block title
-  title= page.title + ' | ' + config.title
+    
 
-block content
-  .post
-    h1.post-title= page.title
-    .post-meta= page.date.format('ll')
-      if page.categories.length > 0
-        span= ' | '
-        span.category
-          for category in page.categories.toArray()
-            a(href=url_for(category.path))= category.name
-      if theme.busuanzi == true
-        script(src='https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js', async)
-        span#busuanzi_container_page_pv= ' | '
-          span#busuanzi_value_page_pv
-          span= ' ' + __('Hits')
-    if theme.duoshuo
-      a.ds-thread-count(data-thread-key=page.path, href=url_for(page.path) + '#comments')
-    if theme.disqus
-      a.disqus-comment-count(data-disqus-identifier=page.path, href=url_for(page.path) + '#disqus_thread')
-    if theme.gentie
-      a.ds-thread-count(class='cloud-tie-join-count', href=url_for(page.path) + '#comments')
-        span.join-count(style='font-size: 15px; color: #6E7173;') 0
-        span= ' ' + __('Discuss')
-    if theme.changyan
-      a.ds-thread-count(href=url_for(page.path) + '#SOHUCS')
-        span#changyan_count_unit(style='font-size: 15px; color: #6E7173;') 0
-        span= ' ' + __('Comment')
-      script(src='https://assets.changyan.sohu.com/upload/plugins/plugins.count.js', async)
-    if page.toc
-      div(class='clear')
-        div(id='toc' class='toc-article')
-          div(class='toc-title')= __('contents')
-          != toc(page.content, {list_number: theme.toc_number})
-    .post-content
-      != page.content
-    if theme.shareto == true
-      script(type='text/javascript', src=url_for(theme.js) + '/share.js' + '?v=' + theme.version, async)
-      a.article-share-link(data-url='#{page.permalink}', data-id='#{page._id}')= __('shareto')
-    include _partial/tag
-    include _partial/post_nav
-    if theme.duoshuo
-      div(class='ds-share flat' data-thread-key=page.path, data-title=page.title, data-url=page.permalink)
-         .ds-share-inline
-            ul.ds-share-icons-16
-              li(data-toggle='ds-share-icons-more')
-                a(class='ds-more' href='javascript:void(0);') 分享到：
-              li
-                a(class='ds-weibo' href='javascript:void(0);' data-service='weibo') 微博
-              li
-                a(class='ds-qzone' href='javascript:void(0);' data-service='qzone') QQ空间
-              li
-                a(class='ds-qqt' href='javascript:void(0);' data-service='qqt') 腾讯微博
-              li
-                a(class='ds-wechat' href='javascript:void(0);' data-service='wechat') 微信
-            .ds-share-icons-more
-    if page.comments
-      include _partial/comments
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>CSAPP Bomb Lab | H-ZeX | H-ZeX&#39;s Coding Life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="CSAPP Lab">
+    <meta name="description" content="CSAPP 炸弹实验的解答">
+<meta name="keywords" content="CSAPP Lab">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP Bomb Lab">
+<meta property="og:url" content="https://h-zex.github.io/2017/09/15/CSAPP-Bomb-Lab/index.html">
+<meta property="og:site_name" content="H-ZeX">
+<meta property="og:description" content="CSAPP 炸弹实验的解答">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-05-26T07:25:32.910Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CSAPP Bomb Lab">
+<meta name="twitter:description" content="CSAPP 炸弹实验的解答">
+    
+        <link rel="alternate" type="application/atom+xml" title="H-ZeX" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">H-ZeX</h5>
+          <a href="mailto:hzx20112012@gmail.com" title="hzx20112012@gmail.com" class="mail">hzx20112012@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">CSAPP Bomb Lab</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">CSAPP Bomb Lab</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2017-09-14T18:04:11.000Z" itemprop="datePublished" class="page-time">
+  2017-09-15
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/CSAPP/">CSAPP</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#CSAPP-Bomb-Lab"><span class="post-toc-number">1.</span> <span class="post-toc-text">CSAPP Bomb Lab</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#答案"><span class="post-toc-number">1.0.1.</span> <span class="post-toc-text">答案</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#第一题"><span class="post-toc-number">1.0.2.</span> <span class="post-toc-text">第一题</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解答思路"><span class="post-toc-number">1.0.2.1.</span> <span class="post-toc-text">解答思路</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#第二题"><span class="post-toc-number">1.0.3.</span> <span class="post-toc-text">第二题</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解答思路-1"><span class="post-toc-number">1.0.3.1.</span> <span class="post-toc-text">解答思路</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#第三题"><span class="post-toc-number">1.0.4.</span> <span class="post-toc-text">第三题</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解题思路"><span class="post-toc-number">1.0.4.1.</span> <span class="post-toc-text">解题思路</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#第四题"><span class="post-toc-number">1.0.5.</span> <span class="post-toc-text">第四题</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解题思路-1"><span class="post-toc-number">1.0.5.1.</span> <span class="post-toc-text">解题思路</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#第五题"><span class="post-toc-number">1.0.6.</span> <span class="post-toc-text">第五题</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解题思路-2"><span class="post-toc-number">1.0.6.1.</span> <span class="post-toc-text">解题思路</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#第六题"><span class="post-toc-number">1.0.7.</span> <span class="post-toc-text">第六题</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#一些心得"><span class="post-toc-number">1.0.7.1.</span> <span class="post-toc-text">一些心得</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解题思路-3"><span class="post-toc-number">1.0.7.2.</span> <span class="post-toc-text">解题思路</span></a></li></ol></li></ol></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-CSAPP-Bomb-Lab"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">CSAPP Bomb Lab</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2017-09-15 02:04:11" datetime="2017-09-14T18:04:11.000Z"  itemprop="datePublished">2017-09-15</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/CSAPP/">CSAPP</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h1 id="CSAPP-Bomb-Lab"><a href="#CSAPP-Bomb-Lab" class="headerlink" title="CSAPP Bomb Lab"></a>CSAPP Bomb Lab</h1><h3 id="答案"><a href="#答案" class="headerlink" title="答案"></a>答案</h3><ol>
+<li>Border relations with Canada have never been better.</li>
+<li>1 2 4 8 16 32</li>
+<li>多个答案<ul>
+<li>0    207</li>
+<li>1    311</li>
+<li>2    707</li>
+<li>3    256</li>
+<li>4    389</li>
+<li>5    206</li>
+<li>6    682</li>
+<li>7    327</li>
+</ul>
+</li>
+<li><em>应该有多个答案</em><ul>
+<li>7    0</li>
+</ul>
+</li>
+<li>一个6个字符的字符串，字符串的ascii值依次为<ul>
+<li>$9+k\times16$ </li>
+<li>$15+k\times16$</li>
+<li>$14+k\times16$</li>
+<li>$5+k\times16$</li>
+<li>$6+k\times16$</li>
+<li>$7+k\times16$</li>
+</ul>
+</li>
+<li>​      4 3 2 1 6 5</li>
+</ol>
+<h3 id="第一题"><a href="#第一题" class="headerlink" title="第一题"></a>第一题</h3><h4 id="解答思路"><a href="#解答思路" class="headerlink" title="解答思路"></a>解答思路</h4><ul>
+<li>string_not_equal函数比对(0x402400)位置的string与输入的string</li>
+<li>直接运行gdb，<code>print (char*)0x402400</code>即可</li>
+<li><em>不需要读完string_not_equal函数，可以猜测0x402400就是要找的，然后一试就过了。不过也不可以绝对相信函数名，或许出题人骗我们呢 2333</em></li>
+</ul>
+<h3 id="第二题"><a href="#第二题" class="headerlink" title="第二题"></a>第二题</h3><h4 id="解答思路-1"><a href="#解答思路-1" class="headerlink" title="解答思路"></a>解答思路</h4><ul>
+<li>汇编代码显示，调用read_six_numbers读入6个数字，放在从栈底开始的24个字节里。测试第一个是否为1，用循环测试后一个是否是前一个的2倍。所以直接输入<code>1  2  4  8  16  32</code>即可AC</li>
+</ul>
+<h3 id="第三题"><a href="#第三题" class="headerlink" title="第三题"></a>第三题</h3><h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">lea    0xc(%rsp),%rcx //rcx=12+rsp</span><br><span class="line">lea    0x8(%rsp),%rdx //rdx=8+rsp</span><br><span class="line">mov    $0x4025cf,%esi //%d %d</span><br><span class="line">mov    $0x0,%eax</span><br><span class="line">callq  400bf0 &lt;__isoc99_sscanf@plt&gt;</span><br></pre></td></tr></table></figure>
+<p>从调用sscanf前的寄存器准备工作中看出，%esi放着格式字符串，用gdb<code>print (char*)0x4025cf</code>打印出<code>&quot;%d %d&quot;</code></p>
+</li>
+<li><p>然后测试读入的第一个数字是否大于7，如果是，explode_bomb</p>
+</li>
+<li><p>然后就是一个switch，用gdb<code>x/14w 0x402470</code>打印出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0x402470:	0x00400f7c	0x00000000	0x00400fb9	0x00000000</span><br><span class="line">0x402480:	0x00400f83	0x00000000	0x00400f8a	0x00000000</span><br><span class="line">0x402490:	0x00400f91	0x00000000	0x00400f98	0x00000000</span><br><span class="line">0x4024a0:	0x00400f9f	0x00000000</span><br></pre></td></tr></table></figure>
+<p>按照对应关系确定第二个读入的数字即可</p>
+</li>
+</ul>
+<h3 id="第四题"><a href="#第四题" class="headerlink" title="第四题"></a>第四题</h3><h4 id="解题思路-1"><a href="#解题思路-1" class="headerlink" title="解题思路"></a>解题思路</h4><ul>
+<li>同样是用sscanf读入两个数字</li>
+<li>由于逻辑比较复杂，但是反编译比较简单，可以直接反编译得到结果</li>
+</ul>
+<h3 id="第五题"><a href="#第五题" class="headerlink" title="第五题"></a>第五题</h3><h4 id="解题思路-2"><a href="#解题思路-2" class="headerlink" title="解题思路"></a>解题思路</h4><ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">callq  40131b &lt;string_length&gt;</span><br><span class="line">cmp    $0x6,%eax</span><br></pre></td></tr></table></figure>
+<p>读入6个字符的字符串</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">movzbl (%rbx,%rax,1),%ecx</span><br><span class="line">mov    %cl,(%rsp)</span><br><span class="line">mov    (%rsp),%rdx</span><br><span class="line">and    $0xf,%edx</span><br><span class="line">movzbl 0x4024b0(%rdx),%edx</span><br><span class="line">mov    %dl,0x10(%rsp,%rax,1)</span><br></pre></td></tr></table></figure>
+<p>提取每个字符的ascii的低4bits，放在<code>edx</code>里，然后从<code>0x4024b0+edx</code>的位置读入数据放在栈上</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mov    $0x40245e,%esi</span><br><span class="line">lea    0x10(%rsp),%rdi</span><br><span class="line">callq  401338 &lt;strings_not_equal&gt;</span><br></pre></td></tr></table></figure>
+<p>后面调用了strings_not_equal，比对0x40245e处的字符串及我们放在栈上的数据。</p>
+</li>
+<li><p>用gdb分别打印0x4024b0  0x40245e处的字符串，获得</p>
+<ul>
+<li><code>maduiersnfotvbylSo you think you can stop the bomb with ctrl-c, do you?</code></li>
+<li><code>flyers</code></li>
+</ul>
+</li>
+<li><p>此时可以知道，前面提取数据时，是以我们输入的字符的低4bit的数值为偏移量，从0x4024b0开始的字符串按照偏移量提取字符放在栈上，然后与<code>flyers</code>比对。偏移量依次为$9\ 15\ 14\ 5\ 6\ 7$</p>
+</li>
+<li><p>但是这些字符不可打印出来，所以我们需要加上$16\times k$来获得可打印的字符</p>
+</li>
+</ul>
+<h3 id="第六题"><a href="#第六题" class="headerlink" title="第六题"></a>第六题</h3><h4 id="一些心得"><a href="#一些心得" class="headerlink" title="一些心得"></a>一些心得</h4><ul>
+<li><p>不要尝试完整的人肉反汇编成C，而是大概知道哪段代码有哪些功能，然后用gdb调试，看看猜的对不对。比如本题以下代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#from 代码段的401153</span><br><span class="line">lea    0x18(%rsp),%rsi</span><br><span class="line">mov    %r14,%rax</span><br><span class="line">mov    $0x7,%ecx</span><br><span class="line"></span><br><span class="line">mov    %ecx,%edx</span><br><span class="line">sub    (%rax),%edx</span><br><span class="line">mov    %edx,(%rax)</span><br><span class="line">add    $0x4,%rax</span><br><span class="line">cmp    %rsi,%rax</span><br><span class="line">jne    401160 &lt;phase_6+0x6c&gt;</span><br></pre></td></tr></table></figure>
+<p>大概知道是改变读入的数字的值，但是不确定确切功能，这时候可以在用gdb，在读入之后的地方设断点，打印这块内存区域的多个字节的值，然后再在这段代码执行后的地方设断点，打印值，观察变化，结合汇编代码，更加容易知道其功能</p>
+</li>
+<li><p>安利一个gdb插件<a href="https://github.com/longld/peda" target="_blank" rel="noopener">peda</a>，大大提高gdb的用户体验</p>
+</li>
+</ul>
+<h4 id="解题思路-3"><a href="#解题思路-3" class="headerlink" title="解题思路"></a>解题思路</h4><ul>
+<li><p>整段代码分为 个部分</p>
+<ul>
+<li><p>0x4010fc 到 0x401106：读入6个数值</p>
+</li>
+<li><p>0x40110b 到 0x401151：一个大循环，对读入的数字的合法性进行检查，要求读入的数字的取值范围是$[1,6]$，并且相互之间不相等。（这时候或许就可以暴力了233333）</p>
+</li>
+<li><p>0x401153 到 0x40116d：另一个循环，对输入的数字顺序进行调整。（一开始想着直接看汇编，但是出错了，后来用gdb调试，很容易就看到了这个特性）</p>
+</li>
+<li><p>0x401176 到 0x4011a9：一个大循环把链表的node的地址按照一定顺序写到栈上（里面有多个小循环、跳转，比较复杂）。通过大概的反汇编、gdb打印该段代码执行前后内存的值、猜测、测试不同的输入的数字序列，获得该段的功能。</p>
+<p>其中，该段中把关于0x6032d0的值写入栈中，所以用gdb命令<code>x/30w 0x6032d0</code>打印改地址附近的多个字节，结果如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">0x6032d0 &lt;node1&gt;:	0x0000014c	0x00000001	0x006032e0	0x00000000</span><br><span class="line">0x6032e0 &lt;node2&gt;:	0x000000a8	0x00000002	0x006032f0	0x00000000</span><br><span class="line">0x6032f0 &lt;node3&gt;:	0x0000039c	0x00000003	0x00603300	0x00000000</span><br><span class="line">0x603300 &lt;node4&gt;:	0x000002b3	0x00000004	0x00603310	0x00000000</span><br><span class="line">0x603310 &lt;node5&gt;:	0x000001dd	0x00000005	0x00603320	0x00000000</span><br><span class="line">0x603320 &lt;node6&gt;:	0x000001bb	0x00000006	0x00000000	0x00000000</span><br></pre></td></tr></table></figure>
+<p>可以看到有6个node，每个node的第三个字节都对应另一个node的地址，很明显，这是一个链表。</p>
+<p>由此可以知道该段代码的功能为<strong>把node的地址写在栈上，地址在栈上的排列顺序由读入的数字确定</strong>。当然，读入的数字的顺序在前面的一段代码被处理了，所以直接从汇编了解其逻辑比较难，还是用gdb打印该段代码执行后的值，并且尝试改变输入的数字的顺序来确定该段的逻辑。</p>
+<p><strong>node地址在栈上关于读入的数字的分布规则为</strong></p>
+<ul>
+<li>node地址越大，对应的数字越小，1对应0x603320，2对应0x603310，3对应0x603300，4对应0x6032f0，5对应0x6032e0，6对应0x6032d0</li>
+<li>node地址按照读入数字的顺序，排列在栈上。</li>
+</ul>
+</li>
+<li><p>0x4011ab 到 0x4011d9：该段从<code>%rsp+0x20</code>开始，读入前面写到栈上的node地址，然后写到上一个节点的偏移量为8bit的位置，也就是node里存放next node的指针的位置。其实就是按照栈上node地址的排列顺序重新排列链表里node的顺序，其等价的C代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">node</span>&#123;</span></span><br><span class="line">	<span class="keyword">int</span> num;</span><br><span class="line">	<span class="keyword">int</span> index;</span><br><span class="line">	node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">node **next = %rsp+<span class="number">0x28</span>;</span><br><span class="line">node **endnode = %rsp+<span class="number">0x50</span>;</span><br><span class="line">node *currentnode = *(%rsp+<span class="number">0x20</span>);</span><br><span class="line">node *temp;</span><br><span class="line"><span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">	temp = *next;</span><br><span class="line">	currentnode-&gt;next = temp;</span><br><span class="line">	next += <span class="number">1</span>;	<span class="comment">//in fact, it add 8 bytes;</span></span><br><span class="line">	<span class="keyword">if</span>(endnode==next)</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	currentnode = temp;</span><br><span class="line">&#125;</span><br><span class="line">temp-&gt;next = null;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>0x4011df 到 0x4011f5：依次访问链表的节点，判断是否有后一个节点的数据大于前一个的情况，如果有，bomb。</p>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2018-05-26T07:25:32.910Z" itemprop="dateUpdated">2018-05-26 15:25:32</time>
+</span><br>
+
+
+        
+        这里可以写作者留言，标签和 hexo 中所有变量及辅助函数等均可调用，示例：<a href="/2017/09/15/CSAPP-Bomb-Lab/" target="_blank" rel="external">https://h-zex.github.io/2017/09/15/CSAPP-Bomb-Lab/</a>
+        
+    </div>
+    
+    <footer>
+        <a href="https://h-zex.github.io">
+            <img src="/img/avatar.jpg" alt="H-ZeX">
+            H-ZeX
+        </a>
+    </footer>
+</blockquote>
+
+        
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CSAPP-Lab/">CSAPP Lab</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2017/09/15/CSAPP-Bomb-Lab/&title=《CSAPP Bomb Lab》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2017/09/15/CSAPP-Bomb-Lab/&title=《CSAPP Bomb Lab》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2017/09/15/CSAPP-Bomb-Lab/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《CSAPP Bomb Lab》 — H-ZeX&url=https://h-zex.github.io/2017/09/15/CSAPP-Bomb-Lab/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2017/09/15/CSAPP-Bomb-Lab/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2017/09/16/CSAPP-Attack-Lab/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">CSAPP Attack Lab</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2017/09/13/CSAPP-Data-Lab/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">CSAPP Data Lab</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitment_thread"></div>
+    <link rel="stylesheet" href="//unpkg.com/gitment/style/default.css">
+    <script src="//unpkg.com/gitment/dist/gitment.browser.js"></script>
+    <script>
+        var gitment = new Gitment({
+            owner: 'H-ZeX',
+            repo: 'H-ZeX.github.io',
+            oauth: {
+                client_id: '77f9acb63af0afe6c8e9',
+                client_secret: 'e8b9218dee631709a296069a209bad5bb89e6eb3',
+            },
+        })
+        gitment.render('comments')
+    </script>
+</section>
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>H-ZeX &copy; 2017 - 2018</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2017/09/15/CSAPP-Bomb-Lab/&title=《CSAPP Bomb Lab》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2017/09/15/CSAPP-Bomb-Lab/&title=《CSAPP Bomb Lab》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2017/09/15/CSAPP-Bomb-Lab/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《CSAPP Bomb Lab》 — H-ZeX&url=https://h-zex.github.io/2017/09/15/CSAPP-Bomb-Lab/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2017/09/15/CSAPP-Bomb-Lab/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://h-zex.github.io/2017/09/15/CSAPP-Bomb-Lab/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: false };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

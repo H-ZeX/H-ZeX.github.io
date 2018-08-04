@@ -1,61 +1,534 @@
-extends base
+<!DOCTYPE html>
+<html>
+<head>
+    
 
-block title
-  title= page.title + ' | ' + config.title
+    
 
-block content
-  .post
-    h1.post-title= page.title
-    .post-meta= page.date.format('ll')
-      if page.categories.length > 0
-        span= ' | '
-        span.category
-          for category in page.categories.toArray()
-            a(href=url_for(category.path))= category.name
-      if theme.busuanzi == true
-        script(src='https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js', async)
-        span#busuanzi_container_page_pv= ' | '
-          span#busuanzi_value_page_pv
-          span= ' ' + __('Hits')
-    if theme.duoshuo
-      a.ds-thread-count(data-thread-key=page.path, href=url_for(page.path) + '#comments')
-    if theme.disqus
-      a.disqus-comment-count(data-disqus-identifier=page.path, href=url_for(page.path) + '#disqus_thread')
-    if theme.gentie
-      a.ds-thread-count(class='cloud-tie-join-count', href=url_for(page.path) + '#comments')
-        span.join-count(style='font-size: 15px; color: #6E7173;') 0
-        span= ' ' + __('Discuss')
-    if theme.changyan
-      a.ds-thread-count(href=url_for(page.path) + '#SOHUCS')
-        span#changyan_count_unit(style='font-size: 15px; color: #6E7173;') 0
-        span= ' ' + __('Comment')
-      script(src='https://assets.changyan.sohu.com/upload/plugins/plugins.count.js', async)
-    if page.toc
-      div(class='clear')
-        div(id='toc' class='toc-article')
-          div(class='toc-title')= __('contents')
-          != toc(page.content, {list_number: theme.toc_number})
-    .post-content
-      != page.content
-    if theme.shareto == true
-      script(type='text/javascript', src=url_for(theme.js) + '/share.js' + '?v=' + theme.version, async)
-      a.article-share-link(data-url='#{page.permalink}', data-id='#{page._id}')= __('shareto')
-    include _partial/tag
-    include _partial/post_nav
-    if theme.duoshuo
-      div(class='ds-share flat' data-thread-key=page.path, data-title=page.title, data-url=page.permalink)
-         .ds-share-inline
-            ul.ds-share-icons-16
-              li(data-toggle='ds-share-icons-more')
-                a(class='ds-more' href='javascript:void(0);') 分享到：
-              li
-                a(class='ds-weibo' href='javascript:void(0);' data-service='weibo') 微博
-              li
-                a(class='ds-qzone' href='javascript:void(0);' data-service='qzone') QQ空间
-              li
-                a(class='ds-qqt' href='javascript:void(0);' data-service='qqt') 腾讯微博
-              li
-                a(class='ds-wechat' href='javascript:void(0);' data-service='wechat') 微信
-            .ds-share-icons-more
-    if page.comments
-      include _partial/comments
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>天梯L3 007 天梯地图 | H-ZeX | H-ZeX&#39;s Coding Life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="Dijstra最短路,天梯赛">
+    <meta name="description" content="Dijstra最短路变形">
+<meta name="keywords" content="Dijstra最短路,天梯赛">
+<meta property="og:type" content="article">
+<meta property="og:title" content="天梯L3 007 天梯地图">
+<meta property="og:url" content="https://h-zex.github.io/2018/05/13/天梯L3-007-天梯地图/index.html">
+<meta property="og:site_name" content="H-ZeX">
+<meta property="og:description" content="Dijstra最短路变形">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://h-zex.github.io/2018/05/13/天梯L3-007-天梯地图/天梯L3-007-天梯地图/1.png">
+<meta property="og:updated_time" content="2018-05-26T07:25:32.797Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="天梯L3 007 天梯地图">
+<meta name="twitter:description" content="Dijstra最短路变形">
+<meta name="twitter:image" content="https://h-zex.github.io/2018/05/13/天梯L3-007-天梯地图/天梯L3-007-天梯地图/1.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="H-ZeX" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">H-ZeX</h5>
+          <a href="mailto:hzx20112012@gmail.com" title="hzx20112012@gmail.com" class="mail">hzx20112012@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">天梯L3 007 天梯地图</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">天梯L3 007 天梯地图</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2018-05-13T07:10:04.000Z" itemprop="datePublished" class="page-time">
+  2018-05-13
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/算法/">算法</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#题目"><span class="post-toc-number">1.</span> <span class="post-toc-text">题目</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#输入示例一"><span class="post-toc-number">1.0.1.</span> <span class="post-toc-text">输入示例一</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#输出示例一"><span class="post-toc-number">1.0.2.</span> <span class="post-toc-text">输出示例一</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#输入示例二"><span class="post-toc-number">1.0.3.</span> <span class="post-toc-text">输入示例二</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#输出示例二"><span class="post-toc-number">1.0.4.</span> <span class="post-toc-text">输出示例二</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Dijstra算法"><span class="post-toc-number">2.</span> <span class="post-toc-text">Dijstra算法</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Dijstra找出所有最短路径"><span class="post-toc-number">3.</span> <span class="post-toc-text">Dijstra找出所有最短路径</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#需要注意的点"><span class="post-toc-number">4.</span> <span class="post-toc-text">需要注意的点</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#不可以这样寻找同代价的不同parent-节点"><span class="post-toc-number">4.0.1.</span> <span class="post-toc-text">不可以这样寻找同代价的不同parent 节点</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#考虑自循环边"><span class="post-toc-number">4.0.2.</span> <span class="post-toc-text">考虑自循环边</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#因为有0权重的边，所以可能有0权重环路，所以后面的dfs要注意"><span class="post-toc-number">4.0.3.</span> <span class="post-toc-text">因为有0权重的边，所以可能有0权重环路，所以后面的dfs要注意</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#INF的取值要注意"><span class="post-toc-number">4.0.4.</span> <span class="post-toc-text">INF的取值要注意</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#自己生成数据对拍时"><span class="post-toc-number">4.0.5.</span> <span class="post-toc-text">自己生成数据对拍时</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#代码"><span class="post-toc-number">5.</span> <span class="post-toc-text">代码</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-天梯L3-007-天梯地图"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">天梯L3 007 天梯地图</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2018-05-13 15:10:04" datetime="2018-05-13T07:10:04.000Z"  itemprop="datePublished">2018-05-13</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/算法/">算法</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="./天梯L3-007-天梯地图/1.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<h4 id="输入示例一"><a href="#输入示例一" class="headerlink" title="输入示例一"></a>输入示例一</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">10 15</span><br><span class="line">0 1 0 1 1</span><br><span class="line">8 0 0 1 1</span><br><span class="line">4 8 1 1 1</span><br><span class="line">5 4 0 2 3</span><br><span class="line">5 9 1 1 4</span><br><span class="line">0 6 0 1 1</span><br><span class="line">7 3 1 1 2</span><br><span class="line">8 3 1 1 2</span><br><span class="line">2 5 0 2 2</span><br><span class="line">2 1 1 1 1</span><br><span class="line">1 5 0 1 3</span><br><span class="line">1 4 0 1 1</span><br><span class="line">9 7 1 1 3</span><br><span class="line">3 1 0 2 5</span><br><span class="line">6 3 1 2 1</span><br><span class="line">5 3</span><br></pre></td></tr></table></figure>
+<h4 id="输出示例一"><a href="#输出示例一" class="headerlink" title="输出示例一"></a>输出示例一</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Time = 6: 5 =&gt; 4 =&gt; 8 =&gt; 3</span><br><span class="line">Distance = 3: 5 =&gt; 1 =&gt; 3</span><br></pre></td></tr></table></figure>
+<h4 id="输入示例二"><a href="#输入示例二" class="headerlink" title="输入示例二"></a>输入示例二</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">7 9</span><br><span class="line">0 4 1 1 1</span><br><span class="line">1 6 1 3 1</span><br><span class="line">2 6 1 1 1</span><br><span class="line">2 5 1 2 2</span><br><span class="line">3 0 0 1 1</span><br><span class="line">3 1 1 3 1</span><br><span class="line">3 2 1 2 1</span><br><span class="line">4 5 0 2 2</span><br><span class="line">6 5 1 2 1</span><br><span class="line">3 5</span><br></pre></td></tr></table></figure>
+<h4 id="输出示例二"><a href="#输出示例二" class="headerlink" title="输出示例二"></a>输出示例二</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Time = 3; Distance = 4: 3 =&gt; 2 =&gt; 5</span><br></pre></td></tr></table></figure>
+<h2 id="Dijstra算法"><a href="#Dijstra算法" class="headerlink" title="Dijstra算法"></a>Dijstra算法</h2><ul>
+<li>bfs+优先队列其实就是dijstra算法</li>
+<li>dijstra维护result set，源节点到这个set里的点的最短路径已经找到，所以result set只会有node被加进去而不会有node被踢出去</li>
+<li>不同于算法导论描述的dijstra算法——算导里的堆是点的堆，所以当发现有新的路径可以以更小的代价到达某点时（该点之前已经在堆里），会使用堆decrease key操作——把这个点的权值减低，并且调整堆使得堆合法。但是stl的优先队列并没有decrease key的操作，所以使用另一种实现——允许某点多次加入到优先队列里——其实就等价于优先队列里放Edge。所以在从优先队列里pop出最小权的点时，要判断该点是否已经处于result set里。这样做会使得复杂度从$O((E+V)lgV)$ 变为$O(ElgE)$ </li>
+</ul>
+<h2 id="Dijstra找出所有最短路径"><a href="#Dijstra找出所有最短路径" class="headerlink" title="Dijstra找出所有最短路径"></a>Dijstra找出所有最短路径</h2><ul>
+<li>从src到dest的路径上的某些节点有多种到达方法——这就导致了多条路径。所以我们要维护所有节点的parent list——无论从哪个parent 到这个节点都是最短的。</li>
+<li>具体实现是：从优先队列其pop出某节点，该节点已经处于result set里，但是源节点到该节点的代价与result中的这个节点的路径代价相同，那么这条新的路径就是另一个条到达这个节点的路径。使用一个vector来存储某个节点的parent list——比如<code>vector&lt;int&gt; parent[600]</code> ，则<code>parent[n]</code> 代表的vector就是编号为n的节点的parent list</li>
+<li>然后使用dfs去计算所有可能的路径的另外一种代价——比如此题，以时间为权重的最短路径有多条，但是我们还需要计算出这些路径在使用路径长度作为权重时该路径的代价。这一步可以使用记忆化搜索。</li>
+</ul>
+<h2 id="需要注意的点"><a href="#需要注意的点" class="headerlink" title="需要注意的点"></a>需要注意的点</h2><h4 id="不可以这样寻找同代价的不同parent-节点"><a href="#不可以这样寻找同代价的不同parent-节点" class="headerlink" title="不可以这样寻找同代价的不同parent 节点"></a>不可以这样寻找同代价的不同parent 节点</h4><ul>
+<li><p>代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 参数me是该edge的终点，p是该edge的起点，t出发的源节点到这条edge的终点的代价</span></span><br><span class="line"><span class="comment">// 其实edge t就代表了节点me</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Edge_t</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> me;</span><br><span class="line">    <span class="keyword">int</span> p;</span><br><span class="line">    <span class="keyword">int</span> t;</span><br><span class="line">    Edge_t(<span class="keyword">int</span> m, <span class="keyword">int</span> h, <span class="keyword">int</span> y) : me(m), p(h), t(y) &#123;&#125; </span><br><span class="line">    <span class="keyword">bool</span> <span class="keyword">operator</span>&lt;(<span class="keyword">const</span> Edge_t &amp;x) <span class="keyword">const</span> &#123; <span class="keyword">return</span> x.t &lt; <span class="keyword">this</span>-&gt;t; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (!que.empty()) &#123;</span><br><span class="line">    Edge_t t = que.top();</span><br><span class="line">    que.pop();</span><br><span class="line">    <span class="keyword">while</span> (!que.empty() &amp;&amp; que.top().t == t.t &amp;&amp; que.top().me == t.me)</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>可能某<code>Edge h</code> 确实跟pop出来的<code>Edge t</code>是代表的是同一个节点——也就是<code>h.me==t.me</code> ，并且代价相同。但是在堆中，还有同等代价的<code>Edge p</code>，其终点不是<code>t.me</code> ——也就是<code>p.me!=t.me</code> ，然后该<code>Edge p</code> 在堆中的位置处在<code>Edge h</code> 前面，所以上面那个while就没办法获得<code>Edge h</code> 从而无法获取完整的parent list。</p>
+</li>
+<li><p>另一种情况更为严重——如果某边是0权重，那么就可能出现“把t.me加到result set之后，后面的循环才产生出另一条与src到t.me等代价的路径”——所以当pop出<code>Edge t</code> 后立刻寻找同等代价的路径是不行的，因为该边其实还没有进入到堆里</p>
+</li>
+</ul>
+<h4 id="考虑自循环边"><a href="#考虑自循环边" class="headerlink" title="考虑自循环边"></a>考虑自循环边</h4><ul>
+<li>直接判断要求某点A邻接的点不与A相同即可实现</li>
+</ul>
+<h4 id="因为有0权重的边，所以可能有0权重环路，所以后面的dfs要注意"><a href="#因为有0权重的边，所以可能有0权重环路，所以后面的dfs要注意" class="headerlink" title="因为有0权重的边，所以可能有0权重环路，所以后面的dfs要注意"></a>因为有0权重的边，所以可能有0权重环路，所以后面的dfs要注意</h4><ul>
+<li>dfs递归访问某条路径时要维护已经访问到的节点的列表，确保不重复访问该条路径上已经出现过的点，做法是维护一个visit数组，有点类似回溯法</li>
+</ul>
+<h4 id="INF的取值要注意"><a href="#INF的取值要注意" class="headerlink" title="INF的取值要注意"></a>INF的取值要注意</h4><ul>
+<li>dfs过程中有可能访问的那条路径无法从src到dest，从而递归到最深的那次dfs的调用会返回INF，如果INF是0xFFFFFFF，加上后面的权重，就会溢出，从而使得<code>INF+weight[i]</code>不再是INF</li>
+</ul>
+<h4 id="自己生成数据对拍时"><a href="#自己生成数据对拍时" class="headerlink" title="自己生成数据对拍时"></a>自己生成数据对拍时</h4><ul>
+<li>要注意不要生成多重边，网上很多ac的代码都是不支持多重边的</li>
+</ul>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cassert&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdlib&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INF 0x3f3f3f3f</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Node</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> index;</span><br><span class="line">    <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; adj;</span><br><span class="line">&#125;;</span><br><span class="line">Node v[<span class="number">600</span>];</span><br><span class="line"><span class="keyword">int</span> length[<span class="number">600</span>][<span class="number">600</span>]; <span class="comment">// length[i][j]记录从node i到node j的length</span></span><br><span class="line"><span class="keyword">int</span> TIME[<span class="number">600</span>][<span class="number">600</span>]; <span class="comment">// TIME[i][j]记录从node i到node j的用时</span></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; tp[<span class="number">600</span>];<span class="comment">// node's parent list</span></span><br><span class="line"><span class="keyword">int</span> tpResult[<span class="number">600</span>];<span class="comment">// 最终的node的parent</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> BEGIN, END; <span class="comment">// 题目输入的天梯队员的起点和要到达的终点</span></span><br><span class="line"><span class="keyword">int</span> vertexCnt, edgeCnt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">dijstra</span><span class="params">(<span class="keyword">int</span> weight[][<span class="number">600</span>])</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">DFS</span><span class="params">(<span class="keyword">bool</span> isLength)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">outp</span><span class="params">(<span class="keyword">int</span> f, <span class="keyword">int</span> index)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>** argv)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n, m;</span><br><span class="line">    <span class="keyword">while</span> (~<span class="built_in">scanf</span>(<span class="string">"%d%d"</span>, &amp;n, &amp;m)) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">                TIME[i][j] = INF;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">                length[i][j] = INF;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            v[i].index = i;</span><br><span class="line">            v[i].adj.clear();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            tp[i].clear();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        vertexCnt = n, edgeCnt = m;</span><br><span class="line">        <span class="keyword">int</span> v1, v2, one, l, t;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; m; i++) &#123;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">"%d%d%d%d%d"</span>, &amp;v1, &amp;v2, &amp;one, &amp;l, &amp;t);</span><br><span class="line">            v[v1].adj.push_back(v2);</span><br><span class="line">            <span class="comment">// 这样做是为了避免输入多重边——比如说从i到j有多条边，那么我们直接选最小代价的边即可</span></span><br><span class="line">            length[v1][v2] = length[v1][v2] &lt; l ? length[v1][v2] : l;</span><br><span class="line">            TIME[v1][v2] = TIME[v1][v2] &lt; t ? TIME[v1][v2] : t;</span><br><span class="line">            <span class="keyword">if</span> (!one) &#123;</span><br><span class="line">                v[v2].adj.push_back(v1);</span><br><span class="line">                length[v2][v1] = length[v2][v1] &lt; l ? length[v2][v1] : l;</span><br><span class="line">                TIME[v2][v1] = TIME[v2][v1] &lt; t ? TIME[v2][v1] : t;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%d%d"</span>, &amp;BEGIN, &amp;END);</span><br><span class="line">        <span class="keyword">if</span> (BEGIN == END) &#123;</span><br><span class="line">            <span class="built_in">cout</span> &lt;&lt; <span class="string">"Time = "</span></span><br><span class="line">                 &lt;&lt; <span class="string">"0"</span></span><br><span class="line">                 &lt;&lt; <span class="string">"; Distance = "</span></span><br><span class="line">                 &lt;&lt; <span class="string">"0"</span></span><br><span class="line">                 &lt;&lt; <span class="string">": "</span>;</span><br><span class="line">            <span class="built_in">cout</span> &lt;&lt; BEGIN &lt;&lt; <span class="string">" =&gt; "</span> &lt;&lt; END &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (n == <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="built_in">cout</span> &lt;&lt; <span class="string">"Time = "</span> &lt;&lt; TIME[BEGIN][END] &lt;&lt; <span class="string">"; Distance = "</span> &lt;&lt; length[BEGIN][END] &lt;&lt; <span class="string">": "</span>;</span><br><span class="line">            <span class="built_in">cout</span> &lt;&lt; BEGIN &lt;&lt; <span class="string">" =&gt; "</span> &lt;&lt; END &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> timeEND = dijstra(TIME);</span><br><span class="line"><span class="comment">//        outp(END, 0);</span></span><br><span class="line">        DFS(<span class="literal">false</span>);</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; r1, r2;</span><br><span class="line">        r1.push_back(END);</span><br><span class="line">        <span class="comment">// 以下这种构造路径的方式是建立在起点不同于终点的情况下</span></span><br><span class="line">        <span class="keyword">int</span> tmp_tp = tpResult[END];</span><br><span class="line">        r1.push_back(tmp_tp);</span><br><span class="line">        <span class="keyword">while</span> (tmp_tp != BEGIN) &#123;</span><br><span class="line">            tmp_tp = tpResult[tmp_tp];</span><br><span class="line">            r1.push_back(tmp_tp);</span><br><span class="line">        &#125;</span><br><span class="line">        reverse(r1.begin(), r1.end());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            tp[i].clear();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> lenEND = dijstra(length);</span><br><span class="line"><span class="comment">//        outp(END, 0);</span></span><br><span class="line">        DFS(<span class="literal">true</span>);</span><br><span class="line">        r2.push_back(END);</span><br><span class="line">        tmp_tp = tpResult[END];</span><br><span class="line">        r2.push_back(tmp_tp);</span><br><span class="line">        <span class="keyword">while</span> (tmp_tp != BEGIN) &#123;</span><br><span class="line">            tmp_tp = tpResult[tmp_tp];</span><br><span class="line">            r2.push_back(tmp_tp);</span><br><span class="line">        &#125;</span><br><span class="line">        reverse(r2.begin(), r2.end());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">bool</span> isSame = <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">if</span> (r1.size() == r2.size()) &#123;</span><br><span class="line">            isSame = <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; r1.size(); i++) &#123;</span><br><span class="line">                isSame = (r1[i] == r2[i]) &amp;&amp; isSame;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (isSame) &#123;</span><br><span class="line">            <span class="built_in">cout</span> &lt;&lt; <span class="string">"Time = "</span> &lt;&lt; timeEND &lt;&lt; <span class="string">"; Distance = "</span> &lt;&lt; lenEND &lt;&lt; <span class="string">": "</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; r1.size() - <span class="number">1</span>; i++) &#123;</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; r1[i] &lt;&lt; <span class="string">" =&gt; "</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="built_in">cout</span> &lt;&lt; r1[r1.size() - <span class="number">1</span>] &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">cout</span> &lt;&lt; <span class="string">"Time = "</span> &lt;&lt; timeEND &lt;&lt; <span class="string">": "</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; r1.size() - <span class="number">1</span>; i++) &#123;</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; r1[i] &lt;&lt; <span class="string">" =&gt; "</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="built_in">cout</span> &lt;&lt; r1[r1.size() - <span class="number">1</span>] &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">            <span class="built_in">cout</span> &lt;&lt; <span class="string">"Distance = "</span> &lt;&lt; lenEND &lt;&lt; <span class="string">": "</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; r2.size() - <span class="number">1</span>; i++) &#123;</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; r2[i] &lt;&lt; <span class="string">" =&gt; "</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="built_in">cout</span> &lt;&lt; r2[r2.size() - <span class="number">1</span>] &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 参数me是该edge的终点，p是该edge的起点，t出发的源节点到这条edge的终点的代价</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Edge_t</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> me;</span><br><span class="line">    <span class="keyword">int</span> p;</span><br><span class="line">    <span class="keyword">int</span> t;</span><br><span class="line">    Edge_t(<span class="keyword">int</span> m, <span class="keyword">int</span> h, <span class="keyword">int</span> y) : me(m), p(h), t(y) &#123;&#125; </span><br><span class="line">    <span class="keyword">bool</span> <span class="keyword">operator</span>&lt;(<span class="keyword">const</span> Edge_t &amp;x) <span class="keyword">const</span> &#123; <span class="keyword">return</span> x.t &lt; <span class="keyword">this</span>-&gt;t; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// bfs+优先队列其实就是dijstra算法</span></span><br><span class="line"><span class="comment">// dijstra维护result set，源节点到这个set里的点的最短路径已经被找到</span></span><br><span class="line"><span class="comment">// 所以result set只会有node被加进去而不会有node被踢出去</span></span><br><span class="line"><span class="comment">// 不同于算法导论描述的dijstra算法——算导里的堆是点的堆，</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">dijstra</span><span class="params">(<span class="keyword">int</span> weight[][<span class="number">600</span>])</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> resWei[<span class="number">600</span>];</span><br><span class="line">    priority_queue&lt;Edge_t&gt; que;</span><br><span class="line">    que.push(Edge_t(BEGIN, <span class="number">0</span>, <span class="number">0</span>));<span class="comment">// 后面用到了t.t+weight[t.me][adj[i]]，所以这里必须要取0</span></span><br><span class="line">    <span class="keyword">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">bool</span> visit[vertexCnt];  <span class="comment">// 记录某点是否已经加入到dijstra的result set里</span></span><br><span class="line">    <span class="built_in">memset</span>(visit, <span class="number">0</span>, <span class="keyword">sizeof</span>(visit) * <span class="keyword">sizeof</span>(<span class="keyword">bool</span>));</span><br><span class="line">    <span class="keyword">while</span> (!que.empty()) &#123;</span><br><span class="line">        Edge_t t = que.top();</span><br><span class="line">        que.pop();</span><br><span class="line">        <span class="comment">// 因为这是Edge的堆，可能会有一些边pop出来时，其终点已经在result set里</span></span><br><span class="line">        <span class="keyword">if</span> (visit[t.me]) &#123;</span><br><span class="line">            assert(resWei[t.me] &lt;= t.t);</span><br><span class="line">            <span class="keyword">if</span> (resWei[t.me] == t.t) &#123;</span><br><span class="line">                tp[t.me].push_back(t.p);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        visit[t.me] = <span class="literal">true</span>;</span><br><span class="line">        tp[t.me].push_back(t.p);</span><br><span class="line">        resWei[t.me] = t.t;</span><br><span class="line">        <span class="keyword">const</span> <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;adj = v[t.me].adj;</span><br><span class="line">        <span class="keyword">int</span> al = adj.size();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; al; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (adj[i] == t.me)</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            que.push(Edge_t(adj[i], t.me, t.t + weight[t.me][adj[i]]));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> resWei[END];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> dp[<span class="number">600</span>];</span><br><span class="line"><span class="keyword">bool</span> dpVisit[<span class="number">600</span>];</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> __dfs(<span class="keyword">int</span> f, <span class="keyword">bool</span> isLength);</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">DFS</span><span class="params">(<span class="keyword">bool</span> isLength)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(dp, <span class="number">0xff</span>, <span class="keyword">sizeof</span>(dp));</span><br><span class="line">    <span class="built_in">memset</span>(tpResult, <span class="number">0</span>, <span class="keyword">sizeof</span>(tpResult));</span><br><span class="line">    <span class="built_in">memset</span>(dpVisit, <span class="number">0</span>, <span class="keyword">sizeof</span>(dpVisit));</span><br><span class="line">    <span class="keyword">return</span> __dfs(END, isLength);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> __dfs(<span class="keyword">int</span> f, <span class="keyword">bool</span> isLength) &#123;</span><br><span class="line">    <span class="keyword">if</span> (dp[f] &gt; <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> dp[f];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (f == BEGIN) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;t = tp[f];</span><br><span class="line">    <span class="keyword">int</span> result = INF;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; t.size(); i++) &#123;</span><br><span class="line">        <span class="keyword">if</span>(t[i]==f)</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        <span class="keyword">if</span> (dpVisit[t[i]])  <span class="comment">// 代表该节点在这条路径上已经被访问过</span></span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        dpVisit[f] = <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">int</span> p = __dfs(t[i], isLength) + (isLength ? <span class="number">1</span> : length[t[i]][f]);</span><br><span class="line">        dpVisit[f] = <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">if</span> (p &lt; result) &#123;</span><br><span class="line">            tpResult[f] = t[i];</span><br><span class="line">            result = p;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    dp[f] = result;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> path[<span class="number">600</span>];</span><br><span class="line"><span class="keyword">bool</span> outpVisit[<span class="number">600</span>];</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">outp</span><span class="params">(<span class="keyword">int</span> f, <span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">    outpVisit[f] = <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">if</span> (f == BEGIN) &#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"outp: "</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; index; i++) &#123;</span><br><span class="line">            <span class="built_in">cout</span> &lt;&lt; path[i] &lt;&lt; <span class="string">" "</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        outpVisit[f] = <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    path[index] = f;</span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;t = tp[f];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; t.size(); i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (outpVisit[t[i]])<span class="comment">// means that 前辈们已经访问过了，再访问就成环了</span></span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        outp(t[i], index + <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    outpVisit[f] = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2018-05-26T07:25:32.797Z" itemprop="dateUpdated">2018-05-26 15:25:32</time>
+</span><br>
+
+
+        
+        这里可以写作者留言，标签和 hexo 中所有变量及辅助函数等均可调用，示例：<a href="/2018/05/13/天梯L3-007-天梯地图/" target="_blank" rel="external">https://h-zex.github.io/2018/05/13/天梯L3-007-天梯地图/</a>
+        
+    </div>
+    
+    <footer>
+        <a href="https://h-zex.github.io">
+            <img src="/img/avatar.jpg" alt="H-ZeX">
+            H-ZeX
+        </a>
+    </footer>
+</blockquote>
+
+        
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Dijstra最短路/">Dijstra最短路</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/天梯赛/">天梯赛</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2018/05/13/天梯L3-007-天梯地图/&title=《天梯L3 007 天梯地图》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2018/05/13/天梯L3-007-天梯地图/&title=《天梯L3 007 天梯地图》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2018/05/13/天梯L3-007-天梯地图/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《天梯L3 007 天梯地图》 — H-ZeX&url=https://h-zex.github.io/2018/05/13/天梯L3-007-天梯地图/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2018/05/13/天梯L3-007-天梯地图/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2018/05/14/组合数之错排数/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">组合数之错排数</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">有限存储的计算机等价于有限自动机（DFA、NFA）</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitment_thread"></div>
+    <link rel="stylesheet" href="//unpkg.com/gitment/style/default.css">
+    <script src="//unpkg.com/gitment/dist/gitment.browser.js"></script>
+    <script>
+        var gitment = new Gitment({
+            owner: 'H-ZeX',
+            repo: 'H-ZeX.github.io',
+            oauth: {
+                client_id: '77f9acb63af0afe6c8e9',
+                client_secret: 'e8b9218dee631709a296069a209bad5bb89e6eb3',
+            },
+        })
+        gitment.render('comments')
+    </script>
+</section>
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>H-ZeX &copy; 2017 - 2018</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2018/05/13/天梯L3-007-天梯地图/&title=《天梯L3 007 天梯地图》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2018/05/13/天梯L3-007-天梯地图/&title=《天梯L3 007 天梯地图》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2018/05/13/天梯L3-007-天梯地图/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《天梯L3 007 天梯地图》 — H-ZeX&url=https://h-zex.github.io/2018/05/13/天梯L3-007-天梯地图/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2018/05/13/天梯L3-007-天梯地图/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://h-zex.github.io/2018/05/13/天梯L3-007-天梯地图/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: false };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

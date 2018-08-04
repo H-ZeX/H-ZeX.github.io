@@ -1,61 +1,515 @@
-extends base
+<!DOCTYPE html>
+<html>
+<head>
+    
 
-block title
-  title= page.title + ' | ' + config.title
+    
 
-block content
-  .post
-    h1.post-title= page.title
-    .post-meta= page.date.format('ll')
-      if page.categories.length > 0
-        span= ' | '
-        span.category
-          for category in page.categories.toArray()
-            a(href=url_for(category.path))= category.name
-      if theme.busuanzi == true
-        script(src='https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js', async)
-        span#busuanzi_container_page_pv= ' | '
-          span#busuanzi_value_page_pv
-          span= ' ' + __('Hits')
-    if theme.duoshuo
-      a.ds-thread-count(data-thread-key=page.path, href=url_for(page.path) + '#comments')
-    if theme.disqus
-      a.disqus-comment-count(data-disqus-identifier=page.path, href=url_for(page.path) + '#disqus_thread')
-    if theme.gentie
-      a.ds-thread-count(class='cloud-tie-join-count', href=url_for(page.path) + '#comments')
-        span.join-count(style='font-size: 15px; color: #6E7173;') 0
-        span= ' ' + __('Discuss')
-    if theme.changyan
-      a.ds-thread-count(href=url_for(page.path) + '#SOHUCS')
-        span#changyan_count_unit(style='font-size: 15px; color: #6E7173;') 0
-        span= ' ' + __('Comment')
-      script(src='https://assets.changyan.sohu.com/upload/plugins/plugins.count.js', async)
-    if page.toc
-      div(class='clear')
-        div(id='toc' class='toc-article')
-          div(class='toc-title')= __('contents')
-          != toc(page.content, {list_number: theme.toc_number})
-    .post-content
-      != page.content
-    if theme.shareto == true
-      script(type='text/javascript', src=url_for(theme.js) + '/share.js' + '?v=' + theme.version, async)
-      a.article-share-link(data-url='#{page.permalink}', data-id='#{page._id}')= __('shareto')
-    include _partial/tag
-    include _partial/post_nav
-    if theme.duoshuo
-      div(class='ds-share flat' data-thread-key=page.path, data-title=page.title, data-url=page.permalink)
-         .ds-share-inline
-            ul.ds-share-icons-16
-              li(data-toggle='ds-share-icons-more')
-                a(class='ds-more' href='javascript:void(0);') 分享到：
-              li
-                a(class='ds-weibo' href='javascript:void(0);' data-service='weibo') 微博
-              li
-                a(class='ds-qzone' href='javascript:void(0);' data-service='qzone') QQ空间
-              li
-                a(class='ds-qqt' href='javascript:void(0);' data-service='qqt') 腾讯微博
-              li
-                a(class='ds-wechat' href='javascript:void(0);' data-service='wechat') 微信
-            .ds-share-icons-more
-    if page.comments
-      include _partial/comments
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>从时间戳（毫秒）计算日历 | H-ZeX | H-ZeX&#39;s Coding Life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="算法,时间戳,日历">
+    <meta name="description" content="从时间戳（毫秒）计算日历">
+<meta name="keywords" content="算法,时间戳,日历">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从时间戳（毫秒）计算日历">
+<meta property="og:url" content="https://h-zex.github.io/2017/10/02/从时间戳（毫秒）计算日历/index.html">
+<meta property="og:site_name" content="H-ZeX">
+<meta property="og:description" content="从时间戳（毫秒）计算日历">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-05-26T07:25:32.912Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="从时间戳（毫秒）计算日历">
+<meta name="twitter:description" content="从时间戳（毫秒）计算日历">
+    
+        <link rel="alternate" type="application/atom+xml" title="H-ZeX" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">H-ZeX</h5>
+          <a href="mailto:hzx20112012@gmail.com" title="hzx20112012@gmail.com" class="mail">hzx20112012@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">从时间戳（毫秒）计算日历</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">从时间戳（毫秒）计算日历</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2017-10-02T08:58:15.000Z" itemprop="datePublished" class="page-time">
+  2017-10-02
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/算法/">算法</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#思路"><span class="post-toc-number">1.</span> <span class="post-toc-text">思路</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#设置时分秒（函数setMinuteAndSecond）"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">设置时分秒（函数setMinuteAndSecond）</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#设置月和日（函数setMonthAndDay）"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">设置月和日（函数setMonthAndDay）</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#设置年份（在函数setDataFile中）"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">设置年份（在函数setDataFile中）</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-从时间戳（毫秒）计算日历"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">从时间戳（毫秒）计算日历</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2017-10-02 16:58:15" datetime="2017-10-02T08:58:15.000Z"  itemprop="datePublished">2017-10-02</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/算法/">算法</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyDate</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> year;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> month;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> day;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> hour;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> minute;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> second;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> timePerSecond = <span class="number">1000</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> timePerMinute = <span class="number">1000</span>*<span class="number">60</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> timePerHour = <span class="number">3600</span>*<span class="number">1000</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> timePerDay = <span class="number">24</span>*<span class="number">3600</span>*<span class="number">1000</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> timePerPingNian = <span class="number">365</span>*timePerDay;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> timePerLeapYear = <span class="number">366</span>*timePerDay;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> timeOf1970And1971 = timePerPingNian+timePerPingNian;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> timePer4Year = (<span class="keyword">long</span>)(<span class="number">365.25</span>*<span class="number">4</span>*timePerDay);</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> timeEvery400Year = timePer4Year*<span class="number">100</span> - <span class="number">3</span>*timePerDay;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> timeOf1970To2000 = timePer4Year*<span class="number">7</span>+timeOf1970And1971;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span>[] daysPerMonth = &#123;<span class="number">31</span>, <span class="number">28</span>, <span class="number">31</span>, <span class="number">30</span>, <span class="number">31</span>, <span class="number">30</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">30</span>, <span class="number">31</span>, <span class="number">30</span>, <span class="number">31</span>&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">setMinuteAndSecond</span><span class="params">(<span class="keyword">long</span> milliTime)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">assert</span> milliTime&lt;timePerDay;</span><br><span class="line">        <span class="keyword">if</span>(milliTime&gt;=timePerDay)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">        hour = (<span class="keyword">int</span>)(milliTime/timePerHour);</span><br><span class="line">        <span class="keyword">long</span> t = milliTime%timePerHour;</span><br><span class="line">        minute = (<span class="keyword">int</span>)(t/timePerMinute);</span><br><span class="line">        t = t%timePerMinute;</span><br><span class="line">        second = (<span class="keyword">int</span>)(t/timePerSecond);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">setMonthAndDay</span><span class="params">(<span class="keyword">long</span> milliTime, <span class="keyword">boolean</span> isLeapYear)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//this func should handle  the case where milliTime == 0;</span></span><br><span class="line">        <span class="comment">//this func get the milliseconds within 1 year;</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">assert</span> milliTime&lt;=timePerLeapYear &amp;&amp; isLeapYear || milliTime&lt;=timePerPingNian &amp;&amp; !isLeapYear;</span><br><span class="line">        <span class="keyword">if</span>(milliTime&gt;timePerLeapYear &amp;&amp; isLeapYear || milliTime&gt;timePerPingNian &amp;&amp; !isLeapYear) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        daysPerMonth[<span class="number">1</span>] = isLeapYear ? <span class="number">29</span> : <span class="number">28</span>; <span class="comment">//set the days of February;</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> cnt = -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">do</span>&#123;</span><br><span class="line">            milliTime -= daysPerMonth[++cnt]*timePerDay;</span><br><span class="line">        &#125;<span class="keyword">while</span> (milliTime&gt;=<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        month = cnt+<span class="number">1</span>;  <span class="comment">//for that the cnt begin from 0, but month begin from 1;</span></span><br><span class="line">        <span class="keyword">long</span> timeOfLastMonth = daysPerMonth[cnt]*timePerDay+milliTime;</span><br><span class="line">        day = (<span class="keyword">int</span>)(timeOfLastMonth/timePerDay)+<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        setMinuteAndSecond(timeOfLastMonth % timePerDay);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">setDataFile</span><span class="params">(<span class="keyword">long</span> milliTime)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(milliTime&lt;<span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">boolean</span> is1970Or1971 = milliTime&lt;timeOf1970And1971 ? <span class="keyword">true</span> : <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">boolean</span> is20Century = milliTime&lt;timeOf1970To2000 ? <span class="keyword">true</span>: <span class="keyword">false</span>; </span><br><span class="line">       	<span class="comment">//if equal is 2000 1 1 0:0:0</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(is1970Or1971) &#123;</span><br><span class="line">            year = milliTime&gt;=timePerPingNian ? <span class="number">1971</span> : <span class="number">1970</span>;</span><br><span class="line">            setMonthAndDay(year==<span class="number">1971</span> ? milliTime-timePerPingNian : milliTime, <span class="keyword">false</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(is20Century) &#123;</span><br><span class="line">            <span class="keyword">long</span> t = (milliTime-timeOf1970And1971)/timePer4Year;  </span><br><span class="line">            <span class="keyword">long</span> t1 = milliTime-timeOf1970And1971-t*timePer4Year;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">long</span> t2 = t1-timePerLeapYear;</span><br><span class="line">            <span class="keyword">boolean</span> isLeapYear = t2&lt;<span class="number">0</span>;</span><br><span class="line">            <span class="keyword">long</span> t3 = isLeapYear ? <span class="number">0</span> : t2/timePerPingNian+<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">            year = (<span class="keyword">int</span>)(<span class="number">1972</span>+t*<span class="number">4</span>+t3);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">long</span> l = isLeapYear ? t1 : (t1-t3*timePerPingNian-timePerDay);</span><br><span class="line">            setMonthAndDay(l, isLeapYear);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> p = milliTime-timeOf1970To2000;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> t1 = p/timeEvery400Year;</span><br><span class="line">        <span class="keyword">long</span> p1 = p-t1*timeEvery400Year;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> t2 = p1/timePer4Year;</span><br><span class="line">        <span class="keyword">long</span> tN = t2/<span class="number">25</span>;    </span><br><span class="line">      	<span class="comment">//in every 400 years, other year such as xy00(y!=0) is not leap year;</span></span><br><span class="line">        </span><br><span class="line">      	<span class="keyword">long</span> p2 = p1-t2*timePer4Year;</span><br><span class="line">        p2 += tN*timePerDay;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> t3 = p2-timePerLeapYear;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">boolean</span> isLeapYear = t3&lt;<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">long</span> t4 = isLeapYear ? <span class="number">0</span> : t3/timePerPingNian+<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        year = (<span class="keyword">int</span>)(<span class="number">2000</span>+t1*<span class="number">400</span>+t2*<span class="number">4</span>+t4);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> lt = isLeapYear ? p2 : (p2-t4*timePerPingNian-timePerDay);</span><br><span class="line">        setMonthAndDay(lt, isLeapYear);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><h4 id="设置时分秒（函数setMinuteAndSecond）"><a href="#设置时分秒（函数setMinuteAndSecond）" class="headerlink" title="设置时分秒（函数setMinuteAndSecond）"></a>设置时分秒（函数setMinuteAndSecond）</h4><ul>
+<li>函数的输入是 小于 每天毫秒数  的一个整数</li>
+<li>因为是从0:0:0开始计时，所以很好算</li>
+<li>直接除以每小时毫秒数，结果就是 要求的小时数</li>
+<li>然后把取模每小时毫秒数的结果除以每分钟毫秒数，算出来的结果就是分钟数</li>
+<li>以此类推，算出秒数</li>
+</ul>
+<h4 id="设置月和日（函数setMonthAndDay）"><a href="#设置月和日（函数setMonthAndDay）" class="headerlink" title="设置月和日（函数setMonthAndDay）"></a>设置月和日（函数setMonthAndDay）</h4><ul>
+<li>函数的输入为  小于  每年毫秒数  一个整数</li>
+<li>依次减去每个月的毫秒数，当减去某个月后，得到负数，说明月份就是这个月。<strong>注意，如果减去后得到0，则是下个月的第一毫秒，因为毫秒数是相对1970.1.1.0:0:0计算的。举个例子，毫秒数==一个平年的毫秒数，那么加上1970.1.1.0:0:0后，就变成1971.1.1.0:0:0，而不是1970.12.31.23:59:59</strong></li>
+<li>通过上面那个流程，得到属于一个月内的毫秒数（注意，比如说某个月的毫秒数是K，那么0~(K-1)都是属于这个月，但是K不是），然后除以每天的毫秒数，得到 P 。同样，如果整除，说明日期数是 P+1，如果不整除，那也是 P+1（注意，日期是从1开始，而不是从0开始）</li>
+</ul>
+<h4 id="设置年份（在函数setDataFile中）"><a href="#设置年份（在函数setDataFile中）" class="headerlink" title="设置年份（在函数setDataFile中）"></a>设置年份（在函数setDataFile中）</h4><ul>
+<li><p>对1970/1971特殊处理，直接判断是否毫秒数是否 $\geq$ 一个平年的毫秒数，如果是，那么就是1971。<strong>注意，等于也是，原因如上所述。</strong>然后调用setMonthAndDay函数，设置日月</p>
+</li>
+<li><p>对1972.1.1.0:0:0到2000.1.1.0:0:0 特殊处理。先减去1970和1971的总的毫秒数，得到的结果除以每4年的毫秒数，得到H。同样，无论是否整除，年份数是在$[4H+1972, 4H+1972+3]$，整除就是$4H+1972$这一年的第一毫秒（0时0分0秒）。因为1970.1.1.0:0:0加上1970和1971总的毫秒数已经是1972.1.1.0:0:0了，再加上整数年$4H$就是(1972+4H).1.1.0:0:0了。</p>
+<p>然后减去一个闰年的毫秒数，因为从1972年算起，每四年的第一年都是闰年，如果结果是负数，说明是闰年（同样的，如果是0，那么并不是闰年，而是闰年下一年的第一毫秒）。否则，把得到结果除以每个平年的毫秒数得到 P ，就是从闰年的下一年 开始的第 P 年，所以，年份就是$1972+4H+1+P$</p>
+</li>
+<li><p>然后，因为当年份数是100的倍数时，只有当年份可以被400整除，才是闰年。而2000年正好就是每400年里的第一年，所以要先计算，毫秒数里总的有多少个400年，如果有 $t$ 个，那么年份数就是$[2000+400t, 2000+400t+399]$</p>
+<p>接下来就计算总的毫秒数减去1970到2000的毫秒数，再减去总共多少个400年的毫秒数，剩下的毫秒数里，算算有多少个4年，因为每4年是闰年。如果算出来的结果是$d$，那么年份数就是$[2000+400t+4d,2000+400t+4d+3]$</p>
+<p>接下来判断剩下的毫秒数是否小于一个闰年的毫秒数，如果是，那么就是闰年，年份数是$2000+400t+4d$。如果不是，就减去一个闰年的毫秒数，然后算一算剩下的有多少个平年的毫秒数，假设算出来的结果是$b$，那么年份数就是$2000+400t+4d+b+1$</p>
+<p>接下来调用setMonthAndDay函数设置月份日期</p>
+</li>
+</ul>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2018-05-26T07:25:32.912Z" itemprop="dateUpdated">2018-05-26 15:25:32</time>
+</span><br>
+
+
+        
+        这里可以写作者留言，标签和 hexo 中所有变量及辅助函数等均可调用，示例：<a href="/2017/10/02/从时间戳（毫秒）计算日历/" target="_blank" rel="external">https://h-zex.github.io/2017/10/02/从时间戳（毫秒）计算日历/</a>
+        
+    </div>
+    
+    <footer>
+        <a href="https://h-zex.github.io">
+            <img src="/img/avatar.jpg" alt="H-ZeX">
+            H-ZeX
+        </a>
+    </footer>
+</blockquote>
+
+        
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/日历/">日历</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/时间戳/">时间戳</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法/">算法</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2017/10/02/从时间戳（毫秒）计算日历/&title=《从时间戳（毫秒）计算日历》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2017/10/02/从时间戳（毫秒）计算日历/&title=《从时间戳（毫秒）计算日历》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2017/10/02/从时间戳（毫秒）计算日历/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《从时间戳（毫秒）计算日历》 — H-ZeX&url=https://h-zex.github.io/2017/10/02/从时间戳（毫秒）计算日历/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2017/10/02/从时间戳（毫秒）计算日历/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">printf的一个异常现象引发的对x86-64体系下可变参数传参的探究</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2017/09/16/CSAPP-Attack-Lab/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">CSAPP Attack Lab</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitment_thread"></div>
+    <link rel="stylesheet" href="//unpkg.com/gitment/style/default.css">
+    <script src="//unpkg.com/gitment/dist/gitment.browser.js"></script>
+    <script>
+        var gitment = new Gitment({
+            owner: 'H-ZeX',
+            repo: 'H-ZeX.github.io',
+            oauth: {
+                client_id: '77f9acb63af0afe6c8e9',
+                client_secret: 'e8b9218dee631709a296069a209bad5bb89e6eb3',
+            },
+        })
+        gitment.render('comments')
+    </script>
+</section>
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>H-ZeX &copy; 2017 - 2018</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2017/10/02/从时间戳（毫秒）计算日历/&title=《从时间戳（毫秒）计算日历》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2017/10/02/从时间戳（毫秒）计算日历/&title=《从时间戳（毫秒）计算日历》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2017/10/02/从时间戳（毫秒）计算日历/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《从时间戳（毫秒）计算日历》 — H-ZeX&url=https://h-zex.github.io/2017/10/02/从时间戳（毫秒）计算日历/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2017/10/02/从时间戳（毫秒）计算日历/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://h-zex.github.io/2017/10/02/从时间戳（毫秒）计算日历/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: false };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
