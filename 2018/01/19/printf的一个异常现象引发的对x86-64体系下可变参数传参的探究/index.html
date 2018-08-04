@@ -29,19 +29,19 @@
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="x86-64体系下的传参方式使得可变参数的传递出现了一些特别的情况">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p6.png">
-<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p1.png">
-<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p2.png">
-<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p4.png">
-<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p3.png">
-<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p5.png">
-<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p8.png">
-<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p7.png">
-<meta property="og:updated_time" content="2018-05-26T07:25:32.798Z">
+<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p6.png">
+<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p1.png">
+<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p2.png">
+<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p4.png">
+<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p3.png">
+<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p5.png">
+<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p8.png">
+<meta property="og:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p7.png">
+<meta property="og:updated_time" content="2018-08-04T04:48:35.572Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="printf的一个异常现象引发的对x86-64体系下可变参数传参的探究">
 <meta name="twitter:description" content="x86-64体系下的传参方式使得可变参数的传递出现了一些特别的情况">
-<meta name="twitter:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p6.png">
+<meta name="twitter:image" content="https://h-zex.github.io/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p6.png">
     
         <link rel="alternate" type="application/atom+xml" title="H-ZeX" href="/atom.xml">
     
@@ -194,7 +194,7 @@
  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">double</span> a = <span class="number">6.0</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%lx\n"</span>	, a);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>执行结果</p>
-<p><img src="printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p6.png" alt=""></p>
+<img src="/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p6.png">
 </li>
 <li><p>这段代码用的运行结果是随机的，无规律的，这是非常奇怪的</p>
 </li>
@@ -211,8 +211,8 @@
 <li><p>如果可变参数完全使用栈帧传递，那么结果不可能是随机的。那么只可能是使用寄存器传参</p>
 </li>
 <li><p>复习一下CSAPP第三章</p>
-<p> <img src="./printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p1.png" alt=""></p>
-<p> <img src="./printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p2.png" alt=""></p>
+ <img src="/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p1.png">
+ <img src="/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p2.png">
 </li>
 <li><p>可以看到，浮点参数的传参使用的是SIMD寄存器，而整形使用的是通用目的寄存器</p>
 </li>
@@ -227,11 +227,11 @@
 <li><p>可以看到，double a 确实放在了xmm0,</p>
 </li>
 <li><p>用GDB在 <code>callq printf</code> 处设置断点(注意，运行到断点处，callq printf指令还没有执行)，检查用于传参的前四个通用目的寄存器</p>
-<p><img src="./printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p4.png" alt=""></p>
+<img src="/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p4.png">
 <p>（红框内是前四个传参的通用目的寄存器）</p>
 </li>
 <li><p>执行gdb 的<code>next</code>指令 ，运行<code>callq printf</code>这条指令，检查输出</p>
-<p><img src="./printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p3.png" alt=""></p>
+<img src="/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p3.png">
 </li>
 <li><p>可以看到，与<code>rsi</code>寄存器的内容一样。可以初步确认，因为格式字符串是”%lx”，所以printf在通用目的寄存器读取可变参数</p>
 </li>
@@ -239,7 +239,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">movabsq	$.L.str, %rdi</span><br><span class="line">movsd	.LCPI0_0, %xmm0         # xmm0 = mem[0],zero</span><br><span class="line">movsd	%xmm0, -8(%rbp)</span><br><span class="line">movsd	-8(%rbp), %xmm0         # xmm0 = mem[0],zero</span><br><span class="line">movb	$1, %al</span><br><span class="line">movq    $16, %rsi 				# 这一条就是加上去的</span><br><span class="line">callq	printf</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>运行，结果是</p>
-<p><img src="./printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p5.png" alt=""></p>
+<img src="/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p5.png">
 </li>
 <li><p>符合预期，与rsi寄存器的东西一样</p>
 </li>
@@ -256,8 +256,8 @@
 </ul>
 <h3 id="关于vc-的一些补充"><a href="#关于vc-的一些补充" class="headerlink" title="关于vc++的一些补充"></a>关于vc++的一些补充</h3><ul>
 <li><p><a href="https://msdn.microsoft.com/zh-cn/library/zthk2dkh.aspx" target="_blank" rel="noopener">Visual Studio 2015的参数传递文档</a></p>
-<p><img src="./printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p8.png" alt=""></p>
-<p><img src="./printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p7.png" alt=""></p>
+<img src="/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p8.png">
+<img src="/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/p7.png">
 <p>​    <strong>注意：这里的b不是在xmm0，而是在xmm1，d也是如此</strong></p>
 </li>
 </ul>
@@ -281,7 +281,7 @@
     <div class="content">
         
 <span class="post-time">
-    Last updated: <time datetime="2018-05-26T07:25:32.798Z" itemprop="dateUpdated">2018-05-26 15:25:32</time>
+    Last updated: <time datetime="2018-08-04T04:48:35.572Z" itemprop="dateUpdated">2018-08-04 12:48:35</time>
 </span><br>
 
 

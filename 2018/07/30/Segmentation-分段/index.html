@@ -29,14 +29,14 @@
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="MIT 6.828, CMU 15-410 关于segmentation的资料的整理">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://h-zex.github.io/2018/07/30/Segmentation-分段/Segmentation-分段/1.gif">
-<meta property="og:image" content="https://h-zex.github.io/2018/07/30/Segmentation-分段/Segmentation-分段/2.png">
-<meta property="og:image" content="https://h-zex.github.io/2018/07/30/Segmentation-分段/Segmentation-分段/3.png">
-<meta property="og:updated_time" content="2018-08-04T02:50:04.931Z">
+<meta property="og:image" content="https://h-zex.github.io/2018/07/30/Segmentation-分段/1.gif">
+<meta property="og:image" content="https://h-zex.github.io/2018/07/30/Segmentation-分段/2.png">
+<meta property="og:image" content="https://h-zex.github.io/2018/07/30/Segmentation-分段/3.png">
+<meta property="og:updated_time" content="2018-08-04T04:48:35.595Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Segmentation 分段">
 <meta name="twitter:description" content="MIT 6.828, CMU 15-410 关于segmentation的资料的整理">
-<meta name="twitter:image" content="https://h-zex.github.io/2018/07/30/Segmentation-分段/Segmentation-分段/1.gif">
+<meta name="twitter:image" content="https://h-zex.github.io/2018/07/30/Segmentation-分段/1.gif">
     
         <link rel="alternate" type="application/atom+xml" title="H-ZeX" href="/atom.xml">
     
@@ -201,7 +201,8 @@
 </li>
 </ul>
 <h4 id="16-bit-protected-mode"><a href="#16-bit-protected-mode" class="headerlink" title="16-bit protected mode"></a>16-bit protected mode</h4><ul>
-<li><p>selector 同样保存在segment register中，不过现在不是单纯的paragraph number，而是包含一组信息：a segment number, a table selector flag, a request privilege level。<br><img src="./Segmentation-分段/1.gif" alt=""></p>
+<li><p>selector 同样保存在segment register中，不过现在不是单纯的paragraph number，而是包含一组信息：a segment number, a table selector flag, a request privilege level。 </p>
+<img src="/2018/07/30/Segmentation-分段/1.gif">
 <p>segment number是到GDT（global decriptor table）或者LDT（local decriptor table）的index（数组下标称为array index，所以这个index就是类似数组下标的东西）。</p>
 <p>table selector flag指示的是segment number使用的是GDT还是LDT的index</p>
 <p>RPL（request privilege level）对于不同的段寄存器有不同的含义。对于cs寄存器，RPL设置处理器的特权级</p>
@@ -209,7 +210,7 @@
 <p> In this case (the %CS register), the RPL sets the privilege level of the processor</p>
 </blockquote>
 <p>不过，在mit 6.828的那本xv6book的Appendix B中有一幅图</p>
-<p><img src="./Segmentation-分段/2.png" alt=""></p>
+<img src="/2018/07/30/Segmentation-分段/2.png">
 <p>其中使用16bit的selector直接作为GDT/LDT的index，所以，这地方有一些疑点</p>
 </li>
 <li><p>GDT/LDT的descriptor包含base address、size和一些flag bits、privilege level，当访问内存时，处理器将offset与size相比较，如果offset&gt;= size ，则是越界访问。如果是合法的访问，则base address + offset得到 linear address</p>
@@ -219,7 +220,7 @@
 <li><p>80386 引入了32-bit protected mode，这个模式相对于16-bit的保护模式有两个区别——offset现在是32bit，segment 现在被切分成4K-sized 的unit，称为page。</p>
 </li>
 <li><p>解释一下整个地址转换流程。logical address（或者叫 virtual address） 就是<code>&lt;selector, offset&gt;</code> ，linear address就是selector 和 offset 经过segment translation 转换后得到的地址。如果没有开paging hardware，那么，linear address就直接作为physical address使用。如果有，则要查页表</p>
-<p><img src="./Segmentation-分段/3.png" alt=""></p>
+<img src="/2018/07/30/Segmentation-分段/3.png">
 </li>
 </ul>
 <h4 id="题外话"><a href="#题外话" class="headerlink" title="题外话"></a>题外话</h4><ul>
@@ -246,7 +247,7 @@
     <div class="content">
         
 <span class="post-time">
-    Last updated: <time datetime="2018-08-04T02:50:04.931Z" itemprop="dateUpdated">2018-08-04 10:50:04</time>
+    Last updated: <time datetime="2018-08-04T04:48:35.595Z" itemprop="dateUpdated">2018-08-04 12:48:35</time>
 </span><br>
 
 
@@ -335,9 +336,9 @@
 
   
     <div class="waves-block waves-effect next">
-      <a href="/2018/07/20/LeetCode-11-Container-With-Most-Water/" id="post-next" class="post-nav-link">
+      <a href="/2018/06/05/vim不支持系统剪切板的解决方案/" id="post-next" class="post-nav-link">
         <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
-        <h4 class="title">LeetCode 11.Container With Most Water</h4>
+        <h4 class="title">vim 不支持系统剪切板的解决方案</h4>
       </a>
     </div>
   

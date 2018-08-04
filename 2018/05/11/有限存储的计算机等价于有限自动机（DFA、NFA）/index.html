@@ -29,12 +29,12 @@
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="区别于图灵机的无限纸带，现实的计算机只有有限存储，所以其不是TM，而是DFA/NFA">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/有限存储的计算机等价于有限自动机（DFA、NFA）/1.png">
-<meta property="og:updated_time" content="2018-05-26T07:25:32.797Z">
+<meta property="og:image" content="https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/1.png">
+<meta property="og:updated_time" content="2018-08-04T04:48:35.570Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="有限存储的计算机等价于有限自动机（DFA、NFA）">
 <meta name="twitter:description" content="区别于图灵机的无限纸带，现实的计算机只有有限存储，所以其不是TM，而是DFA/NFA">
-<meta name="twitter:image" content="https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/有限存储的计算机等价于有限自动机（DFA、NFA）/1.png">
+<meta name="twitter:image" content="https://h-zex.github.io/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/1.png">
     
         <link rel="alternate" type="application/atom+xml" title="H-ZeX" href="/atom.xml">
     
@@ -248,7 +248,7 @@
 <li><p>截断导致NFA死循环的那个环，并不会影响接受的语言。假设该环是s1、s2、s3、s1，那么我们可以把其变成三条路：“s1、s2、s3”，“s2、s3、s1”，“s3、s1、s2” ，非形式化来说，因为这不会改变该图的连通性，所以接受的字符串集合不变</p>
 </li>
 <li><p>而按照<em>Introduction to the Theory of Computation</em> 的1.2节的<em>EQUIVALENCE OF NFAS AND DFAS</em>DFA 描述的方法，其正是去掉了这种$\varepsilon$ 环，所以不会死循环，具体去掉的方法如下（截图来自书本英文第三版P56）：</p>
-<p><img src="./有限存储的计算机等价于有限自动机（DFA、NFA）/1.png" alt=""></p>
+<img src="/2018/05/11/有限存储的计算机等价于有限自动机（DFA、NFA）/1.png">
 <p>$E(R)$ 是一个集合，集合中元素不重复，而$\varepsilon$ 环所到达的状态必然是重复的，所以就把$\varepsilon$ 环断开了</p>
 </li>
 </ul>
@@ -260,7 +260,7 @@
     <div class="content">
         
 <span class="post-time">
-    Last updated: <time datetime="2018-05-26T07:25:32.797Z" itemprop="dateUpdated">2018-05-26 15:25:32</time>
+    Last updated: <time datetime="2018-08-04T04:48:35.570Z" itemprop="dateUpdated">2018-08-04 12:48:35</time>
 </span><br>
 
 
