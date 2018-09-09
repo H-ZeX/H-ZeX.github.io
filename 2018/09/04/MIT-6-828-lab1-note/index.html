@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>MIT-6.828 lab1 Solution | H-ZeX | H-ZeX&#39;s Coding Life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="MIT 6.828,OS">
+    <meta name="description" content="Solution for Some ProblemAt what point does the processor start executing 32-bit code? What exactly causes the switch from 16- to 32-bit mode? Once it has loaded the GDT register, the boot loader enab">
+<meta name="keywords" content="MIT 6.828,OS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT-6.828 lab1 Solution">
+<meta property="og:url" content="https://h-zex.github.io/2018/09/04/MIT-6-828-lab1-note/index.html">
+<meta property="og:site_name" content="H-ZeX">
+<meta property="og:description" content="Solution for Some ProblemAt what point does the processor start executing 32-bit code? What exactly causes the switch from 16- to 32-bit mode? Once it has loaded the GDT register, the boot loader enab">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-09-09T06:57:59.163Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MIT-6.828 lab1 Solution">
+<meta name="twitter:description" content="Solution for Some ProblemAt what point does the processor start executing 32-bit code? What exactly causes the switch from 16- to 32-bit mode? Once it has loaded the GDT register, the boot loader enab">
+    
+        <link rel="alternate" type="application/atom+xml" title="H-ZeX" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">H-ZeX</h5>
+          <a href="mailto:hzx20112012@gmail.com" title="hzx20112012@gmail.com" class="mail">hzx20112012@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">MIT-6.828 lab1 Solution</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">MIT-6.828 lab1 Solution</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2018-09-04T09:20:02.000Z" itemprop="datePublished" class="page-time">
+  2018-09-04
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Solution-for-Some-Problem"><span class="post-toc-number">1.</span> <span class="post-toc-text">Solution for Some Problem</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#At-what-point-does-the-processor-start-executing-32-bit-code-What-exactly-causes-the-switch-from-16-to-32-bit-mode"><span class="post-toc-number">1.0.1.</span> <span class="post-toc-text">At what point does the processor start executing 32-bit code? What exactly causes the switch from 16- to 32-bit mode?</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#How-does-the-boot-loader-decide-how-many-sectors-it-must-read-in-order-to-fetch-the-entire-kernel-from-disk-Where-does-it-find-this-information"><span class="post-toc-number">1.0.2.</span> <span class="post-toc-text">How does the boot loader decide how many sectors it must read in order to fetch the entire kernel from disk? Where does it find this information</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#kern-entry-S-line-64"><span class="post-toc-number">1.0.3.</span> <span class="post-toc-text">kern/entry.S, line 64</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Explain-the-following-from-console-c"><span class="post-toc-number">1.0.4.</span> <span class="post-toc-text">Explain the following from console.c</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Let’s-say-that-GCC-changed-its-calling-convention-so-that-it-pushed-arguments-on-the-stack-in-declaration-order-so-that-the-last-argument-is-pushed-last-How-would-you-have-to-change-cprintf-or-its-interface-so-that-it-would-still-be-possible-to-pass-it-a-variable-number-of-arguments"><span class="post-toc-number">1.0.5.</span> <span class="post-toc-text">Let’s say that GCC changed its calling convention so that it pushed arguments on the stack in declaration order, so that the last argument is pushed last. How would you have to change cprintf or its interface so that it would still be possible to pass it a variable number of arguments?</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#In-debuginfo-eip-where-do-STAB-come-from"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">In debuginfo_eip, where do __STAB come from?</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Other-Note"><span class="post-toc-number">2.</span> <span class="post-toc-text">Other Note</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#VMA-vs-LMA"><span class="post-toc-number">2.0.0.1.</span> <span class="post-toc-text">VMA vs LMA</span></a></li></ol></li></ol></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-MIT-6-828-lab1-note"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">MIT-6.828 lab1 Solution</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2018-09-04 17:20:02" datetime="2018-09-04T09:20:02.000Z"  itemprop="datePublished">2018-09-04</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h2 id="Solution-for-Some-Problem"><a href="#Solution-for-Some-Problem" class="headerlink" title="Solution for Some Problem"></a>Solution for Some Problem</h2><h4 id="At-what-point-does-the-processor-start-executing-32-bit-code-What-exactly-causes-the-switch-from-16-to-32-bit-mode"><a href="#At-what-point-does-the-processor-start-executing-32-bit-code-What-exactly-causes-the-switch-from-16-to-32-bit-mode" class="headerlink" title="At what point does the processor start executing 32-bit code? What exactly causes the switch from 16- to 32-bit mode?"></a>At what point does the processor start executing 32-bit code? What exactly causes the switch from 16- to 32-bit mode?</h4><blockquote>
+<p>Once it has loaded the GDT register, the boot loader enables protected mode by setting the 1 bit (CR0_PE) in register %cr0</p>
+<p>Enabling protected mode does not immediately change how the processor translates logical to physical addresses; it is only when one loads a new value into a segment register that the processor reads the GDT and changes its internal segmentation settings. One cannot directly modify %cs, so instead the code executes an ljmp (far jump) instruction (9153), which allows a code segment selector to be specified. </p>
+</blockquote>
+<h4 id="How-does-the-boot-loader-decide-how-many-sectors-it-must-read-in-order-to-fetch-the-entire-kernel-from-disk-Where-does-it-find-this-information"><a href="#How-does-the-boot-loader-decide-how-many-sectors-it-must-read-in-order-to-fetch-the-entire-kernel-from-disk-Where-does-it-find-this-information" class="headerlink" title="How does the boot loader decide how many sectors it must read in order to fetch the entire kernel from disk? Where does it find this information"></a>How does the boot loader decide how many sectors it must read in order to fetch the entire kernel from disk? Where does it find this information</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// in boot/main.c</span></span><br><span class="line"><span class="comment">// load each program segment (ignores ph flags)</span></span><br><span class="line">ph = (struct Proghdr *) ((<span class="keyword">uint8_t</span> *) ELFHDR + ELFHDR-&gt;e_phoff);</span><br><span class="line">eph = ph + ELFHDR-&gt;e_phnum;</span><br><span class="line"><span class="keyword">for</span> (; ph &lt; eph; ph++)</span><br><span class="line">	<span class="comment">// p_pa is the load address of this segment (as well</span></span><br><span class="line">	<span class="comment">// as the physical address)</span></span><br><span class="line">	readseg(ph-&gt;p_pa, ph-&gt;p_memsz, ph-&gt;p_offset);</span><br></pre></td></tr></table></figure>
+<h4 id="kern-entry-S-line-64"><a href="#kern-entry-S-line-64" class="headerlink" title="kern/entry.S, line 64"></a>kern/entry.S, line 64</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># Now paging is enabled, but we&apos;re still running at a low EIP</span><br><span class="line"># (why is this okay?).  Jump up above KERNBASE before entering</span><br><span class="line"># C code.</span><br><span class="line">mov	$relocated, %eax</span><br><span class="line">jmp	*%eax</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>entry_pgdir translates virtual addresses in the range 0xf0000000 through 0xf0400000 to physical addresses 0x00000000 through 0x00400000, as well as virtual addresses 0x00000000 through 0x00400000 to physical addresses 0x00000000 through 0x00400000.</p>
+</blockquote>
+<h4 id="Explain-the-following-from-console-c"><a href="#Explain-the-following-from-console-c" class="headerlink" title="Explain the following from console.c"></a>Explain the following from console.c</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (crt_pos &gt;= CRT_SIZE) &#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    memmove(crt_buf, crt_buf + CRT_COLS, (CRT_SIZE - CRT_COLS) * <span class="keyword">sizeof</span>(<span class="keyword">uint16_t</span>));</span><br><span class="line">    <span class="keyword">for</span> (i = CRT_SIZE - CRT_COLS; i &lt; CRT_SIZE; i++)</span><br><span class="line">        crt_buf[i] = <span class="number">0x0700</span> | <span class="string">' '</span>;</span><br><span class="line">    crt_pos -= CRT_COLS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果当前光标位置超过每行最大的字符数，换行。</p>
+<p>由于对VGA编程不了解，所以猜测，crt_buf就是VGA对每行的存储空间。所以使用memmove把原本超出一行的部分移到行首。接着设置光标位置。</p>
+<h4 id="Let’s-say-that-GCC-changed-its-calling-convention-so-that-it-pushed-arguments-on-the-stack-in-declaration-order-so-that-the-last-argument-is-pushed-last-How-would-you-have-to-change-cprintf-or-its-interface-so-that-it-would-still-be-possible-to-pass-it-a-variable-number-of-arguments"><a href="#Let’s-say-that-GCC-changed-its-calling-convention-so-that-it-pushed-arguments-on-the-stack-in-declaration-order-so-that-the-last-argument-is-pushed-last-How-would-you-have-to-change-cprintf-or-its-interface-so-that-it-would-still-be-possible-to-pass-it-a-variable-number-of-arguments" class="headerlink" title="Let’s say that GCC changed its calling convention so that it pushed arguments on the stack in declaration order, so that the last argument is pushed last. How would you have to change cprintf or its interface so that it would still be possible to pass it a variable number of arguments?"></a>Let’s say that GCC changed its calling convention so that it pushed arguments on the stack in declaration order, so that the last argument is pushed last. How would you have to change cprintf or its interface so that it would still be possible to pass it a variable number of arguments?</h4><ul>
+<li>我认为不需要修改接口或实现。在linux上，在x86-64架构上，使用寄存器传参，stdarg的宏已经不是简单的获取栈上数据，而是使用gcc的buildin函数来实现。也就是，无论参数如何排列，放在哪里，stdarg都会返回正确的参数。在这个os 的inc/stdarg.h，同样是使用buildin</li>
+<li>不过有一点比较奇怪，<code>GNUmakefile</code> 中编译选项是加了<code>-fno-builtin</code>，但是<code>inc/stdarg.h</code> 却使用<code>__builtin___***</code> ，然后全局搜索也没有找到在哪里定义这些builtin。</li>
+</ul>
+<h3 id="In-debuginfo-eip-where-do-STAB-come-from"><a href="#In-debuginfo-eip-where-do-STAB-come-from" class="headerlink" title="In debuginfo_eip, where do __STAB come from?"></a>In <code>debuginfo_eip</code>, where do <code>__STAB</code> come from?</h3><ul>
+<li><p>使用<code>objdump -h obj/kernel/kernel</code>可知，这是一个<code>LOAD</code>的section</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stab 00003b59  f0102360  00102360  00003360  2**2  CONTENTS, ALLOC, LOAD, READONLY, DATA</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>readelf -l obj/kernel/kernel</code> ，可以看到Program headers包含.stab，所以是被<code>boot/main.c</code> 加载进来的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Elf file type is EXEC (Executable file)</span><br><span class="line">Entry point 0x10000c</span><br><span class="line">There are 3 program headers, starting at offset 52</span><br><span class="line"></span><br><span class="line">Program Headers:</span><br><span class="line">  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align</span><br><span class="line">  LOAD           0x001000 0xf0100000 0x00100000 0x077c1 0x077c1 R E 0x1000</span><br><span class="line">  LOAD           0x009000 0xf0108000 0x00108000 0x0b6a8 0x0b6a8 RW  0x1000</span><br><span class="line">  GNU_STACK      0x000000 0x00000000 0x00000000 0x00000 0x00000 RWE 0x10</span><br><span class="line"></span><br><span class="line"> Section to Segment mapping:</span><br><span class="line">  Segment Sections...</span><br><span class="line">   00     .text .rodata .stab .stabstr </span><br><span class="line">   01     .data .got .got.plt .data.rel.local .data.rel.ro.local .bss </span><br><span class="line">   02</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Other-Note"><a href="#Other-Note" class="headerlink" title="Other Note"></a>Other Note</h2><h5 id="VMA-vs-LMA"><a href="#VMA-vs-LMA" class="headerlink" title="VMA vs LMA"></a>VMA vs LMA</h5><ul>
+<li>VMA: link address, the memory address from which the section expects to execute</li>
+<li>LMA: load address, the memory address at which that section should be loaded into memory​</li>
+</ul>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2018-09-09T06:57:59.163Z" itemprop="dateUpdated">2018-09-09 14:57:59</time>
+</span><br>
+
+
+        
+    </div>
+    
+    <footer>
+        <a href="https://h-zex.github.io">
+            <img src="/img/avatar.jpg" alt="H-ZeX">
+            H-ZeX
+        </a>
+    </footer>
+</blockquote>
+
+        
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MIT-6-828/">MIT 6.828</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OS/">OS</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2018/09/04/MIT-6-828-lab1-note/&title=《MIT-6.828 lab1 Solution》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2018/09/04/MIT-6-828-lab1-note/&title=《MIT-6.828 lab1 Solution》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2018/09/04/MIT-6-828-lab1-note/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《MIT-6.828 lab1 Solution》 — H-ZeX&url=https://h-zex.github.io/2018/09/04/MIT-6-828-lab1-note/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2018/09/04/MIT-6-828-lab1-note/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2018/09/09/关于volatile、单条指令的原子性/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">关于volatile、单条指令的原子性</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2018/08/04/LeetCode-11-Container-With-Most-Water/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">LeetCode 11.Container With Most Water</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitment_thread"></div>
+    <link rel="stylesheet" href="//unpkg.com/gitment/style/default.css">
+    <script src="//unpkg.com/gitment/dist/gitment.browser.js"></script>
+    <script>
+        var gitment = new Gitment({
+            owner: 'H-ZeX',
+            repo: 'H-ZeX.github.io',
+            id: 'Tue Sep 04 2018 17:20:02 GMT+0800',
+            oauth: {
+                client_id: '77f9acb63af0afe6c8e9',
+                client_secret: 'e8b9218dee631709a296069a209bad5bb89e6eb3',
+            },
+        })
+        gitment.render('comments')
+    </script>
+</section>
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>H-ZeX &copy; 2017 - 2018</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2018/09/04/MIT-6-828-lab1-note/&title=《MIT-6.828 lab1 Solution》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2018/09/04/MIT-6-828-lab1-note/&title=《MIT-6.828 lab1 Solution》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2018/09/04/MIT-6-828-lab1-note/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《MIT-6.828 lab1 Solution》 — H-ZeX&url=https://h-zex.github.io/2018/09/04/MIT-6-828-lab1-note/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2018/09/04/MIT-6-828-lab1-note/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://h-zex.github.io/2018/09/04/MIT-6-828-lab1-note/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: false };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = 'H-ZeX's Blog';
+            clearTimeout(titleTime);
+        } else {
+            document.title = 'H-ZeX's Blog';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

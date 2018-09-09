@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>关于volatile、单条指令的原子性 | H-ZeX | H-ZeX&#39;s Coding Life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="Intel,volatile,原子性">
+    <meta name="description" content="volatile 以下说的是C/C++的volatile CSAPP的信号handler中说，对于shared变量，要用volatile修饰，即使是全局变量也如此。 虽然我使用clang 3.8试验，在几种常见情况下，全局变量都不会被缓存在寄存器，但是还是有必要这样做。 至于内存重排序，比如  1234567// thread 1Object c = init();bool isReady = t">
+<meta name="keywords" content="Intel,volatile,原子性">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于volatile、单条指令的原子性">
+<meta property="og:url" content="https://h-zex.github.io/2018/09/09/关于volatile、单条指令的原子性/index.html">
+<meta property="og:site_name" content="H-ZeX">
+<meta property="og:description" content="volatile 以下说的是C/C++的volatile CSAPP的信号handler中说，对于shared变量，要用volatile修饰，即使是全局变量也如此。 虽然我使用clang 3.8试验，在几种常见情况下，全局变量都不会被缓存在寄存器，但是还是有必要这样做。 至于内存重排序，比如  1234567// thread 1Object c = init();bool isReady = t">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-09-09T10:19:36.259Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于volatile、单条指令的原子性">
+<meta name="twitter:description" content="volatile 以下说的是C/C++的volatile CSAPP的信号handler中说，对于shared变量，要用volatile修饰，即使是全局变量也如此。 虽然我使用clang 3.8试验，在几种常见情况下，全局变量都不会被缓存在寄存器，但是还是有必要这样做。 至于内存重排序，比如  1234567// thread 1Object c = init();bool isReady = t">
+    
+        <link rel="alternate" type="application/atom+xml" title="H-ZeX" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">H-ZeX</h5>
+          <a href="mailto:hzx20112012@gmail.com" title="hzx20112012@gmail.com" class="mail">hzx20112012@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">关于volatile、单条指令的原子性</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">关于volatile、单条指令的原子性</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2018-09-09T10:08:21.000Z" itemprop="datePublished" class="page-time">
+  2018-09-09
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/OS/">OS</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/OS/Computer-architecture/">Computer architecture</a></li></ul></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#volatile"><span class="post-toc-number">1.</span> <span class="post-toc-text">volatile</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#单条汇编的原子性"><span class="post-toc-number">2.</span> <span class="post-toc-text">单条汇编的原子性</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Intel对于连接在同一个system-bus上的多处理器的管理机制"><span class="post-toc-number">3.</span> <span class="post-toc-text">Intel对于连接在同一个system bus上的多处理器的管理机制</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#这些机制的特性"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">这些机制的特性</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Guaranteed-Atomic-Operations"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">Guaranteed Atomic Operations</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#…-原文还有多个section，讲述bus-的lock等内容"><span class="post-toc-number">3.3.</span> <span class="post-toc-text">….(原文还有多个section，讲述bus 的lock等内容)</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-关于volatile、单条指令的原子性"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">关于volatile、单条指令的原子性</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2018-09-09 18:08:21" datetime="2018-09-09T10:08:21.000Z"  itemprop="datePublished">2018-09-09</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/OS/">OS</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/OS/Computer-architecture/">Computer architecture</a></li></ul></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h2 id="volatile"><a href="#volatile" class="headerlink" title="volatile"></a>volatile</h2><ul>
+<li>以下说的是C/C++的volatile</li>
+<li>CSAPP的信号handler中说，对于shared变量，要用volatile修饰，即使是全局变量也如此。</li>
+<li>虽然我使用clang 3.8试验，在几种常见情况下，全局变量都不会被缓存在寄存器，但是还是有必要这样做。</li>
+<li><p>至于内存重排序，比如</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// thread 1</span></span><br><span class="line">Object c = init();</span><br><span class="line"><span class="keyword">bool</span> isReady = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// thread 2</span></span><br><span class="line"><span class="keyword">while</span>(isReady==<span class="literal">false</span>);</span><br><span class="line"><span class="comment">// use Object c</span></span><br></pre></td></tr></table></figure>
+<p> 因为内存重排序，所以可能使用 Object c时还没有被初始化<br> Intel 的Software Developer’s Manual，有<code>Memory Ordering</code>的介绍<br> C++、Java等还有自己的memory model</p>
+</li>
+<li>在非本地跳转中，volatile用的比较多。因为非本地跳转会加载存储在env中的环境（包括寄存器的值）</li>
+</ul>
+<h2 id="单条汇编的原子性"><a href="#单条汇编的原子性" class="headerlink" title="单条汇编的原子性"></a>单条汇编的原子性</h2><ul>
+<li>CSAPP的内嵌汇编的web aside中<blockquote>
+<p>To specify that an instruction should be) executed atomically, a special lock prefix byte (with code 0xF0) is included in the machine code immediately before the instruction. This is written in assembly by writing lock as if it were an instruction on a separate line before the instruction that is to be executed atomically.</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="Intel对于连接在同一个system-bus上的多处理器的管理机制"><a href="#Intel对于连接在同一个system-bus上的多处理器的管理机制" class="headerlink" title="Intel对于连接在同一个system bus上的多处理器的管理机制"></a>Intel对于<strong>连接在同一个system bus上</strong>的多处理器的管理机制</h2><blockquote>
+<ul>
+<li>注意，以下都是基于<em>Intel® 64 and IA-32 Architectures Software Developer’s Manual</em> (2018 5 18), Vol.3A ch8</li>
+<li>The Intel 64 and IA-32 architectures provide mechanisms for managing and improving the performance of multiple processors connected to the same system bus. </li>
+</ul>
+</blockquote>
+<h3 id="这些机制的特性"><a href="#这些机制的特性" class="headerlink" title="这些机制的特性"></a>这些机制的特性</h3><ul>
+<li>保证内存一致性<blockquote>
+<p>To maintain system memory coherency. When two or more processors are attempting simultaneously to access the same address in system memory, some communication mechanism or memory access protocol must be available to promote data coherency and, in some instances, to allow one processor to temporarily lock a memory location.</p>
+</blockquote>
+</li>
+<li>保证cache的一致性。比如一个shared变量被缓存在不同processor的L1 cache，那么其中一个processor修改了这个变量，其他processor要如何感知。具体可以看<a href="https://en.wikipedia.org/wiki/MESI_protocol" target="_blank" rel="noopener">MESI Protocol</a><blockquote>
+<p>To maintain cache consistency — When one processor accesses data cached on another processor, it must not receive incorrect data. If it modifies data, all other processors that access that data must receive the modified data.</p>
+</blockquote>
+</li>
+<li>可预测的内存写顺序<blockquote>
+<p>To allow predictable ordering of writes to memory. In some circumstances, it is important that memory writes be observed externally in precisely the same order as programmed. </p>
+</blockquote>
+</li>
+<li>分派中断处理<blockquote>
+<p> To distribute interrupt handling among a group of processors — When several processors are operating in a system in parallel, it is useful to have a centralized mechanism for receiving interrupts and distributing them to available processors for servicing.</p>
+</blockquote>
+</li>
+<li><blockquote>
+<p>To increase system performance by exploiting the multi-threaded and multi-process nature of contemporary operating systems and applications.</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="Guaranteed-Atomic-Operations"><a href="#Guaranteed-Atomic-Operations" class="headerlink" title="Guaranteed Atomic Operations"></a>Guaranteed Atomic Operations</h3><ul>
+<li><code>atomically</code>的含义<blockquote>
+<p>That is, once started, the processor guarantees that the operation will be completed before another processor or bus agent is allowed access to the memory location.</p>
+</blockquote>
+</li>
+<li>Intel还支持通过bus locking来实现对shared area of memory的操作，不过这个不是默认行为。</li>
+<li>如果是对于cache中的内存操作，不适用bus lock，而是用processor’s cache coherency protocols来保证原子操作时，其他对于这内存位置的cache被正确管理</li>
+<li>The Intel486 processor (and newer processors since) guarantees that the following basic <strong>memory operations</strong> will always be carried out atomically:<ul>
+<li>Reading or writing a byte</li>
+<li>Reading or writing a word aligned on a 16-bit boundary</li>
+<li>Reading or writing a doubleword aligned on a 32-bit boundary</li>
+</ul>
+</li>
+<li>The Pentium processor (and newer processors since) guarantees that the following additional <strong>memory operations</strong> will always be carried out atomically:<ul>
+<li>Reading or writing a quadword aligned on a 64-bit boundary</li>
+<li>16-bit accesses to uncached memory locations that fit within a 32-bit data bus</li>
+</ul>
+</li>
+<li>The P6 family processors (and newer processors since) guarantee that the following additional memory operation will always be carried out atomically:<ul>
+<li>Unaligned 16-, 32-, and 64-bit accesses to cached memory that fit within a cache line</li>
+</ul>
+</li>
+<li>以上三个保证我也不太清楚<strong>memory operations</strong>是不是不包括对cache的operations，比如说，某变量缓存在某处理器的L1 cache中，然后对其进行读写，每个读写操作是否对于其他processor来说也是原子的</li>
+<li>Accesses to cacheable memory that are split across cache lines and page boundaries are not guaranteed to be atomic by the Intel Core 2 Duo, Intel® Atom™, Intel Core Duo, Pentium M, Pentium 4, Intel Xeon, P6 family, Pentium, and Intel486 processors.</li>
+<li>The Intel Core 2 Duo, Intel Atom, Intel Core Duo, Pentium M, Pentium 4, Intel Xeon, and P6 family processors provide bus control signals that permit external memory subsystems to make split accesses atomic; (however, nonaligned data accesses will seriously impact the performance of the processor and should be avoided.)</li>
+<li>An x87 instruction or an SSE instructions that accesses data larger than a quadword may be implemented using multiple memory accesses. If such an instruction stores to memory, some of the accesses may complete (writing to memory) while another causes the operation to fault for architectural reasons (e.g. due an page-table entry that is marked “not present”). In this case, the effects of the completed accesses may be visible to software even though the overall instruction caused a fault. If TLB invalidation has been delayed (see Section 4.10.4.4), such page faults may occur even if all accesses are to the same page.</li>
+</ul>
+<h3 id="…-原文还有多个section，讲述bus-的lock等内容"><a href="#…-原文还有多个section，讲述bus-的lock等内容" class="headerlink" title="….(原文还有多个section，讲述bus 的lock等内容)"></a>….(原文还有多个section，讲述bus 的lock等内容)</h3>
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2018-09-09T10:19:36.259Z" itemprop="dateUpdated">2018-09-09 18:19:36</time>
+</span><br>
+
+
+        
+    </div>
+    
+    <footer>
+        <a href="https://h-zex.github.io">
+            <img src="/img/avatar.jpg" alt="H-ZeX">
+            H-ZeX
+        </a>
+    </footer>
+</blockquote>
+
+        
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Intel/">Intel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/volatile/">volatile</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/原子性/">原子性</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2018/09/09/关于volatile、单条指令的原子性/&title=《关于volatile、单条指令的原子性》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2018/09/09/关于volatile、单条指令的原子性/&title=《关于volatile、单条指令的原子性》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2018/09/09/关于volatile、单条指令的原子性/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《关于volatile、单条指令的原子性》 — H-ZeX&url=https://h-zex.github.io/2018/09/09/关于volatile、单条指令的原子性/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2018/09/09/关于volatile、单条指令的原子性/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2018/09/04/MIT-6-828-lab1-note/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">MIT-6.828 lab1 Solution</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitment_thread"></div>
+    <link rel="stylesheet" href="//unpkg.com/gitment/style/default.css">
+    <script src="//unpkg.com/gitment/dist/gitment.browser.js"></script>
+    <script>
+        var gitment = new Gitment({
+            owner: 'H-ZeX',
+            repo: 'H-ZeX.github.io',
+            id: 'Sun Sep 09 2018 18:08:21 GMT+0800',
+            oauth: {
+                client_id: '77f9acb63af0afe6c8e9',
+                client_secret: 'e8b9218dee631709a296069a209bad5bb89e6eb3',
+            },
+        })
+        gitment.render('comments')
+    </script>
+</section>
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>H-ZeX &copy; 2017 - 2018</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2018/09/09/关于volatile、单条指令的原子性/&title=《关于volatile、单条指令的原子性》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2018/09/09/关于volatile、单条指令的原子性/&title=《关于volatile、单条指令的原子性》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2018/09/09/关于volatile、单条指令的原子性/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《关于volatile、单条指令的原子性》 — H-ZeX&url=https://h-zex.github.io/2018/09/09/关于volatile、单条指令的原子性/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2018/09/09/关于volatile、单条指令的原子性/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://h-zex.github.io/2018/09/09/关于volatile、单条指令的原子性/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: false };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = 'H-ZeX's Blog';
+            clearTimeout(titleTime);
+        } else {
+            document.title = 'H-ZeX's Blog';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
