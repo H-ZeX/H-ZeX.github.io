@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>How to Have Two Chromes at Linux | H-ZeX | H-ZeX&#39;s Coding Life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="运维,小技巧,chrome,linux">
+    <meta name="description" content="需求 由于Tampermonkey的脚本频繁更新，所以有点担心脚本的安全性问题。毕竟没有时间把源码都看一遍。 而由于JavaScript的能力比较有限，所以，我认为，构造一个新的浏览器环境来运行这个脚本应该就可以解决问题。 那么，就需要两个chrome的环境  chrome的用户数据 linux下chrome的默认用户数据存储在/home/&amp;lt;user-name&amp;gt;/.config/goo">
+<meta name="keywords" content="运维,小技巧,chrome,linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How to Have Two Chromes at Linux">
+<meta property="og:url" content="https://h-zex.github.io/2018/09/10/How-to-Have-Two-Chromes-at-Linux/index.html">
+<meta property="og:site_name" content="H-ZeX">
+<meta property="og:description" content="需求 由于Tampermonkey的脚本频繁更新，所以有点担心脚本的安全性问题。毕竟没有时间把源码都看一遍。 而由于JavaScript的能力比较有限，所以，我认为，构造一个新的浏览器环境来运行这个脚本应该就可以解决问题。 那么，就需要两个chrome的环境  chrome的用户数据 linux下chrome的默认用户数据存储在/home/&amp;lt;user-name&amp;gt;/.config/goo">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-09-10T13:56:04.298Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="How to Have Two Chromes at Linux">
+<meta name="twitter:description" content="需求 由于Tampermonkey的脚本频繁更新，所以有点担心脚本的安全性问题。毕竟没有时间把源码都看一遍。 而由于JavaScript的能力比较有限，所以，我认为，构造一个新的浏览器环境来运行这个脚本应该就可以解决问题。 那么，就需要两个chrome的环境  chrome的用户数据 linux下chrome的默认用户数据存储在/home/&amp;lt;user-name&amp;gt;/.config/goo">
+    
+        <link rel="alternate" type="application/atom+xml" title="H-ZeX" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">H-ZeX</h5>
+          <a href="mailto:hzx20112012@gmail.com" title="hzx20112012@gmail.com" class="mail">hzx20112012@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">How to Have Two Chromes at Linux</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">How to Have Two Chromes at Linux</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2018-09-10T13:26:34.000Z" itemprop="datePublished" class="page-time">
+  2018-09-10
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/运维/">运维</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#需求"><span class="post-toc-number">1.</span> <span class="post-toc-text">需求</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#chrome的用户数据"><span class="post-toc-number">2.</span> <span class="post-toc-text">chrome的用户数据</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#从chrome-的deb解压获得chrome从而不需要安装也可以使用chrome"><span class="post-toc-number">3.</span> <span class="post-toc-text">从chrome 的deb解压获得chrome从而不需要安装也可以使用chrome</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-How-to-Have-Two-Chromes-at-Linux"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">How to Have Two Chromes at Linux</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2018-09-10 21:26:34" datetime="2018-09-10T13:26:34.000Z"  itemprop="datePublished">2018-09-10</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/运维/">运维</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><ul>
+<li>由于Tampermonkey的脚本频繁更新，所以有点担心脚本的安全性问题。毕竟没有时间把源码都看一遍。</li>
+<li>而由于JavaScript的能力比较有限，所以，我认为，构造一个新的浏览器环境来运行这个脚本应该就可以解决问题。</li>
+<li>那么，就需要两个chrome的环境</li>
+</ul>
+<h3 id="chrome的用户数据"><a href="#chrome的用户数据" class="headerlink" title="chrome的用户数据"></a>chrome的用户数据</h3><ul>
+<li>linux下chrome的默认用户数据存储在<code>/home/&lt;user-name&gt;/.config/google-chrome</code>，可以使用<code>--user-data-dir=DIR</code>参数启动chrome来使得chrome使用另一个目录作为用户data目录<blockquote>
+<p>–user-data-dir=DIR<br>Specifies the directory that user data (your “profile”) is kept in.  Defaults to $HOME/.config/google-chrome .  Separate instances of  Google<br>Chrome  must  use  separate user data directories; repeated invocations of google-chrome will reuse an existing process for a given user data<br>directory.</p>
+</blockquote>
+</li>
+<li><p>接下来</p>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd /home/&lt;user-name&gt;/.config/</span><br><span class="line">mv google-chrome xxx </span><br><span class="line"><span class="meta">#</span> 注意，不可以使用google-chrome.old，否则chrome还是会从这个文件夹获得用户名等信息</span><br><span class="line"><span class="meta">#</span> 我就是使用了google-chrome.old，结果打开新的chrome，chrome总是显示我已经登录了，然后新的google-chrome目录下的生成的新的Local State文件总是有我的个人信息</span><br></pre></td></tr></table></figure>
+<p> 接下来，打开chrome（不加–user-data-dir参数），chrome就会生成新的google-chrome文件夹，从而就可以获得一个全新的chrome环境。然后安装需要的插件和脚本（注意，不要登录账户然后选同步设置。）</p>
+</li>
+<li>把chrome新创建的这个google-chrome文件夹名改为自己要的名字，然后以后要使用新环境就直接加上<code>--user-data-dir=DIR</code>参数打开chrome即可</li>
+<li>由于chrome的用户data似乎对chrome版本比较敏感，所以还需要其他措施（当然没有似乎问题也不大——我67使用69的配置只是报个错，没有其他问题）</li>
+</ul>
+<h3 id="从chrome-的deb解压获得chrome从而不需要安装也可以使用chrome"><a href="#从chrome-的deb解压获得chrome从而不需要安装也可以使用chrome" class="headerlink" title="从chrome 的deb解压获得chrome从而不需要安装也可以使用chrome"></a>从chrome 的deb解压获得chrome从而不需要安装也可以使用chrome</h3><ul>
+<li><code>dpkg -x xxx.deb folder</code>即可把deb包解压到folder文件夹中</li>
+<li>然后使用使用<code>chown</code>命令修改<code>folder/opt/google/chrome/chrome-sandbox</code>的拥有者为root，然后使用<code>chmod 4755</code>修改该文件的权限，才可以使用这个chrome</li>
+<li>使用方法，直接在<code>folder/opt/google/chrome/</code>目录下运行<code>./chrome</code>即可</li>
+</ul>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2018-09-10T13:56:04.298Z" itemprop="dateUpdated">2018-09-10 21:56:04</time>
+</span><br>
+
+
+        
+    </div>
+    
+    <footer>
+        <a href="https://h-zex.github.io">
+            <img src="/img/avatar.jpg" alt="H-ZeX">
+            H-ZeX
+        </a>
+    </footer>
+</blockquote>
+
+        
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/chrome/">chrome</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/小技巧/">小技巧</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/运维/">运维</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2018/09/10/How-to-Have-Two-Chromes-at-Linux/&title=《How to Have Two Chromes at Linux》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2018/09/10/How-to-Have-Two-Chromes-at-Linux/&title=《How to Have Two Chromes at Linux》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2018/09/10/How-to-Have-Two-Chromes-at-Linux/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《How to Have Two Chromes at Linux》 — H-ZeX&url=https://h-zex.github.io/2018/09/10/How-to-Have-Two-Chromes-at-Linux/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2018/09/10/How-to-Have-Two-Chromes-at-Linux/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2018/09/09/关于volatile、单条指令的原子性/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">关于volatile、单条指令的原子性</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitment_thread"></div>
+    <link rel="stylesheet" href="//unpkg.com/gitment/style/default.css">
+    <script src="//unpkg.com/gitment/dist/gitment.browser.js"></script>
+    <script>
+        var gitment = new Gitment({
+            owner: 'H-ZeX',
+            repo: 'H-ZeX.github.io',
+            id: 'Mon Sep 10 2018 21:26:34 GMT+0800',
+            oauth: {
+                client_id: '77f9acb63af0afe6c8e9',
+                client_secret: 'e8b9218dee631709a296069a209bad5bb89e6eb3',
+            },
+        })
+        gitment.render('comments')
+    </script>
+</section>
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>H-ZeX &copy; 2017 - 2018</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2018/09/10/How-to-Have-Two-Chromes-at-Linux/&title=《How to Have Two Chromes at Linux》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2018/09/10/How-to-Have-Two-Chromes-at-Linux/&title=《How to Have Two Chromes at Linux》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2018/09/10/How-to-Have-Two-Chromes-at-Linux/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《How to Have Two Chromes at Linux》 — H-ZeX&url=https://h-zex.github.io/2018/09/10/How-to-Have-Two-Chromes-at-Linux/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2018/09/10/How-to-Have-Two-Chromes-at-Linux/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://h-zex.github.io/2018/09/10/How-to-Have-Two-Chromes-at-Linux/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: false };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = 'H-ZeX's Blog';
+            clearTimeout(titleTime);
+        } else {
+            document.title = 'H-ZeX's Blog';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

@@ -29,14 +29,14 @@
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="volatile 以下说的是C/C++的volatile CSAPP的信号handler中说，对于shared变量，要用volatile修饰，即使是全局变量也如此。 虽然我使用clang 3.8试验，在几种常见情况下，全局变量都不会被缓存在寄存器，但是还是有必要这样做。 至于内存重排序，比如  1234567// thread 1Object c = init();bool isReady = t">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-09-09T10:19:36.259Z">
+<meta property="og:updated_time" content="2018-09-09T14:43:54.662Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于volatile、单条指令的原子性">
 <meta name="twitter:description" content="volatile 以下说的是C/C++的volatile CSAPP的信号handler中说，对于shared变量，要用volatile修饰，即使是全局变量也如此。 虽然我使用clang 3.8试验，在几种常见情况下，全局变量都不会被缓存在寄存器，但是还是有必要这样做。 至于内存重排序，比如  1234567// thread 1Object c = init();bool isReady = t">
     
         <link rel="alternate" type="application/atom+xml" title="H-ZeX" href="/atom.xml">
     
-    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="shortcut icon" href="/img/favicon.ico">
     <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
     <script>window.lazyScripts=[]</script>
 
@@ -258,7 +258,7 @@
     <div class="content">
         
 <span class="post-time">
-    Last updated: <time datetime="2018-09-09T10:19:36.259Z" itemprop="dateUpdated">2018-09-09 18:19:36</time>
+    Last updated: <time datetime="2018-09-09T14:43:54.662Z" itemprop="dateUpdated">2018-09-09 22:43:54</time>
 </span><br>
 
 
@@ -333,7 +333,14 @@
     </div>
 
     
-<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2018/09/10/How-to-Have-Two-Chromes-at-Linux/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">How to Have Two Chromes at Linux</h4>
+      </a>
+    </div>
   
 
   
