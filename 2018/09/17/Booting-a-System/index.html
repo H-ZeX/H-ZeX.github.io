@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>Booting a System | H-ZeX | H-ZeX&#39;s Coding Life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="boot,unix/linux">
+    <meta name="description" content="Legacy BIOS 传统的bios假设boot device start with a record called MBR，MBR512个字节，包含first-stage boot loader（也叫boot block）和一个分区表 无论是BIOS还是第一阶段的boot loader都没有足够的能力去读取标准的文件系统，所以第二阶段的boot loader的位置必须足够容易获取。在大多数场景">
+<meta name="keywords" content="boot,unix&#x2F;linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Booting a System">
+<meta property="og:url" content="https://h-zex.github.io/2018/09/17/Booting-a-System/index.html">
+<meta property="og:site_name" content="H-ZeX">
+<meta property="og:description" content="Legacy BIOS 传统的bios假设boot device start with a record called MBR，MBR512个字节，包含first-stage boot loader（也叫boot block）和一个分区表 无论是BIOS还是第一阶段的boot loader都没有足够的能力去读取标准的文件系统，所以第二阶段的boot loader的位置必须足够容易获取。在大多数场景">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-09-17T04:20:31.051Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Booting a System">
+<meta name="twitter:description" content="Legacy BIOS 传统的bios假设boot device start with a record called MBR，MBR512个字节，包含first-stage boot loader（也叫boot block）和一个分区表 无论是BIOS还是第一阶段的boot loader都没有足够的能力去读取标准的文件系统，所以第二阶段的boot loader的位置必须足够容易获取。在大多数场景">
+    
+        <link rel="alternate" type="application/atom+xml" title="H-ZeX" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">H-ZeX</h5>
+          <a href="mailto:hzx20112012@gmail.com" title="hzx20112012@gmail.com" class="mail">hzx20112012@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">Booting a System</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">Booting a System</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2018-09-17T01:22:08.000Z" itemprop="datePublished" class="page-time">
+  2018-09-17
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/运维/">运维</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Legacy-BIOS"><span class="post-toc-number">1.</span> <span class="post-toc-text">Legacy BIOS</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#MBR"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">MBR</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#EFI"><span class="post-toc-number">2.</span> <span class="post-toc-text">EFI</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#GPT"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">GPT</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Can-a-disk-be-both-GPT-and-MBR"><span class="post-toc-number">2.1.0.1.</span> <span class="post-toc-text">Can a disk be both GPT and MBR?</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#What-is-a-Protective-MBR"><span class="post-toc-number">2.1.0.2.</span> <span class="post-toc-text">What is a Protective MBR?</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Why-does-the-GPT-have-a-Protective-MBR"><span class="post-toc-number">2.1.0.3.</span> <span class="post-toc-text">Why does the GPT have a Protective MBR?</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Why-would-a-GPT-partitioned-disk-appear-to-have-an-MBR-on-it"><span class="post-toc-number">2.1.0.4.</span> <span class="post-toc-text">Why would a GPT-partitioned disk appear to have an MBR on it?</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ESP"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">ESP</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#BOOT"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">BOOT</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-Booting-a-System"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">Booting a System</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2018-09-17 09:22:08" datetime="2018-09-17T01:22:08.000Z"  itemprop="datePublished">2018-09-17</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/运维/">运维</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h2 id="Legacy-BIOS"><a href="#Legacy-BIOS" class="headerlink" title="Legacy BIOS"></a>Legacy BIOS</h2><ul>
+<li>传统的bios假设boot device start with a record called MBR，MBR512个字节，包含first-stage boot loader（也叫boot block）和一个分区表</li>
+<li>无论是BIOS还是第一阶段的boot loader都没有足够的能力去读取标准的文件系统，所以第二阶段的boot loader的位置必须足够容易获取。在大多数场景下，boot block从MBR读取分区表，识别出那些marked as “active”的硬盘分区，然后其从这些分区的开头读取并运行第二阶段boot loader，这个方案被叫做”volume boot record”</li>
+<li>第二阶段的boot loader还可以处于MBR和第一个磁盘分区之间的”dead zone”。由于历史原因，第一个磁盘分区从第64个disk block开始（MBR所在的那个是第0个block），所以这个区域包含有32KB的空间，这个空间足够包含一个文件系统驱动。这个方案通常被GRUB使用</li>
+<li>MBR boot block是OS-agnostic的，但是因为第二阶段的boot loader有多个版本可以安装，所以第二阶段的boot loader通常是了解操作系统和文件系统的，并且是可配置的</li>
+</ul>
+<h3 id="MBR"><a href="#MBR" class="headerlink" title="MBR"></a>MBR</h3><ul>
+<li><blockquote>
+<p>MBR disks support only four partition table entries. For more than four partitions, a secondary structure known as an extended partition is necessary. Extended partitions can then be subdivided into one or more logical disks.</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="EFI"><a href="#EFI" class="headerlink" title="EFI"></a>EFI</h2><ul>
+<li>Intel’s extensible firmware interface (EFI) </li>
+<li>EFI演变成UEFI（unified EFI），被多家制造商支持，不过EFI仍然是更常使用的术语。EFI和UEFI基本上可以互换使用</li>
+</ul>
+<h3 id="GPT"><a href="#GPT" class="headerlink" title="GPT"></a>GPT</h3><ul>
+<li><p>The EFI partitioning scheme, known as a “GUID partition table” or GPT</p>
+<blockquote>
+<p>A partition is a contiguous space of storage on a physical or logical disk that functions as if it were a physically separate disk. Partitions are visible to the system firmware and the installed operating systems. Access to a partition is controlled by the system firmware before the system boots the operating system, and then by the operating system after it is started.</p>
+</blockquote>
+</li>
+<li><p>只有一种分区类型（没有诸如逻辑分区），可以任意多的分区数目，有16-byte的GUID</p>
+<blockquote>
+<p>The specification allows an almost unlimited number of partitions. However, the Windows implementation restricts this to 128 partitions. The number of partitions is limited by the amount of space reserved for partition entries in the GPT.</p>
+<p>The 16-byte partition type GUID, which is similar to a System ID in the partition table of an MBR disk, identifies the type of data that the partition contains and identifies how the partition is used, for example, whether it is a basic disk or a dynamic disk. Note that each GUID partition entry has a backup copy.</p>
+</blockquote>
+</li>
+<li><blockquote>
+<p><a href="https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/windows-and-gpt-faq" target="_blank" rel="noopener">Windows and GPT FAQ</a></p>
+<h5 id="Can-a-disk-be-both-GPT-and-MBR"><a href="#Can-a-disk-be-both-GPT-and-MBR" class="headerlink" title="Can a disk be both GPT and MBR?"></a>Can a disk be both GPT and MBR?</h5><p>No. However, all GPT disks contain a Protective MBR.</p>
+<h5 id="What-is-a-Protective-MBR"><a href="#What-is-a-Protective-MBR" class="headerlink" title="What is a Protective MBR?"></a>What is a Protective MBR?</h5><p>The Protective MBR, beginning in sector 0, precedes the GPT partition table on the disk. The MBR contains one type 0xEE partition that spans the disk.</p>
+<h5 id="Why-does-the-GPT-have-a-Protective-MBR"><a href="#Why-does-the-GPT-have-a-Protective-MBR" class="headerlink" title="Why does the GPT have a Protective MBR?"></a>Why does the GPT have a Protective MBR?</h5><p>The Protective MBR protects GPT disks from previously released MBR disk tools such as Microsoft MS-DOS FDISK or Microsoft Windows NT Disk Administrator. These tools are not aware of GPT and don’t know how to properly access a GPT disk. Legacy software that does not know about GPT interprets only the Protected MBR when it accesses a GPT disk. These tools will view a GPT disk as having a single encompassing (possibly unrecognized) partition by interpreting the Protected MBR, rather than mistaking the disk for one that is unpartitioned.</p>
+<h5 id="Why-would-a-GPT-partitioned-disk-appear-to-have-an-MBR-on-it"><a href="#Why-would-a-GPT-partitioned-disk-appear-to-have-an-MBR-on-it" class="headerlink" title="Why would a GPT-partitioned disk appear to have an MBR on it?"></a>Why would a GPT-partitioned disk appear to have an MBR on it?</h5><p>This occurrs when you use an MBR-only-aware disk tool to access the GPT disk.</p>
+</blockquote>
+</li>
+<li><p>如果没有保护性的MBR，一些MBR-only的工具可能会认为该磁盘没有格式化所以去格式化该磁盘</p>
+</li>
+<li><p>不要使用不支持GPT的分区工具，这些工具会认为自己理解了磁盘布局，其实并没有。这是很危险的。</p>
+</li>
+</ul>
+<h3 id="ESP"><a href="#ESP" class="headerlink" title="ESP"></a>ESP</h3><ul>
+<li><blockquote>
+<p>The <a href="https://en.wikipedia.org/wiki/EFI_system_partition" target="_blank" rel="noopener">EFI system partition</a> (also called ESP or EFISYS) is an OS independent partition that acts as the storage place for the EFI bootloaders, applications and drivers to be launched by the UEFI firmware. It is mandatory for UEFI boot.</p>
+<p>The UEFI specification mandates support for the FAT12, FAT16, and FAT32 filesystems (see <a href="http://www.uefi.org/sites/default/files/resources/UEFI%20Spec%202_7_A%20Sept%206.pdf#G17.1019485" target="_blank" rel="noopener">UEFI specification version 2.7, section 13.3.1.1</a>), but any conformant vendor can optionally add support for additional filesystems; for example, Apple <a href="https://wiki.archlinux.org/index.php/Mac" target="_blank" rel="noopener">Macs</a> support (and by default use) their own HFS+ filesystem drivers.</p>
+</blockquote>
+</li>
+<li><p>因为这只是一个普通的FAT分区，所以可以被操作系统挂载、读写。</p>
+</li>
+<li><blockquote>
+<p>At boot time, the firmware consults the GPT partition table to identify the ESP. It then reads the configured target application directly from a file in the ESP and executes it.</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="BOOT"><a href="#BOOT" class="headerlink" title="BOOT"></a>BOOT</h3><ul>
+<li><p>没有boot block（除了Protective MBR）</p>
+</li>
+<li><p>在UEFI 系统，并不需要boot loader，UEFI boot target 可以是UNIX/Linux kernel，这些kernel可以被配置为direct UEFI loading。不过，实践中，为了兼容legacy BIOSes，所以还是使用了boot loader</p>
+</li>
+<li><p>在modern intel system，UEFI默认从<code>/efi/boot/boot64.efi</code>加载。这个路径可以作为一个参数配置</p>
+</li>
+<li><p>UEFI定义了很多访问系统硬件的API，在这个意义上，其已经是一个小型操作系统了，甚至有UEFI-level add-on device drivers（使用处理器无关的语言编写，存储在ESP）。操作系统可以使用这些API访问硬件，也可以直接控制硬件。</p>
+</li>
+<li><p>因为UEFI有formal API，所以可以在运行的操作系统修改UEFI 变量</p>
+</li>
+<li><p>firmware可以被mounted read/write（从可以修改UEFI变量就可以知道确实可读写）</p>
+</li>
+<li><p>在那些默认允许写的系统(typically, those with systemd)，<code>rm -rf /</code> 可以永久的摧毁system at fireware level。并且，除了移除文件，rm还移除variables and other UEFI information accessible through <code>/sys</code></p>
+<p>​</p>
+</li>
+</ul>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2018-09-17T04:20:31.051Z" itemprop="dateUpdated">2018-09-17 12:20:31</time>
+</span><br>
+
+
+        
+    </div>
+    
+    <footer>
+        <a href="https://h-zex.github.io">
+            <img src="/img/avatar.jpg" alt="H-ZeX">
+            H-ZeX
+        </a>
+    </footer>
+</blockquote>
+
+        
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/boot/">boot</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/unix-linux/">unix/linux</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2018/09/17/Booting-a-System/&title=《Booting a System》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2018/09/17/Booting-a-System/&title=《Booting a System》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2018/09/17/Booting-a-System/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Booting a System》 — H-ZeX&url=https://h-zex.github.io/2018/09/17/Booting-a-System/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2018/09/17/Booting-a-System/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2018/09/17/Extend-Binary-GCD/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">Extend Binary GCD</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2018/09/10/How-to-Have-Two-Chromes-at-Linux/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">How to Have Two Chromes at Linux</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitment_thread"></div>
+    <link rel="stylesheet" href="//unpkg.com/gitment/style/default.css">
+    <script src="//unpkg.com/gitment/dist/gitment.browser.js"></script>
+    <script>
+        var gitment = new Gitment({
+            owner: 'H-ZeX',
+            repo: 'H-ZeX.github.io',
+            id: 'Mon Sep 17 2018 09:22:08 GMT+0800',
+            oauth: {
+                client_id: '77f9acb63af0afe6c8e9',
+                client_secret: 'e8b9218dee631709a296069a209bad5bb89e6eb3',
+            },
+        })
+        gitment.render('comments')
+    </script>
+</section>
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>H-ZeX &copy; 2017 - 2018</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2018/09/17/Booting-a-System/&title=《Booting a System》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2018/09/17/Booting-a-System/&title=《Booting a System》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2018/09/17/Booting-a-System/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Booting a System》 — H-ZeX&url=https://h-zex.github.io/2018/09/17/Booting-a-System/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2018/09/17/Booting-a-System/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://h-zex.github.io/2018/09/17/Booting-a-System/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: false };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = 'H-ZeX's Blog';
+            clearTimeout(titleTime);
+        } else {
+            document.title = 'H-ZeX's Blog';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
