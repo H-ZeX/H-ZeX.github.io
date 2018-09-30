@@ -799,10 +799,10 @@ MathJax.Hub.Queue(function() {
     var OriginTitile = document.title, titleTime;
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
-            document.title = 'H-ZeX's Blog';
+            document.title = "H-ZeX's Blog";
             clearTimeout(titleTime);
         } else {
-            document.title = 'H-ZeX's Blog';
+            document.title = "H-ZeX's Blog";
             titleTime = setTimeout(function() {
                 document.title = OriginTitile;
             },2000);

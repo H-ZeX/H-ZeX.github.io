@@ -320,8 +320,8 @@
 
 <section class="comments" id="comments">
     <div id="gitment_thread"></div>
-    <link rel="stylesheet" href="//unpkg.com/gitment/style/default.css">
-    <script src="//unpkg.com/gitment/dist/gitment.browser.js"></script>
+    <link rel="stylesheet" href="/css/gitment_default.css">
+    <script src="/js/gitment.browser.js"></script>
     <script>
         var gitment = new Gitment({
             owner: 'H-ZeX',
@@ -496,10 +496,10 @@ MathJax.Hub.Queue(function() {
     var OriginTitile = document.title, titleTime;
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
-            document.title = 'H-ZeX's Blog';
+            document.title = "H-ZeX's Blog";
             clearTimeout(titleTime);
         } else {
-            document.title = 'H-ZeX's Blog';
+            document.title = "H-ZeX's Blog";
             titleTime = setTimeout(function() {
                 document.title = OriginTitile;
             },2000);
