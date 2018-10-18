@@ -141,6 +141,118 @@
     <ul class="post-list">
     
         <li class="post-list-item fade">
+            <article id="post-GF-2-n上算术运算的实现"
+  class="article-card article-type-post" itemprop="blogPost">
+
+    <div class="post-meta">
+        <time class="post-time" title="2018-10-18 20:06:10" datetime="2018-10-18T12:06:10.000Z"  itemprop="datePublished">2018-10-18</time>
+
+        
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/数学/">数学</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/数学/密码学/">密码学</a></li></ul></li></ul>
+
+
+
+    </div>
+
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2018/10/18/GF-2-n上算术运算的实现/">GF 2^n上算术运算的实现</a>
+    </h3>
+  
+
+
+
+
+    <div class="post-content" id="post-content" itemprop="postContent">
+
+    
+        
+代码
+
+几个关键点
+
+求模时，算法如下
+123456789101112131415def __modAndDiv__(x, y):    """    return the (x%y, x/y)    """    if y == 0:        raise ZeroDivisionError    xl = util.bitLen(x)    yl = util.bitLen(y) ...
+    
+
+        <a href="/2018/10/18/GF-2-n上算术运算的实现/" class="post-more waves-effect waves-button">
+            Continue reading...
+        </a>
+    </div>
+    
+    <div class="post-footer">
+        
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GF2n/">GF2n</a></li></ul>
+
+    </div>
+    
+</article>
+
+        </li>
+    
+        <li class="post-list-item fade">
+            <article id="post-y-z-mod-n-的所有相关问题的解法"
+  class="article-card article-type-post" itemprop="blogPost">
+
+    <div class="post-meta">
+        <time class="post-time" title="2018-10-18 18:45:58" datetime="2018-10-18T10:45:58.000Z"  itemprop="datePublished">2018-10-18</time>
+
+        
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/数学/">数学</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/数学/密码学/">密码学</a></li></ul></li></ul>
+
+
+
+    </div>
+
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2018/10/18/y-z-mod-n-的所有相关问题的解法/">$x^y=z(mod\ n) 的所有相关问题的解法$</a>
+    </h3>
+  
+
+
+
+
+    <div class="post-content" id="post-content" itemprop="postContent">
+
+    
+        
+以下$x$为未知数。所有数都是整数
+
+$a^x=b(mod\ n)$
+这是离散对数问题，是一个难的问题——Diffie-Hellman算法就依赖于该问题的难解性。
+
+当$gcd(a, n)=n$时
+如果$b=1$，则$x=0$，如果$b=0$，则x为任意正数
+
+当$gcd(a,n)=1$时
+使用baby-step giant-step算法，具体可以参考求解a^x=b(mod m)
+
+$x^...
+    
+
+        <a href="/2018/10/18/y-z-mod-n-的所有相关问题的解法/" class="post-more waves-effect waves-button">
+            Continue reading...
+        </a>
+    </div>
+    
+    <div class="post-footer">
+        
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RSA/">RSA</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/快速幂/">快速幂</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/离散对数/">离散对数</a></li></ul>
+
+    </div>
+    
+</article>
+
+        </li>
+    
+        <li class="post-list-item fade">
             <article id="post-对ITOC-3rd-Theorem-9-20-的一些理解"
   class="article-card article-type-post" itemprop="blogPost">
 
@@ -191,13 +303,15 @@
         </li>
     
         <li class="post-list-item fade">
-            <article id="post-Extend-Binary-GCD"
+            <article id="post-Binary-GCD-And-Extend-Binary-GCD"
   class="article-card article-type-post" itemprop="blogPost">
 
     <div class="post-meta">
         <time class="post-time" title="2018-09-17 21:58:41" datetime="2018-09-17T13:58:41.000Z"  itemprop="datePublished">2018-09-17</time>
 
         
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/数学/">数学</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/数学/密码学/">密码学</a></li></ul></li></ul>
+
 
 
     </div>
@@ -207,7 +321,7 @@
 
   
     <h3 class="post-title" itemprop="name">
-      <a class="post-title-link" href="/2018/09/17/Extend-Binary-GCD/">Extend Binary GCD</a>
+      <a class="post-title-link" href="/2018/09/17/Binary-GCD-And-Extend-Binary-GCD/">Binary GCD And Extend Binary GCD</a>
     </h3>
   
 
@@ -217,12 +331,20 @@
     <div class="post-content" id="post-content" itemprop="postContent">
 
     
-        
+        Binary GCD
+代码
+1234567891011121314151617181920212223def binaryGCD(x, y):    x, y = abs(x), abs(y)    if x == 0 or y == 0:        return x + y    if x == y:        return x    cnt = 0    # this cycle...
     
 
-        <a href="/2018/09/17/Extend-Binary-GCD/" class="post-more waves-effect waves-button">
+        <a href="/2018/09/17/Binary-GCD-And-Extend-Binary-GCD/" class="post-more waves-effect waves-button">
             Continue reading...
         </a>
+    </div>
+    
+    <div class="post-footer">
+        
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/二进制欧几里得算法/">二进制欧几里得算法</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/扩展欧几里得/">扩展欧几里得</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/欧几里得算法/">欧几里得算法</a></li></ul>
+
     </div>
     
 </article>
@@ -532,109 +654,6 @@ selector 保存在segment regist...
     <div class="post-footer">
         
 	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MIT-6-828/">MIT 6.828</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OS/">OS</a></li></ul>
-
-    </div>
-    
-</article>
-
-        </li>
-    
-        <li class="post-list-item fade">
-            <article id="post-vim不支持系统剪切板的解决方案"
-  class="article-card article-type-post" itemprop="blogPost">
-
-    <div class="post-meta">
-        <time class="post-time" title="2018-06-05 15:15:31" datetime="2018-06-05T07:15:31.000Z"  itemprop="datePublished">2018-06-05</time>
-
-        
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/运维/">运维</a></li></ul>
-
-
-
-    </div>
-
-    
-
-
-  
-    <h3 class="post-title" itemprop="name">
-      <a class="post-title-link" href="/2018/06/05/vim不支持系统剪切板的解决方案/">vim 不支持系统剪切板的解决方案</a>
-    </h3>
-  
-
-
-
-
-    <div class="post-content" id="post-content" itemprop="postContent">
-
-    
-        判断vim是否支持系统剪切板
-在终端输入vim -version，如果clipboard 那一项是-clipboard ，以及xterm_clipboard 那一项是-xterm_clipboard ，说明并不支持。可以通过重新编译来解决
-
-以下引用另一位博主的解决方案，原文地址
-
-
-+clipboard +xterm_clipboard
-solution:
-–with-x –x-inclu...
-    
-
-        <a href="/2018/06/05/vim不支持系统剪切板的解决方案/" class="post-more waves-effect waves-button">
-            Continue reading...
-        </a>
-    </div>
-    
-    <div class="post-footer">
-        
-	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/clipboard/">clipboard</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vim/">vim</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/xterm-clipboard/">xterm_clipboard</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/系统剪切板/">系统剪切板</a></li></ul>
-
-    </div>
-    
-</article>
-
-        </li>
-    
-        <li class="post-list-item fade">
-            <article id="post-洛谷2577-午餐"
-  class="article-card article-type-post" itemprop="blogPost">
-
-    <div class="post-meta">
-        <time class="post-time" title="2018-05-20 08:20:06" datetime="2018-05-20T00:20:06.000Z"  itemprop="datePublished">2018-05-20</time>
-
-        
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/算法/">算法</a></li></ul>
-
-
-
-    </div>
-
-    
-
-
-  
-    <h3 class="post-title" itemprop="name">
-      <a class="post-title-link" href="/2018/05/20/洛谷2577-午餐/">洛谷2577 午餐</a>
-    </h3>
-  
-
-
-
-
-    <div class="post-content" id="post-content" itemprop="postContent">
-
-    
-        题目题目描述上午的训练结束了，THU ACM小组集体去吃午餐，他们一行N人来到了著名的十食堂。这里有两个打饭的窗口，每个窗口同一时刻只能给一个人打饭。由于每个人的口味（以及胃口）不同，所以他们要吃的菜各有不同，打饭所要花费的时间是因人而异的。另外每个人吃饭的速度也不尽相同，所以吃饭花费的时间也是可能有所不同的。
-THU ACM小组的吃饭计划是这样的：先把所有的人分成两队，并安排好每队中各人的...
-    
-
-        <a href="/2018/05/20/洛谷2577-午餐/" class="post-more waves-effect waves-button">
-            Continue reading...
-        </a>
-    </div>
-    
-    <div class="post-footer">
-        
-	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ACM/">ACM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/动态规划/">动态规划</a></li></ul>
 
     </div>
     
