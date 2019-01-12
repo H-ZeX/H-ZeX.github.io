@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://h-zex.github.io/"/>
-  <updated>2018-11-02T13:23:06.549Z</updated>
+  <updated>2018-10-18T12:15:09.719Z</updated>
   <id>https://h-zex.github.io/</id>
   
   <author>
@@ -15,28 +15,6 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>test</title>
-    <link href="https://h-zex.github.io/2018/11/02/test/"/>
-    <id>https://h-zex.github.io/2018/11/02/test/</id>
-    <published>2018-11-02T13:21:23.000Z</published>
-    <updated>2018-11-02T13:23:06.549Z</updated>
-    
-    <content type="html"><![CDATA[<p>$a<em>b</em>c<em>d</em>e$</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;$a&lt;em&gt;b&lt;/em&gt;c&lt;em&gt;d&lt;/em&gt;e$&lt;/p&gt;
-
-      
-    
-    </summary>
-    
-    
-  </entry>
   
   <entry>
     <title>GF 2^n上算术运算的实现</title>
@@ -101,11 +79,11 @@
   </entry>
   
   <entry>
-    <title>对*Introduction to the Theory of Computation 3rd* Theorem 9.20 的一些理解</title>
+    <title>对Introduction to the Theory of Computation 3rd Theorem 9.20 的一些理解</title>
     <link href="https://h-zex.github.io/2018/09/29/%E5%AF%B9ITOC-3rd-Theorem-9-20-%E7%9A%84%E4%B8%80%E4%BA%9B%E7%90%86%E8%A7%A3/"/>
     <id>https://h-zex.github.io/2018/09/29/对ITOC-3rd-Theorem-9-20-的一些理解/</id>
     <published>2018-09-29T06:45:15.000Z</published>
-    <updated>2019-01-12T01:04:32.419Z</updated>
+    <updated>2019-01-12T01:23:48.385Z</updated>
     
     <content type="html"><![CDATA[<ul><li><img src="/2018/09/29/对ITOC-3rd-Theorem-9-20-的一些理解/1.png"></li><li>证明中，通过枚举所有的P时间内运行的图灵机，然后利用对角化方法，来构造集合$A$，使得对于某一个$M_i$和某一个选定的$n$，要么$M_i$识别$1^n$，但是$A$不包含长度为n的字符串，要么$M_i$不识别$1^n$，但是$A$包含某一个长度为n的字符串。并且，为了使得$M_i$与$n$可以一一对应，要求所选取的$n$单调增长</li><li>按照文中描述的方法，构造似乎可以成立。但是，有一个重要的地方作者没有提及——<strong>无论集合$A$是否构造好，</strong>我们都应该可以运行任意一台$M_i$，$M_i$行为要保持一致</li><li>在我们运行$M_i$来构造集合$A$ 的过程中，每次$M_i$查询orcale，orcale都会因为长度为$n$ 的字符串尚未被决定是否加进去集合$A$而回答NO，不过，如果我们决定长度为$n$的字符串是否加进去集合$A$中后，orcale会如实回答。那么，在长度为n的字符串被决定是否加进去集合$A$之前和之后，orcale对某些字符串的回答不一致是否会导致$M_i$ 的行为改变，从而本来$M_i$不识别$1^n$，现在却识别了$1^n$，或者相反</li><li>可以证明，无论$A$是否构造好，$M_i$的行为还是会保持一致</li><li>一开始，长度为$n$的字符串还没有加进去时，orcale都是回答NO，所以：<ul><li>如果$M_i$不识别$1^n$，我们就给$A$加进去一个$M_i$没有询问到长度为n的字符串，从而，虽然集合$A$现在有了长度为$n$的字符串，但是，对于输入$1^n$，$M_i$对orcale的询问的答案依然全部是NO——因为输入确定，$M_i$确定，所以$M_i$究竟会询问orcale哪些字符串也是确定的——只要我们保证对询问的回答是一致的</li><li>如果$M_i$识别$1^n$，那么我们根本就不会给集合$A$加进去长度为$n$的字符串，那么，对于输入$1^n$，orcale对$M_i$的询问的结果依然全部是NO</li></ul></li><li>这个证明要成立还有一个很重要的地方，图灵机是可数个的，因为对于每一台$M_i$，我们都使用独特的$n$，那么，如果图灵机有不可数个，这个一一对应关系就无法建立。</li></ul>]]></content>
     
