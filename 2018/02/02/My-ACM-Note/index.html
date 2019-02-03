@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>My ACM Note | H-ZeX | H-ZeX&#39;s Coding Life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="ACM,note">
+    <meta name="description" content="全源最短路径的一种错误解法 错误代码 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758int main() &amp;#123;    while (~scanf(&quot;%d&quot;, &amp;amp;N)) &amp;#123;        // assume">
+<meta name="keywords" content="ACM,note">
+<meta property="og:type" content="article">
+<meta property="og:title" content="My ACM Note">
+<meta property="og:url" content="https://h-zex.github.io/2018/02/02/My-ACM-Note/index.html">
+<meta property="og:site_name" content="H-ZeX">
+<meta property="og:description" content="全源最短路径的一种错误解法 错误代码 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758int main() &amp;#123;    while (~scanf(&quot;%d&quot;, &amp;amp;N)) &amp;#123;        // assume">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-02-03T03:23:38.732Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="My ACM Note">
+<meta name="twitter:description" content="全源最短路径的一种错误解法 错误代码 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758int main() &amp;#123;    while (~scanf(&quot;%d&quot;, &amp;amp;N)) &amp;#123;        // assume">
+    
+        <link rel="alternate" type="application/atom+xml" title="H-ZeX" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">H-ZeX</h5>
+          <a href="mailto:hzx20112012@gmail.com" title="hzx20112012@gmail.com" class="mail">hzx20112012@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-id-card"></i>
+                About
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/link"  >
+                <i class="icon icon-lg icon-link"></i>
+                友情链接
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">My ACM Note</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">My ACM Note</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2018-02-02T05:31:40.000Z" itemprop="datePublished" class="page-time">
+  2018-02-02
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/算法/">算法</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#全源最短路径的一种错误解法"><span class="post-toc-number">1.</span> <span class="post-toc-text">全源最短路径的一种错误解法</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#NYOJ7"><span class="post-toc-number">2.</span> <span class="post-toc-text">NYOJ7</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#题目描述"><span class="post-toc-number">2.0.1.</span> <span class="post-toc-text">题目描述:</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#输入描述"><span class="post-toc-number">2.0.2.</span> <span class="post-toc-text">输入描述:</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#输出描述"><span class="post-toc-number">2.0.3.</span> <span class="post-toc-text">输出描述:</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#样例输入"><span class="post-toc-number">2.0.4.</span> <span class="post-toc-text">样例输入:</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#样例输出"><span class="post-toc-number">2.0.5.</span> <span class="post-toc-text">样例输出:</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#01背包"><span class="post-toc-number">3.</span> <span class="post-toc-text">01背包</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#找出一个序列中任意长度的逆序对"><span class="post-toc-number">4.</span> <span class="post-toc-text">找出一个序列中任意长度的逆序对</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#关于使用优先队列的bfs"><span class="post-toc-number">5.</span> <span class="post-toc-text">关于使用优先队列的bfs</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#DP"><span class="post-toc-number">6.</span> <span class="post-toc-text">DP</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#浮点数输入"><span class="post-toc-number">7.</span> <span class="post-toc-text">浮点数输入</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#枚举所有素数"><span class="post-toc-number">8.</span> <span class="post-toc-text">枚举所有素数</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#树状数组"><span class="post-toc-number">9.</span> <span class="post-toc-text">树状数组</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#离散化"><span class="post-toc-number">10.</span> <span class="post-toc-text">离散化</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#POJ3278"><span class="post-toc-number">11.</span> <span class="post-toc-text">POJ3278</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#子集和问题的动态规划解法"><span class="post-toc-number">12.</span> <span class="post-toc-text">子集和问题的动态规划解法</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#子集和问题变形"><span class="post-toc-number">13.</span> <span class="post-toc-text">子集和问题变形</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#floyd求最小环"><span class="post-toc-number">14.</span> <span class="post-toc-text">floyd求最小环</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#查询第K大"><span class="post-toc-number">15.</span> <span class="post-toc-text">查询第K大</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Nim游戏（博弈论）"><span class="post-toc-number">16.</span> <span class="post-toc-text">Nim游戏（博弈论）</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#HDU3483"><span class="post-toc-number">17.</span> <span class="post-toc-text">HDU3483</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#题意"><span class="post-toc-number">17.0.1.</span> <span class="post-toc-text">[题意]</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#解题方法"><span class="post-toc-number">17.0.2.</span> <span class="post-toc-text">[解题方法]</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#KMP算法理解"><span class="post-toc-number">18.</span> <span class="post-toc-text">KMP算法理解</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#预处理算法"><span class="post-toc-number">18.1.</span> <span class="post-toc-text">预处理算法</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#为什么偶数长度的回文数字串不是primer"><span class="post-toc-number">19.</span> <span class="post-toc-text">为什么偶数长度的回文数字串不是primer</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#贪心算法总结"><span class="post-toc-number">20.</span> <span class="post-toc-text">贪心算法总结</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#贪心选择性质"><span class="post-toc-number">20.0.1.</span> <span class="post-toc-text">贪心选择性质</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#一组有效的步骤"><span class="post-toc-number">20.0.2.</span> <span class="post-toc-text">一组有效的步骤</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#一组简化的步骤"><span class="post-toc-number">20.0.3.</span> <span class="post-toc-text">一组简化的步骤</span></a></li></ol></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-My-ACM-Note"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">My ACM Note</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2018-02-02 13:31:40" datetime="2018-02-02T05:31:40.000Z"  itemprop="datePublished">2018-02-02</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/算法/">算法</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h3 id="全源最短路径的一种错误解法"><a href="#全源最短路径的一种错误解法" class="headerlink" title="全源最短路径的一种错误解法"></a>全源最短路径的一种错误解法</h3><ul>
+<li><p>错误代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (~<span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;N)) &#123;</span><br><span class="line">        <span class="comment">// assume that if no edge i-&gt;j, then input w[i][j] will be INF</span></span><br><span class="line">        <span class="comment">// and assume that w[i][i] == 0</span></span><br><span class="line">        FWD(i, <span class="number">0</span>, N) &#123;</span><br><span class="line">            FWD(j, <span class="number">0</span>, N) &#123;</span><br><span class="line">                <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;w[i][j]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">memset</span>(dp, <span class="number">0xff</span>, <span class="keyword">sizeof</span>(dp));</span><br><span class="line">        FWD(i, <span class="number">0</span>, N) &#123;</span><br><span class="line">            FWD(j, <span class="number">0</span>, N) &#123;</span><br><span class="line">                <span class="comment">// if i == j, dfs can still return true answer</span></span><br><span class="line">                dfs(i, j);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        FWD(i, <span class="number">0</span>, N) &#123;</span><br><span class="line">            FWD(j, <span class="number">0</span>, N) &#123;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"%15d"</span>, dp[i][j]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">bool</span> visit[MAXV];</span><br><span class="line"><span class="keyword">int</span> __dfs(<span class="keyword">int</span> now, <span class="keyword">int</span> target);</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> from, <span class="keyword">int</span> target)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(visit, <span class="number">0</span>, <span class="keyword">sizeof</span>(visit));</span><br><span class="line">    visit[from] = <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">return</span> __dfs(from, target);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> __dfs(<span class="keyword">int</span> now, <span class="keyword">int</span> target) &#123;</span><br><span class="line">    <span class="keyword">if</span> (dp[now][target] &gt; <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> dp[now][target];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (now == target) &#123;</span><br><span class="line">        dp[now][target] = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>; <span class="comment">// visit[now] will never be true;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> ans = INF;</span><br><span class="line">    FWD(i, <span class="number">0</span>, N) &#123;</span><br><span class="line">        <span class="keyword">if</span> (visit[i] || w[now][i] == INF || i==now) &#123; <span class="comment">// avoid rings and not edge</span></span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        visit[i] = <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">int</span> p = __dfs(i, target) + w[now][i];</span><br><span class="line">        visit[i] = <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">if</span> (p &lt; ans) &#123;</span><br><span class="line">            NEXT[now][target] = i; <span class="comment">// record the NEXT vertex of i in the shortest path now-&gt;target</span></span><br><span class="line">            ans = p;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    dp[now][target] = ans;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>不可以使用这种dp</p>
+</li>
+<li><p>对于每对点执行dfs，然后执行过程中，记忆化搜索。当然，为了避免执行过程出现不断的走环路的情况，需要使用visit，避免dfs过程中走环路。</p>
+</li>
+<li><p>虽然复杂度是$O(V^3)$ ，但是算法是错的</p>
+</li>
+<li><p>记忆化搜索计算$(begin,target)$ 时，假设dfs过程中经过了点<code>i</code> ，为了避免环，<code>i</code>不可以经过<code>begin</code>，但是，可能$(i,target)$ 的最优路径就是<code>i</code>经过点<code>begin</code> 到达的。</p>
+</li>
+<li><p>但是，记忆化过程中，却把在dfs$(begin,target)$过程中 计算出来的$(i,target)$ 作为<code>i</code> 到<code>target</code> 的结果。</p>
+</li>
+</ul>
+<h3 id="NYOJ7"><a href="#NYOJ7" class="headerlink" title="NYOJ7"></a>NYOJ7</h3><blockquote>
+<h5 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述:"></a>题目描述:</h5><p>一个街区有很多住户，街区的街道只能为东西、南北两种方向。<br>住户只可以沿着街道行走。<br>各个街道之间的间隔相等。<br>用(x,y)来表示住户坐在的街区。<br>例如（4,20），表示用户在东西方向第4个街道，南北方向第20个街道。<br>现在要建一个邮局，使得各个住户到邮局的距离之和最少。<br>求现在这个邮局应该建在那个地方使得所有住户距离之和最小；</p>
+<h5 id="输入描述"><a href="#输入描述" class="headerlink" title="输入描述:"></a>输入描述:</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; 第一行一个整数n&lt;20，表示有n组测试数据，下面是n组数据;</span><br><span class="line">&gt; 每组第一行一个整数m&lt;20,表示本组有m个住户，下面的m行每行有两个整数0&lt;x,y&lt;100，表示某个用户所在街区的坐标。</span><br><span class="line">&gt; m行后是新一组的数据；</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<h5 id="输出描述"><a href="#输出描述" class="headerlink" title="输出描述:"></a>输出描述:</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; 每组数据输出到邮局最小的距离和，回车结束；</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<h5 id="样例输入"><a href="#样例输入" class="headerlink" title="样例输入:"></a>样例输入:</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&gt; 2</span><br><span class="line">&gt; 3</span><br><span class="line">&gt; 1 1</span><br><span class="line">&gt; 2 1</span><br><span class="line">&gt; 1 2</span><br><span class="line">&gt; 5</span><br><span class="line">&gt; 2 9 </span><br><span class="line">&gt; 5 20</span><br><span class="line">&gt; 11 9</span><br><span class="line">&gt; 1 1</span><br><span class="line">&gt; 1 20</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<h5 id="样例输出"><a href="#样例输出" class="headerlink" title="样例输出:"></a>样例输出:</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; 2</span><br><span class="line">&gt; 44</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ul>
+<li>考虑横坐标的情况，取那个横坐标可以使得大家的在横坐标上需要走的距离最短？显然是中位数——反证法，加入有N个点，如果N是奇数，那么中位数就是d[N/2]，然后，尝试采用第N/2-1个点计算，显然，总量的变化是（设 t = d[N/2]-d[N/2-1] ），$+t<em>(N/2+1)-t</em>N/2$ ，也就是缩短的对于前N/2的用户来说，是缩短了，但是对于后面N/2+1个用户来说延长了</li>
+<li>所以，无论y坐标取值多少，x坐标都要取中位数。同理，y也要取中位数</li>
+</ul>
+<h3 id="01背包"><a href="#01背包" class="headerlink" title="01背包"></a>01背包</h3><ul>
+<li>动态规划算法是伪多项式复杂度$O(NW)$，如果W很大，那么可能，直接枚举N元素的集合的所有子集会更快一些</li>
+</ul>
+<h3 id="找出一个序列中任意长度的逆序对"><a href="#找出一个序列中任意长度的逆序对" class="headerlink" title="找出一个序列中任意长度的逆序对"></a>找出一个序列中任意长度的逆序对</h3><ul>
+<li>首先定义什么是逆序对：比如一个序列是从小到大排列的，那么如果$x_i&gt;x_{i+1}&gt;x_{i+2}&gt;…$那么就是逆序对</li>
+<li>主要思路是，对于n元逆序对，flag数组中的index表示某个序列中的某个等于index的数，而flag[index]的值表示以这个index结尾的n-1元的逆序对的数量</li>
+<li>假设序列有n个数，数的范围是[0, MAX], 首先搞一个int flag[MAX+1], 该数组的所有值初始化为0，还有一个int result[n]</li>
+<li>首先看看如何求二元逆序对<ul>
+<li>从左到右扫描序列，对于值位置为<code>i</code>的值<code>x</code>，flag[x]+=1</li>
+<li>然后此时，以该x结尾的逆序对的数量就是$\sum_{j=x+1}^{MAX}flag[j]$，将这个数量记录在result[i]</li>
+<li>那么result的数组的和就是逆序对的数量</li>
+<li>同样的，在刚才flag[x]+=1的步骤，可以输出后面的数与x组成的序对来输出具体的逆序对</li>
+</ul>
+</li>
+<li>三元组的，我们已经用上面的方法求出二元的result数组(此处将其记为result_2数组)，此时设另外的两个数组int flag_3[MAX+1], int result_3[n];<ul>
+<li>同样扫描序列，对于位置为<code>i</code>的数<code>x</code>，取出result_2[i]的值，也就是以该x结尾的二元组逆序对的数量m，然后flag_3[x]+=m。此时flag_3[x]记录了截止目前，以x结尾的二元组逆序对的数量</li>
+<li>求$\sum_{j=x+1}^{MAX}flag_3[j]$，得到以x结尾的三元组逆序对的数量，记录在result_3[i]中</li>
+<li>到最后，result_3就是结果</li>
+</ul>
+</li>
+<li>更多元组的也如此思路</li>
+<li>这是利用数组记录了当前已经有的数，然后新加入的数如果不是该数组中当前index最大的，那么意味着其比之前加入的一些数小，这就形成了逆序对</li>
+<li>对于n元逆序对，同理，数组记录了当前已有的数<code>x</code>作为<code>最后一个元素是x的n-1元逆序对</code>的逆序对的数量，然后如果我们往该数组加入一个数，然后这个数不是index最大的，那么其比之前已经加入的一些数小，从而与<code>比他大的数代表的n-1元逆序对</code>形成了更长的逆序对</li>
+<li>然后，既然这其中，对数组求和很重要，我们就可以利用树状数组优化这个往flag[x]中增加数值然后求和计算出对应result[i]的过程（原始序对中第<code>i</code>位的值是<code>x</code>）</li>
+</ul>
+<blockquote>
+<p>3p另一种思路：针对三元逆序对，还有一种简单的解法，先把数据按顺序插入，用树形数组记录此时比这个数大的数的数目x，再把数据倒着插入，用另一个树形数组记录此时比这个数小的数的数目y，x*y=以这个数为中心的三元逆数对数目，把各个数计算累计起来即可（来自17级大佬Potatso）</p>
+</blockquote>
+<h3 id="关于使用优先队列的bfs"><a href="#关于使用优先队列的bfs" class="headerlink" title="关于使用优先队列的bfs"></a>关于使用优先队列的bfs</h3><ul>
+<li>其实就是dijstra单源最短路径算法</li>
+<li>关于O((V+E)lgV)：对每个点都需要从堆中pop出来（除了源点），对于每条边，都需要把该边对应的一个点压进堆里或者decrease key，consider that，如果一个点被pop出来，那么该点就在result set里，所以不会再被压到堆里。所以是O((V+E)lgV)，如果使用斐波那契堆，因为压到堆里以及decrease key的代价是O(1)，所以是O(VlgV+E)</li>
+</ul>
+<h3 id="DP"><a href="#DP" class="headerlink" title="DP"></a>DP</h3><ul>
+<li>DP要找到什么因素影响了当前你要求的东西，有影响的我们就处理，没影响的我们不用管</li>
+</ul>
+<h3 id="浮点数输入"><a href="#浮点数输入" class="headerlink" title="浮点数输入"></a>浮点数输入</h3><ul>
+<li>由于是二进制，所以有些十进制有限小数成了无限的，所以读取时会截断，所以要加上一个偏移量（比如读入到小数点后6位，可以加一个$2*10^{-7}$，这样，截断部分如果比较大，就可以反映出来，如果比较小，不会对产生进位，则没影响）</li>
+</ul>
+<h3 id="枚举所有素数"><a href="#枚举所有素数" class="headerlink" title="枚举所有素数"></a>枚举所有素数</h3><ul>
+<li>$O(N)$ 的做法 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> CNT = (<span class="keyword">int</span>)<span class="number">1e9</span>+<span class="number">10</span>;</span><br><span class="line"><span class="keyword">bool</span> a[CNT];</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    a[<span class="number">0</span>] = a[<span class="number">1</span>] = <span class="literal">true</span>;</span><br><span class="line">    FWD(i, <span class="number">2</span>, CNT) &#123;</span><br><span class="line">        <span class="keyword">if</span> (a[i]) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">2</span> * i; j &lt; CNT; j += i) &#123;</span><br><span class="line">             a[j] = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="树状数组"><a href="#树状数组" class="headerlink" title="树状数组"></a>树状数组</h3><ul>
+<li><p>注意，a[0]是没有放东西的，因为$i-lowbit(i)+1 &gt; 0$</p>
+</li>
+<li><p>插线问点中，每一点 i 的值都是 sum(a[1] to a[i])。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//NYOJ 123</span></span><br><span class="line"><span class="keyword">int</span> c[<span class="number">1000010</span>],N;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">lowbit</span><span class="params">(<span class="keyword">int</span> x)</span> <span class="comment">//求最低位1的位置所表示的数</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x&amp;(-x);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">update</span><span class="params">(<span class="keyword">int</span> p,<span class="keyword">int</span> q)</span><span class="comment">//常规数组中的a[p]更新，在树状数组中需要这样更新</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(p&lt;=N)</span><br><span class="line">    &#123;</span><br><span class="line">        c[p]+=q;</span><br><span class="line">        p+=lowbit(p);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">S</span><span class="params">(<span class="keyword">int</span> x)</span>  <span class="comment">//S(i)表示的是的前i个数的和</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> sum=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span>(x&gt;<span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        sum+=c[x];</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;<span class="string">"sum: "</span>&lt;&lt;sum&lt;&lt;<span class="string">" "</span>;</span><br><span class="line">        x-=lowbit(x);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> T;</span><br><span class="line">    <span class="keyword">char</span> s[<span class="number">10</span>];</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d%d"</span>,&amp;T,&amp;N);</span><br><span class="line">    <span class="keyword">while</span>(T--)&#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%s"</span>,s);</span><br><span class="line">        <span class="keyword">if</span>(s[<span class="number">0</span>]==<span class="string">'A'</span>)&#123;</span><br><span class="line">            <span class="keyword">int</span> l,r,num;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">"%d%d%d"</span>,&amp;l,&amp;r,&amp;num);</span><br><span class="line">            update(l,num);</span><br><span class="line">            update(r+<span class="number">1</span>,-num);</span><br><span class="line">          <span class="comment">//每个士兵 i 的军功都是前 i 个元素的和，所以，[l, m]区间每个人加 num 的军功只需要给</span></span><br><span class="line">          <span class="comment">//l 位置加上num，这样，[l, N]区间的每个人都加上了 num ，但是，我们只要[l, m]，所以要</span></span><br><span class="line">          <span class="comment">//给 m+1 位置减去num,</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">int</span> x;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">"%d"</span>,&amp;x);</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%d\n"</span>,S(x));</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;=x;i++) &#123;</span><br><span class="line">                <span class="built_in">cout</span>&lt;&lt;c[i]&lt;&lt;<span class="string">" "</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="built_in">cout</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;=x;i++) &#123;</span><br><span class="line">                <span class="built_in">cout</span>&lt;&lt;S(i)&lt;&lt;<span class="string">" "</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="built_in">cout</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="离散化"><a href="#离散化" class="headerlink" title="离散化"></a>离散化</h3><ul>
+<li><p><a href="https://vijos.org/p/1056" target="_blank" rel="noopener">图形面积</a>，<a href="http://www.cnblogs.com/forgot93/archive/2014/07/02/3819956.html" target="_blank" rel="noopener">解答</a></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;math.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">double</span> x[<span class="number">201</span>],y[<span class="number">201</span>],s[<span class="number">101</span>][<span class="number">4</span>];</span><br><span class="line"><span class="keyword">int</span> xy[<span class="number">201</span>][<span class="number">201</span>];</span><br><span class="line"><span class="keyword">int</span> n,cas=<span class="number">0</span>;</span><br><span class="line"><span class="keyword">double</span> sum;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i,j,k;</span><br><span class="line">    <span class="keyword">while</span>(<span class="built_in">cin</span>&gt;&gt;n)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(n==<span class="number">0</span>)   <span class="keyword">break</span>;</span><br><span class="line">        cas++;</span><br><span class="line">        k=<span class="number">0</span>;</span><br><span class="line">        sum=<span class="number">0.0</span>;</span><br><span class="line">        <span class="built_in">memset</span>(xy,<span class="number">0</span>,<span class="keyword">sizeof</span>(xy));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">cin</span>&gt;&gt;s[i][<span class="number">0</span>]&gt;&gt;s[i][<span class="number">1</span>]&gt;&gt;s[i][<span class="number">2</span>]&gt;&gt;s[i][<span class="number">3</span>];</span><br><span class="line">            x[k]=s[i][<span class="number">0</span>];</span><br><span class="line">            y[k]=s[i][<span class="number">1</span>];</span><br><span class="line">            k++;</span><br><span class="line">            x[k]=s[i][<span class="number">2</span>];</span><br><span class="line">            y[k]=s[i][<span class="number">3</span>];</span><br><span class="line">            k++;</span><br><span class="line">        &#125;</span><br><span class="line">        sort(x,x+<span class="number">2</span>*n);</span><br><span class="line">        sort(y,y+<span class="number">2</span>*n);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">        &#123;</span><br><span class="line">         <span class="keyword">int</span>  i1=lower_bound(x,x+<span class="number">2</span>*n,s[i][<span class="number">0</span>])-x;<span class="comment">//二分查找，跟普通的FOR语句一样</span></span><br><span class="line">         <span class="keyword">int</span>  j1=lower_bound(y,y+<span class="number">2</span>*n,s[i][<span class="number">1</span>])-y;</span><br><span class="line">         <span class="keyword">int</span>  i2=lower_bound(x,x+<span class="number">2</span>*n,s[i][<span class="number">2</span>])-x;</span><br><span class="line">         <span class="keyword">int</span>  j2=lower_bound(y,y+<span class="number">2</span>*n,s[i][<span class="number">3</span>])-y;</span><br><span class="line">         <span class="keyword">for</span> (<span class="keyword">int</span> p1=i1;p1&lt;i2;p1++)</span><br><span class="line">           <span class="comment">//标记状态，记住我们是以一个方块的角标记状态所以p1&lt;i2，不是&lt;=</span></span><br><span class="line">         <span class="keyword">for</span> (<span class="keyword">int</span> p=j1;p&lt;j2;p++)</span><br><span class="line">         xy[p1][p]=<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">2</span>*n;i++)<span class="comment">//统计</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;<span class="number">2</span>*n;j++)</span><br><span class="line">            <span class="keyword">if</span> (xy[i][j]) &#123;</span><br><span class="line">            sum+=(x[i+<span class="number">1</span>]-x[i])*(y[j+<span class="number">1</span>]-y[j]);</span><br><span class="line">        &#125;</span><br><span class="line">         <span class="built_in">printf</span>(<span class="string">"Test case #%d\n"</span>,cas);</span><br><span class="line">         <span class="built_in">printf</span>(<span class="string">"Total explored area: %.2f\n"</span>,sum);</span><br><span class="line">         <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其实就是，把坐标间的距离都忽略掉，把坐标的集中在一起，一个挨着一个，然后遍历整个标记区域，某个单元格有标记说明该位置两边都对应地存在两个坐标（原始数据中的），则只需要知道这两个原始数据中的坐标相差多远，就可以知道这个标记代表着多大的面积。</p>
+</li>
+</ul>
+<h3 id="POJ3278"><a href="#POJ3278" class="headerlink" title="POJ3278"></a>POJ3278</h3><ul>
+<li>N是人的位置，K是牛的位置</li>
+<li>一种lgN的做法<ul>
+<li>如果N的二进制大于等于K的二进制，则直接走x-1法</li>
+<li>否则，想办法修改N的二进制使得其与K的二进制的最高几位重合，然后接下来的二进制就直接用x2和+1来实现（二进制位为0则x2，为1则+1）</li>
+<li>假设K与N重合的二进制部分为W<ul>
+<li>如果W&lt;N，可以消减N使得N==W，也可以N乘以多次2然后减去一些1使得N与新的W相同（因为随着N×2，其与K重合的最高二进制位变多，所以说是新的W）</li>
+<li>如果W&gt;N，可以先进行多次加一使得重合，或者是多次×2后多次-1使得重合</li>
+<li>即使W小于N，也有可能先乘以几次2后在进行几次-1比较高效（因为可能后面很多个1，导致如果直接消减W）</li>
+</ul>
+</li>
+<li>总结起来就是，构造W与N相同的过程中，可以对N乘以一次2、两次2…P次2，对于每种乘2，减去或加上一些1使得重合，然后再计算在此基础上需要的时间</li>
+<li>也就是不断试错的过程</li>
+</ul>
+</li>
+</ul>
+<h3 id="子集和问题的动态规划解法"><a href="#子集和问题的动态规划解法" class="headerlink" title="子集和问题的动态规划解法"></a>子集和问题的动态规划解法</h3><ul>
+<li>如果只是要求出是否有一个解法，或者是要求出有多少个解法，那么动态规划可行</li>
+</ul>
+<h3 id="子集和问题变形"><a href="#子集和问题变形" class="headerlink" title="子集和问题变形"></a>子集和问题变形</h3><ul>
+<li>问题：给定一个正整数M和另一个K，要求求出M切分成K份，每份都是正整数的解法有多少。同样可以动态规划</li>
+</ul>
+<h3 id="floyd求最小环"><a href="#floyd求最小环" class="headerlink" title="floyd求最小环"></a>floyd求最小环</h3><ul>
+<li>最小环的定义：在有向或是无向的简单图中在找到一条路径，其从点x到点x，总的权重最小。（不可以直接x到x，在无向图中也不可以利用x到y，y到x，因为如果可以这样，意味着多重边或是使用同一条边）</li>
+<li>如果可以确定w[x][x] = INF，那么floyd然后找到最小的w[x][x]既可。</li>
+<li>否则，不可以通过使得所有的w[x][x]变为INF来实现，因为floyd过程中，会使用到</li>
+</ul>
+<h3 id="查询第K大"><a href="#查询第K大" class="headerlink" title="查询第K大"></a>查询第K大</h3><ul>
+<li>如果是静态数组，多次查询，直接一个sort</li>
+<li>如果是静态数组，一次查询，算导中那个快排变体，$O(N)$</li>
+<li>如果是动态数组，字典树——每个数以二进制表示，构造字典树，字典树的node需要维护当前node为root的子树的叶子数目，从而在任意一个非叶子节点，可以选择要走那条路下去——可以算出，二进制比x进制更快</li>
+</ul>
+<h3 id="Nim游戏（博弈论）"><a href="#Nim游戏（博弈论）" class="headerlink" title="Nim游戏（博弈论）"></a>Nim游戏（博弈论）</h3><ul>
+<li><blockquote>
+<p>定义P-position和N-position，其中P代表Previous，N代表Next。直观的说，上一次move的人有必胜策略的局面是P-position，也就是“后手可保证必胜”或者“先手必败”，现在轮到move的人有必胜策略的局面是N-position，也就是“先手可保证必胜”。更严谨的定义是：1.无法进行任何移动的局面（也就是terminal position）是P-position；2.可以移动到P-position的局面是N-position；3.所有移动都导致N-position的局面是P-position。</p>
+</blockquote>
+</li>
+<li>P-position需要保证所有子格局都是N-position，N-position只要找到第一个子格局是P-position即可。</li>
+<li>通过数学归纳法，两堆石子的情况下，两堆相等是P-position</li>
+<li><blockquote>
+<p>如果局面不可能重现，或者说positions的集合可以进行拓扑排序，那么每个position或者是P-position或者是N-position，而且可以通过定义计算出来。</p>
+</blockquote>
+</li>
+<li></li>
+</ul>
+<h3 id="HDU3483"><a href="#HDU3483" class="headerlink" title="HDU3483"></a>HDU3483</h3><h5 id="题意"><a href="#题意" class="headerlink" title="[题意]"></a>[题意]</h5><p>输入n, x, m ，求$(1^x)<em>(x^1)+(2^x)</em>(x^2)+(3^x)<em>(x^3)+…+(n^x)</em>(x^n)$ </p>
+<h5 id="解题方法"><a href="#解题方法" class="headerlink" title="[解题方法]"></a>[解题方法]</h5><p>设$f[n] = [x^n, n<em>(x^n), (n^2)</em>(x^n),…, (n^x)<em>(x^n)]$，则$f[n][k] = (n^k)</em>(x^n)$，问题转化为求：$(g[n] = f[1][x]+f[2][x]+…+f[n][x])$，设C(i,j)为组合数，即i种元素取j种的方法数，所以有：$$f[n+1][k] = ((n+1)^k)<em>(x^(n+1)) \text{（二次多项式展开）}\ = x</em>( C(k,0)<em>(x^n)+C(k,1)</em>n<em>(x^n)+…+C(k,k)</em>(n^k)<em>(x^n))\= x</em>(C(k,0)<em>f[n][0]+C(k,1)</em>f[n][1]+…+C(k,k)*f[n][k])​$$<br>所以得： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">|x*1 0................................0|        |f[n][0]|       |f[n+1][0]| </span><br><span class="line">|x*1 x*1 0............................0|        |f[n][1]|       |f[n+1][1]| </span><br><span class="line">|x*1 x*2 x*1 0........................0|    *   |f[n][2]|   =   |f[n+1][2]| </span><br><span class="line">|......................................|        |.......|       |.........| </span><br><span class="line">|x*1 x*C(k,1) x*C(k,2)...x*C(k,x) 0...0|        |f[n][k]|       |f[n+1][k]| </span><br><span class="line">|......................................|        |.......|       |.........| </span><br><span class="line">|x*1 x*C(x,1) x*C(x,2).......x*C(x,x) 0|        |f[n][x]|       |f[n+1][x]| </span><br><span class="line">|0................................0 1 1|        |g[n-1] |       | g[ n ]  |</span><br></pre></td></tr></table></figure>
+<h3 id="KMP算法理解"><a href="#KMP算法理解" class="headerlink" title="KMP算法理解"></a>KMP算法理解</h3><h4 id="预处理算法"><a href="#预处理算法" class="headerlink" title="预处理算法"></a>预处理算法</h4><ul>
+<li>预处理出来的第 $i$ 位结果 $p[i]$ 是原字符串截止到第 $i$ 那个字符的最小周期，也就是只需要移动最少量的字符 $p[i]$ 既可以使得原先匹配部分再次匹配起来。</li>
+</ul>
+<h3 id="为什么偶数长度的回文数字串不是primer"><a href="#为什么偶数长度的回文数字串不是primer" class="headerlink" title="为什么偶数长度的回文数字串不是primer"></a>为什么偶数长度的回文数字串不是primer</h3><ul>
+<li><a href="https://leetcode.com/problems/prime-palindrome/discuss/212297/Why-even-prime-palindromes-are-not-possible" target="_blank" rel="noopener">ref</a></li>
+<li><blockquote>
+<p>Because even length prime digit numbers are divisible by 11 therefore are not prime.<br>It’s a trick that has to do powers of 10 and mod 11.<br>Ex: 10 = 10^1 mod 11 = -1 mod 11<br>​      $100 = 10^2 = 1 \mod 11$<br>​      $1000 = 10^3 = -1 \mod 11$<br>​      $10000 = 10^4 = 1 \mod 11$<br>See the pattern?<br>Even exponent powers of 10 are 1 mod 11<br>Odd exponent powers of 10 are -1 mod 11.</p>
+<p>We also know decimal numbers are just base 10 expansion of the digits.</p>
+<p>So   $1225 = (10^3<em>)1 + 2</em>(10^2) + 2<em>(10^1) + 5</em>(10^0).$<br>​        using modular arithmetic we can say,</p>
+<pre><code>1225 MOD 11 = (-1)*1 + 2*(1) + 2*(-1) + 5*(1) = -1 + 2 + 2 + 5 = 8.
+
+In other words, in MOD 11 we calculate what a decimal number is by just alternating the addition and subtraction across the digits.
+</code></pre><p>Another example.</p>
+<p>$1323412 \mod 11 =   1 -3  +2 -3 +4 -1 +2\mod 11 = 0.$</p>
+<p>Then it becomes why it is quite obvious why the above logic works for even palindromes.</p>
+<p>Example: </p>
+<p>$321123 =      -3 + 2 - 1 + 1 -2 + 3 = 0$. All the numbers cancel out with each other.</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="贪心算法总结"><a href="#贪心算法总结" class="headerlink" title="贪心算法总结"></a>贪心算法总结</h3><ul>
+<li>在每个贪心算法后面几乎总有一个DP解法</li>
+<li>如何<strong>证明</strong>是否可以用贪心算法求解一个问题？并没有通用方法，但是贪心选择性质和最优子结构是两个关键要素</li>
+<li>如果贪心选择时需要考虑众多选择，通常意味着可以改进贪心选择来获得更高效的解法</li>
+</ul>
+<h5 id="贪心选择性质"><a href="#贪心选择性质" class="headerlink" title="贪心选择性质"></a>贪心选择性质</h5><ul>
+<li>可以通过做出局部最优的选择来构造全局最优</li>
+<li>证明方法：首先考察某个子问题的最优解，然后用贪心选择替换某个其他选择来修改此解，从而得到一个相似但是更小的子问题</li>
+</ul>
+<h5 id="一组有效的步骤"><a href="#一组有效的步骤" class="headerlink" title="一组有效的步骤"></a>一组有效的步骤</h5><ul>
+<li>确定问题的最优子结构（如果一个问题的最优解包含其子问题的最优解，则称此问题具有最优子结构性质）</li>
+<li>设计一个递归解法（该递归解法加上记忆就可以变成自顶向下的DP）</li>
+<li>证明如果做出一个贪心选择，就只剩下一个子问题（或许可能是几个子问题？不过子问题的数量确实要比自顶向下的DP解法少）</li>
+<li>证明贪心选择总是安全的<ul>
+<li>什么是安全的？</li>
+<li>做出贪心选择后，原问题总存在最优解，即贪心选择总是安全的</li>
+<li>做出贪心选择后，剩余的子问题满足性质：其最优解与贪心选择组合即可得到原问题的最优解，这样就得到了最优子结构</li>
+</ul>
+</li>
+<li>设计一个递归算法实现贪心策略</li>
+<li>把递归算法转为迭代算法</li>
+</ul>
+<h5 id="一组简化的步骤"><a href="#一组简化的步骤" class="headerlink" title="一组简化的步骤"></a>一组简化的步骤</h5><ul>
+<li>将最优化问题转为这样的形式：做出一次选择后，只剩下一个子问题需要求解</li>
+<li>证明做出贪心选择后，原问题总存在最优解，即贪心选择总是安全的</li>
+<li>证明做出贪心选择后，剩余的子问题满足性质：其最优解与贪心选择组合即可得到原问题的最优解，这样就得到了最优子结构</li>
+</ul>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2019-02-03T03:23:38.732Z" itemprop="dateUpdated">2019-02-03 11:23:38</time>
+</span><br>
+
+
+        
+    </div>
+    
+    <footer>
+        <a href="https://h-zex.github.io">
+            <img src="/img/avatar.jpg" alt="H-ZeX">
+            H-ZeX
+        </a>
+    </footer>
+</blockquote>
+
+        
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ACM/">ACM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/note/">note</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2018/02/02/My-ACM-Note/&title=《My ACM Note》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2018/02/02/My-ACM-Note/&title=《My ACM Note》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2018/02/02/My-ACM-Note/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《My ACM Note》 — H-ZeX&url=https://h-zex.github.io/2018/02/02/My-ACM-Note/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2018/02/02/My-ACM-Note/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2018/02/02/My-ITOPS-Note/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">My ITOps Note</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2018/01/19/printf的一个异常现象引发的对x86-64体系下可变参数传参的探究/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">printf的一个异常现象引发的对x86-64体系下可变参数传参的探究</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitment_thread"></div>
+    <link rel="stylesheet" href="/css/gitment_default.css">
+    <script src="/js/gitment.browser.js"></script>
+    <script>
+        var gitment = new Gitment({
+            owner: 'H-ZeX',
+            repo: 'H-ZeX.github.io',
+            id: 'Fri Feb 02 2018 13:31:40 GMT+0800',
+            oauth: {
+                client_id: '77f9acb63af0afe6c8e9',
+                client_secret: 'e8b9218dee631709a296069a209bad5bb89e6eb3',
+            },
+        })
+        gitment.render('comments')
+    </script>
+</section>
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>H-ZeX &copy; 2017 - 2019</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://h-zex.github.io/2018/02/02/My-ACM-Note/&title=《My ACM Note》 — H-ZeX&pic=https://h-zex.github.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://h-zex.github.io/2018/02/02/My-ACM-Note/&title=《My ACM Note》 — H-ZeX&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://h-zex.github.io/2018/02/02/My-ACM-Note/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《My ACM Note》 — H-ZeX&url=https://h-zex.github.io/2018/02/02/My-ACM-Note/&via=https://h-zex.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://h-zex.github.io/2018/02/02/My-ACM-Note/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://h-zex.github.io/2018/02/02/My-ACM-Note/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: false };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = "H-ZeX's Blog";
+            clearTimeout(titleTime);
+        } else {
+            document.title = "H-ZeX's Blog";
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
