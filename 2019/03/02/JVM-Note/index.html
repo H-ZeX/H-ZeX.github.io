@@ -124,7 +124,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="本笔记大部分是《深入理解java虚拟机第二版》的笔记，该书基于java1.7  运行时数据区域 方法区  线程共享  存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等  虚拟机规范把方法区描述为堆的一个逻辑部分（但是有一个别名：Non-Heap）  HotSpot用永久代实现。其他虚拟机并没有永久代这个概念  但使用永久代来实现方法区，现在看来并不是一个好主意，因为这样更容易">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-03-02T04:49:43.990Z">
+<meta property="og:updated_time" content="2019-03-02T05:33:24.259Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My JVM Note">
 <meta name="twitter:description" content="本笔记大部分是《深入理解java虚拟机第二版》的笔记，该书基于java1.7  运行时数据区域 方法区  线程共享  存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等  虚拟机规范把方法区描述为堆的一个逻辑部分（但是有一个别名：Non-Heap）  HotSpot用永久代实现。其他虚拟机并没有永久代这个概念  但使用永久代来实现方法区，现在看来并不是一个好主意，因为这样更容易">
@@ -409,7 +409,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
               
 
-              <time title="Created: 2019-03-02 12:49:04 / Modified: 12:49:43" itemprop="dateCreated datePublished" datetime="2019-03-02T12:49:04+08:00">2019-03-02</time>
+              <time title="Created: 2019-03-02 12:49:04 / Modified: 13:33:24" itemprop="dateCreated datePublished" datetime="2019-03-02T12:49:04+08:00">2019-03-02</time>
             
 
             
@@ -649,7 +649,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <h5 id="Hotspot-GC"><a href="#Hotspot-GC" class="headerlink" title="Hotspot GC"></a>Hotspot GC</h5><ul>
 <li><p>Minor GC：新生代的GC，Eden空间的存活对象和from survivor空间的不够老的存活对象复制到to survivor空间，from survivor空间中足够老的对象提升为老年代。结束后，Eden空间一般是全空的（也有不空的情况）。只要追求速度，空间利用率会低一些</p>
 </li>
-<li><p>Major GC（Full GC）：老年代GC Major GC经常会伴随至少一次的Minor GC（但非绝对的， 在Parallel Scavenge收集器的收集策略里就有直接进行Major GC的策略选择过程） 。 Major GC的速度一般会比Minor GC慢10倍以上</p>
+<li><p>Major GC（Full GC）：老年代GC, Major GC经常会伴随至少一次的Minor GC（但非绝对的， 在Parallel Scavenge收集器的收集策略里就有直接进行Major GC的策略选择过程） 。 Major GC的速度一般会比Minor GC慢10倍以上</p>
 <blockquote>
 <p><em>java performance</em> HotSpot中译本P57注释有</p>
 <p>“实际上，HotSpot VM的FullGC收集整个堆，包括新生代、老年代、永生代”</p>
@@ -816,14 +816,18 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </li>
 <li><p><code>Xlog:gc*</code>, <code>-XX:+PrintGCDetails</code>：打印GC日志</p>
 </li>
+<li><p><code>-XX:MaxTenuringThreshold</code>：晋升老年代的年龄阀值</p>
+</li>
+<li><p><code>-XX:+PrintReferenceGC</code>：GC时打印finalReference的信息</p>
+</li>
+<li><p><code>-XX:+PrintGCApplicationStoppedTime</code>：打印到达安全点的信息</p>
+</li>
 <li><p><code>-XX:UseCompressedOops</code>：开启压缩指针</p>
 </li>
 <li><p><code>-XX:PretenureSizeThreshold</code>：大于这个设置值的对象直接在老年代分配。这样做的目的是避免在Eden区及两个Survivor区之间发生大量的内存复制（因为新生代采用复制算法收集内存）</p>
 <blockquote>
 <p>PretenureSizeThreshold参数只对Serial和ParNew两款收集器有效， Parallel Scavenge收集器不认识这个参数， Parallel Scavenge收集器一般并不需要设置。 如果遇到必须使用此参数的场合，可以考虑ParNew加CMS的收集器组合。</p>
 </blockquote>
-</li>
-<li><p><code>-XX:MaxTenuringThreshold</code>：晋升老年代的年龄阀值</p>
 </li>
 </ul>
 <h3 id="实验和调优"><a href="#实验和调优" class="headerlink" title="实验和调优"></a>实验和调优</h3><h5 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h5><ul>
@@ -891,6 +895,10 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/04/java内部类、局部类的实现原理/" rel="prev" title="Java内部类、局部类的实现原理以及与内存可见性的关系">
+                Java内部类、局部类的实现原理以及与内存可见性的关系 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -965,7 +973,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">28</span>
+                    <span class="site-state-item-count">29</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -1002,7 +1010,9 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                     
                       
                     
-                    <span class="site-state-item-count">10</span>
+                      
+                    
+                    <span class="site-state-item-count">11</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -1125,7 +1135,11 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                     
                       
                     
-                    <span class="site-state-item-count">50</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">52</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
