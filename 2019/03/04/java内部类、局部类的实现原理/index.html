@@ -125,7 +125,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="实现原理 以下内容一部分来自于core java第十版，一部分来自于我使用openjdk java1.8/java11的javac和fernflower这个反编译器反编译字节码得到的   对象内总有一个隐式引用， 它指向了创建它的外部类对象，比如下面的反编译代码  12345678910public class JavaLangTest &amp;#123;   public JavaLangTest()">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-03-04T13:58:18.672Z">
+<meta property="og:updated_time" content="2019-03-04T14:13:37.471Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java内部类、局部类的实现原理以及与内存可见性的关系">
 <meta name="twitter:description" content="实现原理 以下内容一部分来自于core java第十版，一部分来自于我使用openjdk java1.8/java11的javac和fernflower这个反编译器反编译字节码得到的   对象内总有一个隐式引用， 它指向了创建它的外部类对象，比如下面的反编译代码  12345678910public class JavaLangTest &amp;#123;   public JavaLangTest()">
@@ -410,7 +410,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
               
 
-              <time title="Created: 2019-03-04 20:54:01 / Modified: 21:58:18" itemprop="dateCreated datePublished" datetime="2019-03-04T20:54:01+08:00">2019-03-04</time>
+              <time title="Created: 2019-03-04 20:54:01 / Modified: 22:13:37" itemprop="dateCreated datePublished" datetime="2019-03-04T20:54:01+08:00">2019-03-04</time>
             
 
             
@@ -507,7 +507,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </li>
 </ul>
 <h3 id="内存可见性"><a href="#内存可见性" class="headerlink" title="内存可见性"></a>内存可见性</h3><h5 id="内部类"><a href="#内部类" class="headerlink" title="内部类"></a>内部类</h5><ul>
-<li>既然我们已经知道内部类访问外部类的原理，那么内存可见性其实就和普通的类之间互相访问对方的数据没有差别。所以，如果一个变量没有final修饰或者没有volatile修饰，那么就不能保证其对内部类是可见的，即使可见，也不能保证内部来看到的对象是完成构造之后的对象</li>
+<li>既然我们已经知道内部类访问外部类的原理，那么内存可见性其实就和普通的类之间互相访问对方的数据没有差别。所以，如果一个变量没有final修饰或者没有volatile修饰或者没有加锁，那么就不能保证其对内部类是可见的，即使可见，也不能保证内部来看到的对象是完成构造之后的对象(这里有个问题，原子变量也是吗)</li>
 <li>按照JCIP(java concurrent in practice)，一个对象的引用即使对于某个线程是可见的（比如某个对象发现这个引用非null了），这个对象的状态有可能还没初始化完成，也就是这个对象可能处于不一致状态</li>
 <li>不过我在测试中，因为不能对该对象设置volatile，也不能搞个volatile的flag来标志这个对象是否已经完成初始化(因为JSR133保证，某个volatile变量被Thread a 写入后，Thread b去读这个变量，读了之后，原先在Thread a写入该变量之前对于Thread a可见的状态，对于Thread b都可见)，所以情况一直是读到该变量是null，即使另一个线程已经初始完成。所以没有复现出JCIP中提到的这种情况</li>
 </ul>
@@ -656,8 +656,6 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 <div class="site-state-item site-state-categories">
                   <a href="/categories/index.html">
                     
-                    
-                      
                     
                       
                     
