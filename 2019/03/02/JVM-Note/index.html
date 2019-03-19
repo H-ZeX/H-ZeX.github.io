@@ -117,17 +117,17 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
 
 
-  <meta name="description" content="本笔记大部分是《深入理解java虚拟机第二版》的笔记，该书基于java1.7  运行时数据区域 方法区  线程共享  存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等  虚拟机规范把方法区描述为堆的一个逻辑部分（但是有一个别名：Non-Heap）  HotSpot用永久代实现。其他虚拟机并没有永久代这个概念  但使用永久代来实现方法区，现在看来并不是一个好主意，因为这样更容易">
+  <meta name="description" content="本笔记大部分是《深入理解java虚拟机第二版》的笔记，该书基于java1.7  Override 准确式内存管理：即虚拟机可以知道内存中某个位置的数据具体是什么类型   运行时数据区域 方法区  线程共享  存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等  虚拟机规范把方法区描述为堆的一个逻辑部分（但是有一个别名：Non-Heap）  HotSpot用永久代实现。其他虚拟机">
 <meta property="og:type" content="article">
 <meta property="og:title" content="My JVM Note">
 <meta property="og:url" content="https://h-zex.github.io/2019/03/02/JVM-Note/index.html">
 <meta property="og:site_name" content="H-ZeX">
-<meta property="og:description" content="本笔记大部分是《深入理解java虚拟机第二版》的笔记，该书基于java1.7  运行时数据区域 方法区  线程共享  存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等  虚拟机规范把方法区描述为堆的一个逻辑部分（但是有一个别名：Non-Heap）  HotSpot用永久代实现。其他虚拟机并没有永久代这个概念  但使用永久代来实现方法区，现在看来并不是一个好主意，因为这样更容易">
+<meta property="og:description" content="本笔记大部分是《深入理解java虚拟机第二版》的笔记，该书基于java1.7  Override 准确式内存管理：即虚拟机可以知道内存中某个位置的数据具体是什么类型   运行时数据区域 方法区  线程共享  存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等  虚拟机规范把方法区描述为堆的一个逻辑部分（但是有一个别名：Non-Heap）  HotSpot用永久代实现。其他虚拟机">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-03-02T05:33:24.259Z">
+<meta property="og:updated_time" content="2019-03-14T12:06:25.882Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My JVM Note">
-<meta name="twitter:description" content="本笔记大部分是《深入理解java虚拟机第二版》的笔记，该书基于java1.7  运行时数据区域 方法区  线程共享  存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等  虚拟机规范把方法区描述为堆的一个逻辑部分（但是有一个别名：Non-Heap）  HotSpot用永久代实现。其他虚拟机并没有永久代这个概念  但使用永久代来实现方法区，现在看来并不是一个好主意，因为这样更容易">
+<meta name="twitter:description" content="本笔记大部分是《深入理解java虚拟机第二版》的笔记，该书基于java1.7  Override 准确式内存管理：即虚拟机可以知道内存中某个位置的数据具体是什么类型   运行时数据区域 方法区  线程共享  存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等  虚拟机规范把方法区描述为堆的一个逻辑部分（但是有一个别名：Non-Heap）  HotSpot用永久代实现。其他虚拟机">
 
 
 
@@ -409,12 +409,24 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
               
 
-              <time title="Created: 2019-03-02 12:49:04 / Modified: 13:33:24" itemprop="dateCreated datePublished" datetime="2019-03-02T12:49:04+08:00">2019-03-02</time>
+              <time title="Created: 2019-03-02 12:49:04" itemprop="dateCreated datePublished" datetime="2019-03-02T12:49:04+08:00">2019-03-02</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-03-14 20:06:25" itemprop="dateModified" datetime="2019-03-14T20:06:25+08:00">2019-03-14</time>
               
             
           </span>
@@ -481,6 +493,10 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
         <blockquote>
 <p>本笔记大部分是《深入理解java虚拟机第二版》的笔记，该书基于java1.7</p>
 </blockquote>
+<h3 id="Override"><a href="#Override" class="headerlink" title="Override"></a>Override</h3><ul>
+<li>准确式内存管理：即虚拟机可以知道内存中某个位置的数据具体是什么类型</li>
+<li></li>
+</ul>
 <h3 id="运行时数据区域"><a href="#运行时数据区域" class="headerlink" title="运行时数据区域"></a>运行时数据区域</h3><ul>
 <li><p>方法区</p>
 <ul>
@@ -605,6 +621,18 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li>句柄中包含对象的实例数据和类型数据的各自具体地址</li>
 <li>在对象被移动时，无需更新reference数据</li>
 </ul>
+</li>
+</ul>
+<h3 id="类加载的时机"><a href="#类加载的时机" class="headerlink" title="类加载的时机"></a>类加载的时机</h3><blockquote>
+<p>注意，这一部分JVM有明确规定，但不知道是否有一些是实现相关的。我试验时用的是HotSpot，openJDK 1.8，client模式下</p>
+</blockquote>
+<ul>
+<li><p>按照作者说法</p>
+<blockquote>
+<p>常量在编译阶段会存入调用类的常量池中，本质上并没有直接引用到定义常量的类，因此不会触发定义常量的类的初始化</p>
+</blockquote>
+<p>在实验中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">InitTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        System.out.println(Holder.str3);</span><br><span class="line">        <span class="comment">// 如果是输出str，则不会输出`Init Holder`</span></span><br><span class="line">        <span class="comment">// 如果是输出str2和str3则会</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Holder</span> </span>&#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> String str = <span class="string">"Hello"</span>;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> String str2 = <span class="keyword">new</span> String(<span class="string">"NewString"</span>);</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> String str3 = String.valueOf(<span class="string">"Str3"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">static</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">"Init Holder"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <h3 id="HotSpot-VM的结构"><a href="#HotSpot-VM的结构" class="headerlink" title="HotSpot VM的结构"></a>HotSpot VM的结构</h3><ul>
@@ -973,7 +1001,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">29</span>
+                    <span class="site-state-item-count">30</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -1206,7 +1234,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#运行时数据区域"><span class="nav-text">运行时数据区域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HotSpot在Java堆中对象的创建、布局、访问"><span class="nav-text">HotSpot在Java堆中对象的创建、布局、访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HotSpot-VM的结构"><span class="nav-text">HotSpot VM的结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HotSpot-Runtime"><span class="nav-text">HotSpot Runtime</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GC"><span class="nav-text">GC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类加载器"><span class="nav-text">类加载器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数"><span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实验和调优"><span class="nav-text">实验和调优</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Override"><span class="nav-text">Override</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行时数据区域"><span class="nav-text">运行时数据区域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HotSpot在Java堆中对象的创建、布局、访问"><span class="nav-text">HotSpot在Java堆中对象的创建、布局、访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类加载的时机"><span class="nav-text">类加载的时机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HotSpot-VM的结构"><span class="nav-text">HotSpot VM的结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HotSpot-Runtime"><span class="nav-text">HotSpot Runtime</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GC"><span class="nav-text">GC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类加载器"><span class="nav-text">类加载器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数"><span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实验和调优"><span class="nav-text">实验和调优</span></a></li></ol></div>
             
 
           </div>
