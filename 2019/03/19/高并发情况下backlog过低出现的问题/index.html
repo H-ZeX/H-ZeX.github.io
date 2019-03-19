@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    showProcessingMessages: false,
+    messageStyle: "none",
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+        inlineMath:  [ ["$", "$"] ],
+        displayMath: [ ["$$","$$"] ],
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre','code','a'],
+        ignoreClass:"comment-content"
+    },
+    "HTML-CSS": {
+        availableFonts: ["STIX","TeX"],
+        showMathMenu: false
+    }
+});
+MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+</script>
+<script src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+  
+
+
+
+
+  <meta name="description" content="问题 最近重构一个以前写的FTP Server，压测时，服务器的backlog是20，然后client总是有一些链接，已经new Socket()成功（根据测试，这意味着三次握手完成），但是就是收不到welcome信息，服务端的log看到的accept的链接数目少于client打开的链接数目(服务端的accept也没有报错)，少的数量刚好是client端hang住在读welcome信息那些链接的数">
+<meta name="keywords" content="高并发,backlog,TCP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="高并发情况下backlog过低出现的问题">
+<meta property="og:url" content="https://h-zex.github.io/2019/03/19/高并发情况下backlog过低出现的问题/index.html">
+<meta property="og:site_name" content="H-ZeX">
+<meta property="og:description" content="问题 最近重构一个以前写的FTP Server，压测时，服务器的backlog是20，然后client总是有一些链接，已经new Socket()成功（根据测试，这意味着三次握手完成），但是就是收不到welcome信息，服务端的log看到的accept的链接数目少于client打开的链接数目(服务端的accept也没有报错)，少的数量刚好是client端hang住在读welcome信息那些链接的数">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-03-19T17:17:57.636Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="高并发情况下backlog过低出现的问题">
+<meta name="twitter:description" content="问题 最近重构一个以前写的FTP Server，压测时，服务器的backlog是20，然后client总是有一些链接，已经new Socket()成功（根据测试，这意味着三次握手完成），但是就是收不到welcome信息，服务端的log看到的accept的链接数目少于client打开的链接数目(服务端的accept也没有报错)，少的数量刚好是client端hang住在读welcome信息那些链接的数">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="H-ZeX" type="application/atom+xml"/>
+
+
+
+
+  <link rel="canonical" href="https://h-zex.github.io/2019/03/19/高并发情况下backlog过低出现的问题/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>高并发情况下backlog过低出现的问题 | H-ZeX</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">H-ZeX</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">H-ZeX's Coding Life</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br/>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br/>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-友情链接">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/link" rel="section"><i class="menu-item-icon fa fa-fw fa-link"></i> <br/>友情链接</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://h-zex.github.io/2019/03/19/高并发情况下backlog过低出现的问题/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="H-ZeX"/>
+      <meta itemprop="description" content=""/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="H-ZeX"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">高并发情况下backlog过低出现的问题
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-03-19 21:58:41" itemprop="dateCreated datePublished" datetime="2019-03-19T21:58:41+08:00">2019-03-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-03-20 01:17:57" itemprop="dateModified" datetime="2019-03-20T01:17:57+08:00">2019-03-20</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络编程/" itemprop="url" rel="index"><span itemprop="name">网络编程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <a href="/2019/03/19/高并发情况下backlog过低出现的问题/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2019/03/19/高并发情况下backlog过低出现的问题/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ul>
+<li>最近重构一个以前写的FTP Server，压测时，服务器的backlog是20，然后client总是有一些链接，已经<code>new Socket()</code>成功（根据测试，这意味着三次握手完成），但是就是收不到welcome信息，服务端的log看到的accept的链接数目少于client打开的链接数目(服务端的accept也没有报错)，少的数量刚好是client端hang住在读welcome信息那些链接的数目。后来尝试了调整<code>ulimit</code>无果，调整了backlog后就好了。看起来就像是一些链接被悄无声息（没有返回FIN或RST之类的报文）地从 等待被应用accept的队列 移除。</li>
+<li>我抽查的十几个hang住的端口对应的报文都是三次握手成功，然后还hang住时是没有新的报文的，client一关闭，发送了FIN后，一种情况是，server端就发送数据给client，另一种情况是server端对client的FIN报文返回RST。</li>
+<li><p>报文如下</p>
+<ul>
+<li><p>第一种情况的报文，这种是client hang住没多久就关掉整个client进程时出现的情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> 117890 271.658989117  127.0.0.1             127.0.0.1             TCP      74     [TCP Port numbers reused] 40900 → 8083 [SYN, ECN, CWR] Seq=0 Win=43690 Len=0 MSS=65495 SACK_PERM=1 TSval=298647083 TSecr=0 WS=128</span><br><span class="line"> 201498 272.673187012  127.0.0.1             127.0.0.1             TCP      74     [TCP Retransmission] 40900 → 8083 [SYN] Seq=0 Win=43690 Len=0 MSS=65495 SACK_PERM=1 TSval=298648097 TSecr=0 WS=128</span><br><span class="line"> 201591 272.673232077  127.0.0.1             127.0.0.1             TCP      74     8083 → 40900 [SYN, ACK] Seq=0 Ack=1 Win=43690 Len=0 MSS=65495 SACK_PERM=1 TSval=298648068 TSecr=298648097 WS=128</span><br><span class="line"> 201643 272.673288084  127.0.0.1             127.0.0.1             TCP      66     40900 → 8083 [ACK] Seq=1 Ack=1 Win=43776 Len=0 TSval=298648097 TSecr=298648068</span><br><span class="line"> 203783 297.152188039  127.0.0.1             127.0.0.1             TCP      66     40900 → 8083 [FIN, ACK] Seq=1 Ack=1 Win=43776 Len=0 TSval=298672576 TSecr=298648068</span><br><span class="line"> 203823 297.152451323  127.0.0.1             127.0.0.1             TCP      73     8083 → 40900 [PSH, ACK] Seq=1 Ack=2 Win=29312 Len=7 TSval=298672576 TSecr=298672576</span><br><span class="line">0000  68 65 6c 6c 6f 0d 0a                              hello..</span><br><span class="line"> 203825 297.152464118  127.0.0.1             127.0.0.1             TCP      54     40900 → 8083 [RST] Seq=2 Win=0 Len=0</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>第二种情况的报文，这种是client hang住很久才关掉整个client进程时出现的情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> 21004 108.400081512  127.0.0.1             127.0.0.1             TCP      74     46538 → 8083 [SYN, ECN, CWR] Seq=0 Win=43690 Len=0 MSS=65495 SACK_PERM=1 TSval=298483826 TSecr=0 WS=128</span><br><span class="line"> 92060 109.409186851  127.0.0.1             127.0.0.1             TCP      74     [TCP Retransmission] 46538 → 8083 [SYN] Seq=0 Win=43690 Len=0 MSS=65495 SACK_PERM=1 TSval=298484836 TSecr=0 WS=128</span><br><span class="line"> 92108 109.409228584  127.0.0.1             127.0.0.1             TCP      74     8083 → 46538 [SYN, ACK] Seq=0 Ack=1 Win=43690 Len=0 MSS=65495 SACK_PERM=1 TSval=298484804 TSecr=298484836 WS=128</span><br><span class="line"> 92155 109.409268850  127.0.0.1             127.0.0.1             TCP      66     46538 → 8083 [ACK] Seq=1 Ack=1 Win=43776 Len=0 TSval=298484836 TSecr=298484804</span><br><span class="line">112908 254.340209126  127.0.0.1             127.0.0.1             TCP      66     46538 → 8083 [FIN, ACK] Seq=1 Ack=1 Win=43776 Len=0 TSval=298629764 TSecr=298484804</span><br><span class="line">112909 254.340214301  127.0.0.1             127.0.0.1             TCP      54     8083 → 46538 [RST] Seq=1 Win=0 Len=0</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="复现"><a href="#复现" class="headerlink" title="复现"></a>复现</h3><ul>
+<li><p>server</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.net.ServerSocket;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Executor;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Executors;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestBacklogServer</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        Executor executor = Executors.newFixedThreadPool(<span class="number">128</span>);</span><br><span class="line">        ServerSocket socket = <span class="keyword">new</span> ServerSocket(<span class="number">8083</span>, <span class="number">10</span>);</span><br><span class="line">        <span class="keyword">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="keyword">final</span> Socket client = socket.accept();</span><br><span class="line">            System.out.println(cnt + <span class="string">": accept one: "</span> + client.getRemoteSocketAddress());</span><br><span class="line">            cnt++;</span><br><span class="line">            executor.execute(() -&gt; &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    client.getOutputStream().write(<span class="string">"hello\r\n"</span>.getBytes());</span><br><span class="line">                    client.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>client。之所以设置了timeout，是为了拿到hang住的端口号，测试时可以不设置timeout，然后在没有新的输出时，threadDump，可以看到有多个链接hang在read那里</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.BufferedReader;</span><br><span class="line"><span class="keyword">import</span> java.io.FileReader;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStream;</span><br><span class="line"><span class="keyword">import</span> java.net.ServerSocket;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"><span class="keyword">import</span> java.net.SocketTimeoutException;</span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Vector;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ExecutorService;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Executors;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.TimeUnit;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.LongAdder;</span><br><span class="line"><span class="keyword">import</span> java.util.regex.Matcher;</span><br><span class="line"><span class="keyword">import</span> java.util.regex.Pattern;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestBacklogClient</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> LongAdder adder = <span class="keyword">new</span> LongAdder();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">        Vector&lt;Integer&gt; timeoutPorts = <span class="keyword">new</span> Vector&lt;&gt;(<span class="number">1240</span>);</span><br><span class="line">        ExecutorService pool = Executors.newFixedThreadPool(<span class="number">128</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10240</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">int</span> finalI = i;</span><br><span class="line">            pool.execute(() -&gt; &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Socket socket = <span class="keyword">new</span> Socket(<span class="string">"localhost"</span>, <span class="number">8083</span>);</span><br><span class="line">                    socket.setSoTimeout(<span class="number">1024</span> * <span class="number">10</span>);</span><br><span class="line">                    System.out.println(<span class="string">"connect Success one: "</span> + finalI);</span><br><span class="line">                    String r = readLine(socket.getInputStream());</span><br><span class="line">                    <span class="keyword">assert</span> r == <span class="keyword">null</span> || <span class="string">"hello\r\n"</span>.equals(r);</span><br><span class="line">                    <span class="keyword">if</span> (r == <span class="keyword">null</span>) &#123;</span><br><span class="line">                        timeoutPorts.add(socket.getLocalPort());</span><br><span class="line">                    &#125;</span><br><span class="line">                    System.out.println(<span class="string">"read success one: "</span> + finalI);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        pool.shutdown();</span><br><span class="line">        pool.awaitTermination(<span class="number">1024</span>, TimeUnit.DAYS);</span><br><span class="line">        System.out.println(adder.sum());</span><br><span class="line">        System.out.println(timeoutPorts);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">readLine</span><span class="params">(InputStream in)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">byte</span>[] buf = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">        StringBuilder builder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                <span class="keyword">int</span> t = in.read(buf);</span><br><span class="line">                <span class="keyword">if</span> (t &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                builder.append(<span class="keyword">new</span> String(buf, <span class="number">0</span>, t));</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> builder.toString();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SocketTimeoutException ex) &#123;</span><br><span class="line">            adder.add(<span class="number">1</span>);</span><br><span class="line">            System.out.println(<span class="string">"time out, read: "</span> + builder.length()</span><br><span class="line">                    + <span class="string">", "</span> + builder.toString()</span><br><span class="line">                    + <span class="string">", hasCRLF: "</span> + (builder.lastIndexOf(<span class="string">"\r\n"</span>) &gt;= <span class="number">0</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>localhost的系统配置信息</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ uname -r</span><br><span class="line">4.18.0-13-generic</span><br><span class="line"></span><br><span class="line">$ /bin/cat /proc/sys/net/ipv4/tcp_max_syn_backlog</span><br><span class="line">512</span><br><span class="line"></span><br><span class="line">$ lsb_release -a</span><br><span class="line">No LSB modules are available.</span><br><span class="line">Distributor ID:	Ubuntu</span><br><span class="line">Description:	Ubuntu 18.10</span><br><span class="line">Release:	18.10</span><br><span class="line">Codename:	cosmic</span><br><span class="line"></span><br><span class="line">$ java -version                  </span><br><span class="line">openjdk version &quot;11.0.1&quot; 2018-10-16</span><br><span class="line">OpenJDK Runtime Environment 18.9 (build 11.0.1+13)</span><br><span class="line">OpenJDK 64-Bit Server VM 18.9 (build 11.0.1+13, mixed mode)</span><br><span class="line"></span><br><span class="line">$ /bin/cat /proc/sys/net/core/somaxconn    </span><br><span class="line">128</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>vps的配置信息</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">root@vultr:~# ./jdk-11.0.2/bin/java -version</span><br><span class="line">java version &quot;11.0.2&quot; 2019-01-15 LTS</span><br><span class="line">Java(TM) SE Runtime Environment 18.9 (build 11.0.2+9-LTS)</span><br><span class="line">Java HotSpot(TM) 64-Bit Server VM 18.9 (build 11.0.2+9-LTS, mixed mode)</span><br><span class="line"></span><br><span class="line">root@vultr:~# uname -r</span><br><span class="line">4.18.0-10-generic</span><br><span class="line"></span><br><span class="line">root@vultr:~# lsb_release -a</span><br><span class="line">No LSB modules are available.</span><br><span class="line">Distributor ID: Ubuntu</span><br><span class="line">Description:    Ubuntu 18.10</span><br><span class="line">Release:        18.10</span><br><span class="line">Codename:       cosmic</span><br><span class="line"></span><br><span class="line">root@vultr:~# /bin/cat /proc/sys/net/ipv4/tcp_max_syn_backlog</span><br><span class="line">128</span><br><span class="line"></span><br><span class="line">root@vultr:~# /bin/cat /proc/sys/net/core/somaxconn</span><br><span class="line">128</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>复现过程出现过这个现象：client端<code>ctrl-c</code>关掉后，server端突然就接收到了剩下的所有链接。这个在server运行在localhost时并且 一旦所有其他没有被hang住的链接完成后马上就<code>ctrl-c</code>时出现过，但是在server运行在vps上没出现过。</p>
+</li>
+</ul>
+<h3 id="猜测原因一"><a href="#猜测原因一" class="headerlink" title="猜测原因一"></a>猜测原因一</h3><ul>
+<li><p>按照TCP/IP详解卷二的说法，如果listen的那个端点的队列满了（已经完成三次握手的队列，其大小由backlog确定），那么就不回复syn。但是，有个问题，如果多个syn同时到达，那么即使这时候队列未满，也可能接受了这些syn的一部分后队列就满了，那么linux系统如何处理——是否会存在有些链接三次握手完成，但是放不进队列里。</p>
+</li>
+<li><p>按照这篇文章(<a href="http://veithen.io/2014/01/01/how-tcp-backlog-works-in-linux.html" target="_blank" rel="noopener">http://veithen.io/2014/01/01/how-tcp-backlog-works-in-linux.html</a>)的说法，如果遇到这种情况，服务器会不断发送<code>syn/ack</code>报文（如果<code>/proc/sys/net/ipv4/tcp_abort_on_overflow</code>是<code>1</code>，则发送RST）</p>
+</li>
+<li><p>我自己也抓到了这种报文，其中8083是server，server的backlog只有10，然后有10240个client企图链接该server。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">No.     Time           Source                Destination           Protocol Length Info</span><br><span class="line"> 117974 271.659812650  127.0.0.1             127.0.0.1             TCP      74     [TCP Port numbers reused] 40970 → 8083 [SYN, ECN, CWR] Seq=0 Win=43690 Len=0 MSS=65495 SACK_PERM=1 TSval=298647084 TSecr=0 WS=128</span><br><span class="line"> 117976 271.659818367  127.0.0.1             127.0.0.1             TCP      74     8083 → 40970 [SYN, ACK, ECN] Seq=0 Ack=1 Win=43690 Len=0 MSS=65495 SACK_PERM=1 TSval=298647084 TSecr=298647084 WS=128</span><br><span class="line"> 117977 271.659825016  127.0.0.1             127.0.0.1             TCP      66     40970 → 8083 [ACK] Seq=1 Ack=1 Win=43776 Len=0 TSval=298647084 TSecr=298647084</span><br><span class="line"> 201482 272.673178662  127.0.0.1             127.0.0.1             TCP      74     [TCP Retransmission] 8083 → 40970 [SYN, ACK, ECN] Seq=0 Ack=1 Win=43690 Len=0 MSS=65495 SACK_PERM=1 TSval=298648097 TSecr=298647084 WS=128</span><br><span class="line"> 201563 272.673220860  127.0.0.1             127.0.0.1             TCP      66     [TCP Dup ACK 117977#1] 40970 → 8083 [ACK] Seq=1 Ack=1 Win=43776 Len=0 TSval=298648097 TSecr=298647084</span><br><span class="line"> 201993 274.693205982  127.0.0.1             127.0.0.1             TCP      74     [TCP Retransmission] 8083 → 40970 [SYN, ACK, ECN] Seq=0 Ack=1 Win=43690 Len=0 MSS=65495 SACK_PERM=1 TSval=298650117 TSecr=298648097 WS=128</span><br><span class="line"> 201995 274.693247830  127.0.0.1             127.0.0.1             TCP      66     [TCP Dup ACK 117977#2] 40970 → 8083 [ACK] Seq=1 Ack=1 Win=43776 Len=0 TSval=298650117 TSecr=298647084</span><br><span class="line"> 201997 274.693527487  127.0.0.1             127.0.0.1             TCP      73     8083 → 40970 [PSH, ACK] Seq=1 Ack=1 Win=43776 Len=7 TSval=298650117 TSecr=298650117</span><br><span class="line">0000  68 65 6c 6c 6f 0d 0a                              hello..</span><br><span class="line"> 201999 274.693556287  127.0.0.1             127.0.0.1             TCP      66     40970 → 8083 [ACK] Seq=1 Ack=8 Win=43776 Len=0 TSval=298650117 TSecr=298650117</span><br><span class="line"> 202001 274.695599421  127.0.0.1             127.0.0.1             TCP      66     8083 → 40970 [FIN, ACK] Seq=8 Ack=1 Win=43776 Len=0 TSval=298650119 TSecr=298650117</span><br><span class="line"> 202009 274.737168658  127.0.0.1             127.0.0.1             TCP      66     40970 → 8083 [ACK] Seq=1 Ack=9 Win=43776 Len=0 TSval=298650161 TSecr=298650119</span><br><span class="line"> 203731 297.151676910  127.0.0.1             127.0.0.1             TCP      66     40970 → 8083 [FIN, ACK] Seq=1 Ack=9 Win=43776 Len=0 TSval=298672575 TSecr=298650119</span><br><span class="line"> 203732 297.151682855  127.0.0.1             127.0.0.1             TCP      66     8083 → 40970 [ACK] Seq=9 Ack=2 Win=43776 Len=0 TSval=298672575 TSecr=298672575</span><br></pre></td></tr></table></figure>
+<p> 在<code>/proc/sys/net/ipv4/tcp_abort_on_overflow</code>设为<code>1</code>之后，抓到了如下报文。需要注意，那个RST并不是服务器关闭了，服务器后面还对其他链接响应了很多报文</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">No.     Time           Source                Destination           Protocol Length Info</span><br><span class="line">   5904 9.174057671    127.0.0.1             127.0.0.1             TCP      74     54448 → 8083 [SYN, ECN, CWR] Seq=0 Win=43690 Len=0 MSS=65495 SACK_PERM=1 TSval=300065429 TSecr=0 WS=128</span><br><span class="line">  92075 10.190560916   127.0.0.1             127.0.0.1             TCP      74     [TCP Retransmission] 54448 → 8083 [SYN] Seq=0 Win=43690 Len=0 MSS=65495 SACK_PERM=1 TSval=300066446 TSecr=0 WS=128</span><br><span class="line">  92209 12.206628025   127.0.0.1             127.0.0.1             TCP      74     [TCP Retransmission] 54448 → 8083 [SYN] Seq=0 Win=43690 Len=0 MSS=65495 SACK_PERM=1 TSval=300068462 TSecr=0 WS=128</span><br><span class="line">  92258 12.206814283   127.0.0.1             127.0.0.1             TCP      74     8083 → 54448 [SYN, ACK] Seq=0 Ack=1 Win=43690 Len=0 MSS=65495 SACK_PERM=1 TSval=300068462 TSecr=300068462 WS=128</span><br><span class="line">  92319 12.207072233   127.0.0.1             127.0.0.1             TCP      66     54448 → 8083 [ACK] Seq=1 Ack=1 Win=43776 Len=0 TSval=300068462 TSecr=300068462</span><br><span class="line">  92345 12.207466000   127.0.0.1             127.0.0.1             TCP      54     8083 → 54448 [RST] Seq=1 Win=0 Len=0</span><br></pre></td></tr></table></figure>
+<p> 需要注意，那个RST并不是服务器关闭了，服务器后面还对其他链接响应了很多报文——如下面所示，最后的那个No.为<code>92345</code>后面还有很多报文，都是8083端口的server与client的通信</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">No.     Time           Source                Destination           Protocol Length Info</span><br><span class="line">  92345 12.207466000   127.0.0.1             127.0.0.1             TCP      54     8083 → 54448 [RST] Seq=1 Win=0 Len=0</span><br><span class="line">  92346 12.207985091   127.0.0.1             127.0.0.1             TCP      73     8083 → 54168 [PSH, ACK] Seq=1 Ack=1 Win=43776 Len=7 TSval=300068463 TSecr=300068462</span><br><span class="line">  92347 12.208004676   127.0.0.1             127.0.0.1             TCP      66     54168 → 8083 [ACK] Seq=1 Ack=8 Win=43776 Len=0 TSval=300068463 TSecr=300068463</span><br><span class="line">  92348 12.208041224   127.0.0.1             127.0.0.1             TCP      66     8083 → 54168 [FIN, ACK] Seq=8 Ack=1 Win=43776 Len=0 TSval=300068463 TSecr=300068463</span><br><span class="line">  92349 12.208052138   127.0.0.1             127.0.0.1             TCP      73     8083 → 54172 [PSH, ACK] Seq=1 Ack=1 Win=43776 Len=7 TSval=300068463 TSecr=300068462</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然而，这个并不是上述问题的原因，因为打印出来的hang住的端口号，跟发生重传<code>syn/ack</code>的端口号对不上</p>
+</li>
+</ul>
+<h3 id="猜测原因二"><a href="#猜测原因二" class="headerlink" title="猜测原因二"></a>猜测原因二</h3><ul>
+<li>网上搜到这篇文章<a href="http://www.10tiao.com/html/749/201411/201005717/1.html" target="_blank" rel="noopener">http://www.10tiao.com/html/749/201411/201005717/1.html</a></li>
+<li>案例分析（二）那里描述的现象刚好跟跟上述问题非常相似——也是client握手成功但是读不到信息，作者分析的原因是，第三次握手的ACK因为AcceptQueue溢出而被丢弃，导致client进入了ESTABLISHED状态，但是server只是在<code>SYN_RECV</code>状态，并且因为<code>net.ipv4.tcp_synack_retries=1</code>(我的测试机器的这个参数是5)，所以如果Server重传的SYN+ACK报文对应的ACK还是被丢弃，那么就会进入client以为连接成功，但是server并没有连接成功的状态</li>
+<li>然而，我把server架设到另一个机子上，然后使用<code>watch -n 0.5 &quot;netcat -n | grep 8083 | grep -i &quot;syn&quot;&quot;</code>检查server那里是否有链接是一直处于<code>syn_recv</code>状态，但是整个过程中看到的处于<code>SYN_RECV</code>状态的链接端口号都是在不断变动（说明它们不是hang住的链接），并且client端所有没有hang住的链接都完成后，只剩下hang住的链接时，server端是看不到处于<code>syn_recv</code>状态的链接的</li>
+<li>所以我认为可能也不是这个原因（欢迎指正！）</li>
+</ul>
+<h3 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h3><ul>
+<li>这个问题并没有解决，如果有大佬知道原因，或者有一些想法，欢迎与我交流，谢谢！</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/高并发/" rel="tag"># 高并发</a>
+          
+            <a href="/tags/backlog/" rel="tag"># backlog</a>
+          
+            <a href="/tags/TCP/" rel="tag"># TCP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/04/java内部类、局部类的实现原理/" rel="next" title="Java内部类、局部类的实现原理以及与内存可见性的关系">
+                <i class="fa fa-chevron-left"></i> Java内部类、局部类的实现原理以及与内存可见性的关系
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">H-ZeX</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">55</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/H-ZeX" title="GitHub &rarr; https://github.com/H-ZeX" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:hzx20112012@gmail.com" title="E-Mail &rarr; mailto:hzx20112012@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-text">问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#复现"><span class="nav-text">复现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#猜测原因一"><span class="nav-text">猜测原因一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#猜测原因二"><span class="nav-text">猜测原因二</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结尾"><span class="nav-text">结尾</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">H-ZeX</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.0.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=7.0.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=7.0.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: true,
+    appId: '2zewWM7OPwRwvylk6pRcPGm7-gzGzoHsz',
+    appKey: 'qPGJQQgN9YMXkOQLEC97Ufhf',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+</script>
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+</body>
+</html>
