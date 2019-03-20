@@ -117,18 +117,18 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
 
 
-  <meta name="description" content="构造一个线程安全的ThreadPool线程安全的两个要点 原子性：一组操作要么不执行，要么完全执行  内存可见性：一个线程对于某个对象、变量的修改对于另一个线程是否可见，什么时候可见，该数据可见时其他数据的的可见情况   使用pthread情况下实现内存可见性 由于笔者对pthread的内存模型不熟悉、不清楚c++中的volatile语义是否编译器相关的，所以，在构造这个ThreadPool时不敢">
+  <meta name="description" content="构造一个线程安全的ThreadPool线程安全的两个要点 原子性：一组操作要么不执行，要么完全执行  内存可见性：一个线程对于某个对象、变量的修改对于另一个线程是否可见，什么时候可见，该数据可见时其他数据的的可见情况   使用pthread时保证内存可见性 由于笔者对pthread的内存模型不熟悉、不清楚c++中的volatile语义是否编译器相关的，所以，在构造这个ThreadPool时不敢使用">
 <meta name="keywords" content="原子性,线程安全,线程池,内存可见性">
 <meta property="og:type" content="article">
 <meta property="og:title" content="构造一个线程安全的ThreadPool">
 <meta property="og:url" content="https://h-zex.github.io/2019/03/20/构造一个线程安全的ThreadPool/index.html">
 <meta property="og:site_name" content="H-ZeX">
-<meta property="og:description" content="构造一个线程安全的ThreadPool线程安全的两个要点 原子性：一组操作要么不执行，要么完全执行  内存可见性：一个线程对于某个对象、变量的修改对于另一个线程是否可见，什么时候可见，该数据可见时其他数据的的可见情况   使用pthread情况下实现内存可见性 由于笔者对pthread的内存模型不熟悉、不清楚c++中的volatile语义是否编译器相关的，所以，在构造这个ThreadPool时不敢">
+<meta property="og:description" content="构造一个线程安全的ThreadPool线程安全的两个要点 原子性：一组操作要么不执行，要么完全执行  内存可见性：一个线程对于某个对象、变量的修改对于另一个线程是否可见，什么时候可见，该数据可见时其他数据的的可见情况   使用pthread时保证内存可见性 由于笔者对pthread的内存模型不熟悉、不清楚c++中的volatile语义是否编译器相关的，所以，在构造这个ThreadPool时不敢使用">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-03-20T01:59:53.023Z">
+<meta property="og:updated_time" content="2019-03-20T10:12:32.736Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="构造一个线程安全的ThreadPool">
-<meta name="twitter:description" content="构造一个线程安全的ThreadPool线程安全的两个要点 原子性：一组操作要么不执行，要么完全执行  内存可见性：一个线程对于某个对象、变量的修改对于另一个线程是否可见，什么时候可见，该数据可见时其他数据的的可见情况   使用pthread情况下实现内存可见性 由于笔者对pthread的内存模型不熟悉、不清楚c++中的volatile语义是否编译器相关的，所以，在构造这个ThreadPool时不敢">
+<meta name="twitter:description" content="构造一个线程安全的ThreadPool线程安全的两个要点 原子性：一组操作要么不执行，要么完全执行  内存可见性：一个线程对于某个对象、变量的修改对于另一个线程是否可见，什么时候可见，该数据可见时其他数据的的可见情况   使用pthread时保证内存可见性 由于笔者对pthread的内存模型不熟悉、不清楚c++中的volatile语义是否编译器相关的，所以，在构造这个ThreadPool时不敢使用">
 
 
 
@@ -410,7 +410,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
               
 
-              <time title="Created: 2019-03-20 09:58:41 / Modified: 09:59:53" itemprop="dateCreated datePublished" datetime="2019-03-20T09:58:41+08:00">2019-03-20</time>
+              <time title="Created: 2019-03-20 09:58:41 / Modified: 18:12:32" itemprop="dateCreated datePublished" datetime="2019-03-20T09:58:41+08:00">2019-03-20</time>
             
 
             
@@ -485,7 +485,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li><p>内存可见性：一个线程对于某个对象、变量的修改对于另一个线程是否可见，什么时候可见，该数据可见时其他数据的的可见情况</p>
 </li>
 </ul>
-<h4 id="使用pthread情况下实现内存可见性"><a href="#使用pthread情况下实现内存可见性" class="headerlink" title="使用pthread情况下实现内存可见性"></a>使用pthread情况下实现内存可见性</h4><ul>
+<h4 id="使用pthread时保证内存可见性"><a href="#使用pthread时保证内存可见性" class="headerlink" title="使用pthread时保证内存可见性"></a>使用pthread时保证内存可见性</h4><ul>
 <li><p>由于笔者对pthread的内存模型不熟悉、不清楚c++中的<code>volatile</code>语义是否编译器相关的，所以，在构造这个ThreadPool时不敢使用<code>volatile</code>等来实现内存可见性。而是通过加锁以充当内存屏障来实现——虽然性能上会受到影响，但是至少可以保证正确性</p>
 </li>
 <li><p>pthread创建线程时，传递的<code>start_routine</code>参数必须是static方法，这意味着，需要把ThreadPool的<code>this</code>指针传递过去。但是，一个严重的问题，<code>this</code>指针是在原线程初始化的，ThreadPool对象也是在原线程构造的，那么，如何保证新线程看到一致的、正确构造的ThreadPool对象？在java内存模型中，这是无法保证的，必须使用其他办法来保证（<code>volatile</code>、<code>final</code>、<code>AtomicReference</code>等）。笔者不清楚pthread是否可以保证传递过去的参数的内存可见性，虽然实验中，clang++7开<code>-O3</code>，测试了5k多次，在另一个线程都可以看到正确的对象，但是因为不确定这是否是编译器相关的。所以，笔者使用了一个全局mutex，充当内存屏障——每次写该变量时持有该mutex，每次读时也要持有，以保证新线程可以看到正确构造的、一致的对象</p>
@@ -521,9 +521,18 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li><p>因为不清楚pthread是否也会有这种问题，所以对于获得ThreadPool实例的<code>getInstance</code>方法，每次都要加锁，然后才检查instance指针</p>
 </li>
 </ul>
+<h4 id="使用条件变量的注意事项"><a href="#使用条件变量的注意事项" class="headerlink" title="使用条件变量的注意事项"></a>使用条件变量的注意事项</h4><ul>
+<li><p>wait Condition变量前要检查条件是否满足，否则可能出现：条件以满足，所以生产者不再notify，然后消费者就一直hang在cond wait那里</p>
+</li>
+<li><p>检查条件时要使用<code>while</code>而不是<code>if</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 正面例子</span></span><br><span class="line"><span class="keyword">while</span> (<span class="keyword">not</span> satify condition) &#123;</span><br><span class="line">    cond.wait()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 反面例子</span></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">not</span> satify condition) &#123;</span><br><span class="line">    cond.wait</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一个很重要的原因：某个线程正在等待，然后被唤醒，这时候，突然一个新线程（该线程之前并没有在等待该cond）进来，拿走了资源，结果醒来的线程拿不到资源，所以应该继续等。另外wiki（<a href="https://en.wikipedia.org/wiki/Spurious_wakeup" target="_blank" rel="noopener">Spurious wakeup</a>）上还讲了另一个原因，就是说在现代处理器上，要保证没有假醒需要较高的代价。不过，JCIP（java concurrency in practice）上虽然有打比方说“因为线路故障导致烤面包机提前响起”，但是没有明确说存在这种硬件上导致的假醒</p>
+</li>
+</ul>
 <h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><ul>
 <li>链接：<a href="https://github.com/H-ZeX/FTP-Implement/blob/master/src/main/tools/ThreadPool.hpp" target="_blank" rel="noopener">https://github.com/H-ZeX/FTP-Implement/blob/master/src/main/tools/ThreadPool.hpp</a></li>
-<li>代码依赖于项目中的基础设施，所以不能直接使用。</li>
+<li>测试代码链接：<a href="https://github.com/H-ZeX/FTP-Implement/blob/master/src/test/tools/ThreadPoolTest.hpp" target="_blank" rel="noopener">https://github.com/H-ZeX/FTP-Implement/blob/master/src/test/tools/ThreadPoolTest.hpp</a></li>
+<li>代码依赖于项目中的基础设施，所以不能直接使用</li>
 </ul>
 
       
@@ -899,7 +908,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#构造一个线程安全的ThreadPool"><span class="nav-text">构造一个线程安全的ThreadPool</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#线程安全的两个要点"><span class="nav-text">线程安全的两个要点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用pthread情况下实现内存可见性"><span class="nav-text">使用pthread情况下实现内存可见性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#this指针逸出问题"><span class="nav-text">this指针逸出问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#状态转换的证明"><span class="nav-text">状态转换的证明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#单例模式"><span class="nav-text">单例模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#代码"><span class="nav-text">代码</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#构造一个线程安全的ThreadPool"><span class="nav-text">构造一个线程安全的ThreadPool</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#线程安全的两个要点"><span class="nav-text">线程安全的两个要点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用pthread时保证内存可见性"><span class="nav-text">使用pthread时保证内存可见性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#this指针逸出问题"><span class="nav-text">this指针逸出问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#状态转换的证明"><span class="nav-text">状态转换的证明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#单例模式"><span class="nav-text">单例模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用条件变量的注意事项"><span class="nav-text">使用条件变量的注意事项</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#代码"><span class="nav-text">代码</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
