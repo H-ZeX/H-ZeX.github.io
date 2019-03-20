@@ -125,7 +125,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="需求 根据RFC959 高并发  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  1234567891011121314151617">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-03-20T15:44:31.739Z">
+<meta property="og:updated_time" content="2019-03-20T16:03:45.920Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="开发一个高并发的FTP服务器">
 <meta name="twitter:description" content="需求 根据RFC959 高并发  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  1234567891011121314151617">
@@ -410,12 +410,24 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
               
 
-              <time title="Created: 2019-03-20 21:58:41 / Modified: 23:44:31" itemprop="dateCreated datePublished" datetime="2019-03-20T21:58:41+08:00">2019-03-20</time>
+              <time title="Created: 2019-03-20 21:58:41" itemprop="dateCreated datePublished" datetime="2019-03-20T21:58:41+08:00">2019-03-20</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-03-21 00:03:45" itemprop="dateModified" datetime="2019-03-21T00:03:45+08:00">2019-03-21</time>
               
             
           </span>
@@ -529,7 +541,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </ul>
 </li>
 </ul>
-<h2 id="压测"><a href="#压测" class="headerlink" title="压测"></a>压测</h2><h4 id="压测步骤"><a href="#压测步骤" class="headerlink" title="压测步骤"></a>压测步骤</h4><ul>
+<h3 id="压测"><a href="#压测" class="headerlink" title="压测"></a>压测</h3><h4 id="压测步骤"><a href="#压测步骤" class="headerlink" title="压测步骤"></a>压测步骤</h4><ul>
 <li><p>笔者的压测程序使用java写的，代码在这里<a href="https://github.com/H-ZeX/FTP-Implement/tree/master/test/FTPServerTester" target="_blank" rel="noopener">https://github.com/H-ZeX/FTP-Implement/tree/master/test/FTPServerTester</a></p>
 </li>
 <li><p>压测前，运行server的命令是`</p>
@@ -547,7 +559,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <h4 id="压测结果"><a href="#压测结果" class="headerlink" title="压测结果"></a>压测结果</h4><ul>
 <li>笔者在自己的机器上，<code>StressTest.MaxCmdConnectionCnt</code>设为<code>10240</code>及以下时，测试可以顺利完成。并且在测试过程使用linux的<code>ftp</code>命令与server通信，是比较流畅的</li>
 </ul>
-<h2 id="出现的问题"><a href="#出现的问题" class="headerlink" title="出现的问题"></a>出现的问题</h2><ul>
+<h3 id="出现的问题"><a href="#出现的问题" class="headerlink" title="出现的问题"></a>出现的问题</h3><ul>
 <li><p>测试程序开50k个链接连server进行操作（50k个测试是依次提交给线程池，边提交线程池边运行），server需要openListenFd，由OS指定端口，但是在测试程序成功进行了15k多一点的测试后，server的这个openListenFd失败，errno是<code>Address already in use</code>。</p>
 <p><strong>我猜测</strong>，可能是很多端口处于<code>TIME_WAIT</code>状态，虽然打开的socket设置了<code>SO_REUSEADDR</code>，可以绑定这些TIME_WAIT链接的端口，但是刚好，对端也是上一次那个链接的端口，这是TCP禁止的——TCP允许复用处于TIME_WAIT的端口，但是不允许新的链接与TIME_WAIT的链接的(serverIp, serverPort, serverIp, serverPort)相同（其实也不是一定禁止，TCP规范是允许有例外），所以就提示<code>Address already in use</code></p>
 </li>
@@ -928,7 +940,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#需求"><span class="nav-text">需求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#架构"><span class="nav-text">架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程安全的线程池类的设计"><span class="nav-text">线程安全的线程池类的设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Utility"><span class="nav-text">Utility</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FTP类"><span class="nav-text">FTP类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#压测"><span class="nav-text">压测</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#压测步骤"><span class="nav-text">压测步骤</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#压测结果"><span class="nav-text">压测结果</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#出现的问题"><span class="nav-text">出现的问题</span></a></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#需求"><span class="nav-text">需求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#架构"><span class="nav-text">架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程安全的线程池类的设计"><span class="nav-text">线程安全的线程池类的设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Utility"><span class="nav-text">Utility</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FTP类"><span class="nav-text">FTP类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#压测"><span class="nav-text">压测</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#压测步骤"><span class="nav-text">压测步骤</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#压测结果"><span class="nav-text">压测结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#出现的问题"><span class="nav-text">出现的问题</span></a></li></ol></div>
             
 
           </div>
