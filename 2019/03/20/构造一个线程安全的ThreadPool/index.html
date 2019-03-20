@@ -118,7 +118,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
 
   <meta name="description" content="构造一个线程安全的ThreadPool线程安全的两个要点 原子性：一组操作要么不执行，要么完全执行  内存可见性：一个线程对于某个对象、变量的修改对于另一个线程是否可见，什么时候可见，该数据可见时其他数据的的可见情况   使用pthread时保证内存可见性 由于笔者对pthread的内存模型不熟悉、不清楚c++中的volatile语义是否编译器相关的，所以，在构造这个ThreadPool时不敢使用">
-<meta name="keywords" content="原子性,线程安全,线程池,内存可见性">
+<meta name="keywords" content="线程安全,线程池,原子性,内存可见性">
 <meta property="og:type" content="article">
 <meta property="og:title" content="构造一个线程安全的ThreadPool">
 <meta property="og:url" content="https://h-zex.github.io/2019/03/20/构造一个线程安全的ThreadPool/index.html">
@@ -557,11 +557,11 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
       
         <div class="post-tags">
           
-            <a href="/tags/原子性/" rel="tag"># 原子性</a>
-          
             <a href="/tags/线程安全/" rel="tag"># 线程安全</a>
           
             <a href="/tags/线程池/" rel="tag"># 线程池</a>
+          
+            <a href="/tags/原子性/" rel="tag"># 原子性</a>
           
             <a href="/tags/内存可见性/" rel="tag"># 内存可见性</a>
           
@@ -586,8 +586,8 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/03/20/开发一个高并发的FTP服务器/" rel="prev" title="开发一个高并发的FTP服务器">
-                开发一个高并发的FTP服务器 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/03/20/开发一个高并发的FTP服务器/" rel="prev" title="开发一个C10K的高并发的FTP服务器">
+                开发一个C10K的高并发的FTP服务器 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

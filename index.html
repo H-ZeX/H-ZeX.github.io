@@ -383,7 +383,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2019/03/20/开发一个高并发的FTP服务器/" class="post-title-link" itemprop="url">开发一个高并发的FTP服务器</a>
+                <a href="/2019/03/20/开发一个高并发的FTP服务器/" class="post-title-link" itemprop="url">开发一个C10K的高并发的FTP服务器</a>
               
             
           </h1>
@@ -425,7 +425,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-03-21 00:03:45" itemprop="dateModified" datetime="2019-03-21T00:03:45+08:00">2019-03-21</time>
+                <time title="Modified: 2019-03-21 00:42:02" itemprop="dateModified" datetime="2019-03-21T00:42:02+08:00">2019-03-21</time>
               
             
           </span>
@@ -501,14 +501,14 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
             <p>
               需求
 根据RFC959
-高并发
+高并发(C10K)
 
 架构
 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）
 
 一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行
 
-每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等
+每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时
               ...
             </p>
           <!--noindex-->
