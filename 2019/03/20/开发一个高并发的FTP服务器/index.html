@@ -125,7 +125,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="需求 根据RFC959 高并发(C5K~C10K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  123456789101112">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-03-21T04:55:47.046Z">
+<meta property="og:updated_time" content="2019-03-21T06:50:32.724Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="开发一个高并发的FTP服务器">
 <meta name="twitter:description" content="需求 根据RFC959 高并发(C5K~C10K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  123456789101112">
@@ -427,7 +427,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-03-21 12:55:47" itemprop="dateModified" datetime="2019-03-21T12:55:47+08:00">2019-03-21</time>
+                <time title="Modified: 2019-03-21 14:50:32" itemprop="dateModified" datetime="2019-03-21T14:50:32+08:00">2019-03-21</time>
               
             
           </span>
@@ -546,16 +546,25 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </li>
 <li><p>压测前，运行server的命令是</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ulimit -s unlimited -f unlimited -d unlimited -n unlimited </span><br><span class="line">su root</span><br><span class="line">echo 20000 &gt;  /proc/sys/net/core/somaxconn</span><br><span class="line">sudo ./FTPServer [port]  &gt; /tmp/FTPServerOutput</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>修改<code>somaxconn</code>是为了使得baclog足够大</p>
+</li>
+<li><p>将stdout重定向到<code>/tmp/FTPServerOutput</code>是为了使得错误信息清晰的显示出来</p>
+</li>
+<li><p>之所以需要<code>sudo</code>，是因为使用了OS的账户验证机制来实现用户登录</p>
+</li>
+<li><p><code>./FTPServer [port]</code>的<code>[port]</code>参数可以不指定，也就是直接<code>sudo ./FTPServer  &gt; /tmp/FTPServerOutput</code>,这样将会监听在<code>8001</code>端口</p>
 </li>
 </ul>
-<p>　修改<code>somaxconn</code>是为了使得baclog足够大<br>  将stdout重定向到<code>/tmp/FTPServerOutput</code>是为了使得错误信息清晰的显示出来</p>
-<p>  之所以需要<code>sudo</code>，是因为使用了OS的账户验证机制来实现用户登录</p>
-<p>  <code>./FTPServer [port]</code>的<code>[port]</code>参数可以不指定，也就是直接<code>sudo ./FTPServer  &gt; /tmp/FTPServerOutput</code>,这样将会监听在<code>8001</code>端口</p>
-<ul>
+</li>
 <li><p>然后运行<code>java  -ea -jar -Dexternal.config=file:/tmp/1.properties FTPServerTester-1.0-SNAPSHOT.jar</code></p>
-<p><code>FTPServerTester-1.0-SNAPSHOT.jar</code>在根目录的<code>test</code>目录下（不是在<code>src/test</code>的那个<code>test</code>目录）</p>
-<p><code>/tmp/1.properties</code>是配置文件，因为需要包含测试账户信息，所以需要自己定制，样例如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">StressTest.TestCnt=10</span><br><span class="line">StressTest.MaxCmdConnectionCnt=1000</span><br><span class="line">StressTest.MaxThreadCnt=1024</span><br><span class="line"># the time(millisecond) to hand on the connection</span><br><span class="line">StressTest.HangTime=1000</span><br><span class="line"></span><br><span class="line"># 你运行FTPServer的host的地址</span><br><span class="line">Tester.TesterServerAddress=10.243.6.109</span><br><span class="line"></span><br><span class="line"># 你运行Tester的host地址</span><br><span class="line"># 必须保证运行server的host与运行tester的host是可以互通的</span><br><span class="line"># 包括，tester可以主动链接server，server也可以主动链接tester</span><br><span class="line">Tester.YourselfAddress=10.243.6.43</span><br><span class="line"></span><br><span class="line">Tester.ServerPort=8001</span><br><span class="line"># 系统上账户的用户名</span><br><span class="line">Tester.UserName=</span><br><span class="line"># 系统上账户的密码</span><br><span class="line">Tester.Password=</span><br><span class="line"># 这些是以逗号分隔的目录列表 </span><br><span class="line"># 必须是绝对路径</span><br><span class="line"># 这些目录数量应该&gt;=20个，越多越好，太少的话，测试会很慢</span><br><span class="line"># 因为多个用户访问少数几个目录会很慢</span><br><span class="line"># 如果你的测试程序与这个FTPserver运行在不同的主机上，那么FTPServer运行的主机上应该存在这些目录</span><br><span class="line"># 如果运行在同一台机子上，测试程序会创建这些目录</span><br><span class="line">Tester.ListTestDir=/tmp/testDir_1,/tmp/testDir_2,/tmp/testDir_3,/tmp/testDir_4,/tmp/testDir_5,/tmp/testDir_6,/tmp/testDir_7,/tmp/testDir_8,/tmp/testDir_9,/tmp/testDir_10,/tmp/testDir_11,/tmp/testDir_12,/tmp/testDir_13,/tmp/testDir_14,/tmp/testDir_15,/tmp/testDir_16,/tmp/testDir_17</span><br><span class="line"># 这个目录必须是绝对路径</span><br><span class="line"># 如果你的测试程序与这个FTPserver运行在不同的主机上，那么FTPServer运行的主机上应该存在这些目录</span><br><span class="line"># 如果运行在同一台机子上，测试程序会创建这些目录</span><br><span class="line">Tester.StorTestDir=/tmp/FTPSeverTesterStorDirs____23233dd22/</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>FTPServerTester-1.0-SNAPSHOT.jar</code>在根目录的<code>test</code>目录下（不是在<code>src/test</code>的那个<code>test</code>目录）</p>
+</li>
+<li><p><code>/tmp/1.properties</code>是配置文件，因为需要包含测试账户信息，所以需要自己定制，样例如下</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">StressTest.TestCnt=10</span><br><span class="line">StressTest.MaxCmdConnectionCnt=1000</span><br><span class="line">StressTest.MaxThreadCnt=1024</span><br><span class="line"># the time(millisecond) to hand on the connection</span><br><span class="line">StressTest.HangTime=1000</span><br><span class="line"></span><br><span class="line"># 你运行FTPServer的host的地址</span><br><span class="line">Tester.TesterServerAddress=10.243.6.109</span><br><span class="line"></span><br><span class="line"># 你运行Tester的host地址</span><br><span class="line"># 必须保证运行server的host与运行tester的host是可以互通的</span><br><span class="line"># 包括，tester可以主动链接server，server也可以主动链接tester</span><br><span class="line">Tester.YourselfAddress=10.243.6.43</span><br><span class="line"></span><br><span class="line">Tester.ServerPort=8001</span><br><span class="line"># 系统上账户的用户名</span><br><span class="line">Tester.UserName=</span><br><span class="line"># 系统上账户的密码</span><br><span class="line">Tester.Password=</span><br><span class="line"># 这些是以逗号分隔的目录列表 </span><br><span class="line"># 必须是绝对路径</span><br><span class="line"># 这些目录数量应该&gt;=20个，越多越好，太少的话，测试会很慢</span><br><span class="line"># 因为多个用户访问少数几个目录会很慢</span><br><span class="line"># 如果你的测试程序与这个FTPserver运行在不同的主机上，那么FTPServer运行的主机上应该存在这些目录</span><br><span class="line"># 如果运行在同一台机子上，测试程序会创建这些目录</span><br><span class="line">Tester.ListTestDir=/tmp/testDir_1,/tmp/testDir_2,/tmp/testDir_3,/tmp/testDir_4,/tmp/testDir_5,/tmp/testDir_6,/tmp/testDir_7,/tmp/testDir_8,/tmp/testDir_9,/tmp/testDir_10,/tmp/testDir_11,/tmp/testDir_12,/tmp/testDir_13,/tmp/testDir_14,/tmp/testDir_15,/tmp/testDir_16,/tmp/testDir_17</span><br><span class="line"># 这个目录必须是绝对路径</span><br><span class="line"># 如果你的测试程序与这个FTPserver运行在不同的主机上，那么FTPServer运行的主机上应该存在这些目录</span><br><span class="line"># 如果运行在同一台机子上，测试程序会创建这些目录</span><br><span class="line">Tester.StorTestDir=/tmp/FTPSeverTesterStorDirs____23233dd22/</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
 </li>
 </ul>
 <h4 id="压测结果"><a href="#压测结果" class="headerlink" title="压测结果"></a>压测结果</h4><ul>
