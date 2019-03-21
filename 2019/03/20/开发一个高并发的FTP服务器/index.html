@@ -125,7 +125,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="需求 根据RFC959 高并发(C5K~C10K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  123456789101112">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-03-21T04:31:02.688Z">
+<meta property="og:updated_time" content="2019-03-21T04:55:47.046Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="开发一个高并发的FTP服务器">
 <meta name="twitter:description" content="需求 根据RFC959 高并发(C5K~C10K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  123456789101112">
@@ -427,7 +427,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-03-21 12:31:02" itemprop="dateModified" datetime="2019-03-21T12:31:02+08:00">2019-03-21</time>
+                <time title="Modified: 2019-03-21 12:55:47" itemprop="dateModified" datetime="2019-03-21T12:55:47+08:00">2019-03-21</time>
               
             
           </span>
@@ -545,11 +545,13 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li><p>笔者的压测程序使用java写的，代码在这里<a href="https://github.com/H-ZeX/FTP-Implement/tree/master/test/FTPServerTester" target="_blank" rel="noopener">https://github.com/H-ZeX/FTP-Implement/tree/master/test/FTPServerTester</a></p>
 </li>
 <li><p>压测前，运行server的命令是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ulimit -s unlimited -f unlimited -d unlimited -n unlimited </span><br><span class="line">sudo ./FTPServer [port]  &gt; /tmp/FTPServerOutput</span><br></pre></td></tr></table></figure>
-<p>将stdout重定向到<code>/tmp/FTPServerOutput</code>是为了使得错误信息清晰的显示出来</p>
-<p>之所以需要<code>sudo</code>，是因为使用了OS的账户验证机制来实现用户登录</p>
-<p><code>./FTPServer [port]</code>的<code>[port]</code>参数可以不指定，也就是直接<code>sudo ./FTPServer  &gt; /tmp/FTPServerOutput</code>,这样将会监听在<code>8001</code>端口</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ulimit -s unlimited -f unlimited -d unlimited -n unlimited </span><br><span class="line">su root</span><br><span class="line">echo 20000 &gt;  /proc/sys/net/core/somaxconn</span><br><span class="line">sudo ./FTPServer [port]  &gt; /tmp/FTPServerOutput</span><br></pre></td></tr></table></figure>
 </li>
+</ul>
+<p>　修改<code>somaxconn</code>是为了使得baclog足够大<br>  将stdout重定向到<code>/tmp/FTPServerOutput</code>是为了使得错误信息清晰的显示出来</p>
+<p>  之所以需要<code>sudo</code>，是因为使用了OS的账户验证机制来实现用户登录</p>
+<p>  <code>./FTPServer [port]</code>的<code>[port]</code>参数可以不指定，也就是直接<code>sudo ./FTPServer  &gt; /tmp/FTPServerOutput</code>,这样将会监听在<code>8001</code>端口</p>
+<ul>
 <li><p>然后运行<code>java  -ea -jar -Dexternal.config=file:/tmp/1.properties FTPServerTester-1.0-SNAPSHOT.jar</code></p>
 <p><code>FTPServerTester-1.0-SNAPSHOT.jar</code>在根目录的<code>test</code>目录下（不是在<code>src/test</code>的那个<code>test</code>目录）</p>
 <p><code>/tmp/1.properties</code>是配置文件，因为需要包含测试账户信息，所以需要自己定制，样例如下</p>
