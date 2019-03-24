@@ -117,18 +117,18 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
 
 
-  <meta name="description" content="需求 根据RFC959 高并发(C2K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  12345678910111213141">
+  <meta name="description" content="需求 根据RFC959 高并发(C3K~C4K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  1234567891011121">
 <meta name="keywords" content="FTP 服务器,高并发">
 <meta property="og:type" content="article">
 <meta property="og:title" content="开发一个高并发的FTP服务器">
 <meta property="og:url" content="https://h-zex.github.io/2019/03/20/开发一个高并发的FTP服务器/index.html">
 <meta property="og:site_name" content="H-ZeX">
-<meta property="og:description" content="需求 根据RFC959 高并发(C2K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  12345678910111213141">
+<meta property="og:description" content="需求 根据RFC959 高并发(C3K~C4K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  1234567891011121">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-03-24T03:59:31.108Z">
+<meta property="og:updated_time" content="2019-03-24T04:12:37.593Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="开发一个高并发的FTP服务器">
-<meta name="twitter:description" content="需求 根据RFC959 高并发(C2K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  12345678910111213141">
+<meta name="twitter:description" content="需求 根据RFC959 高并发(C3K~C4K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  1234567891011121">
 
 
 
@@ -427,7 +427,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-03-24 11:59:31" itemprop="dateModified" datetime="2019-03-24T11:59:31+08:00">2019-03-24</time>
+                <time title="Modified: 2019-03-24 12:12:37" itemprop="dateModified" datetime="2019-03-24T12:12:37+08:00">2019-03-24</time>
               
             
           </span>
@@ -500,7 +500,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
       
         <h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><ul>
 <li>根据RFC959</li>
-<li>高并发(C2K)</li>
+<li>高并发(C3K~C4K)</li>
 </ul>
 <h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><ul>
 <li><p>在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）</p>
@@ -569,6 +569,10 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </ul>
 <h4 id="压测结果"><a href="#压测结果" class="headerlink" title="压测结果"></a>压测结果</h4><ul>
 <li>笔者在自己的机器上(Intel i7-8550U, 16G内存，没有SSD)，<code>StressTest.MaxCmdConnectionCnt</code>设为<code>10240</code>及以下时，测试可以顺利完成。并且在测试过程使用linux的<code>ftp</code>命令与server通信，是比较流畅的</li>
+<li><p>在如下设置测试参数后</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">StressTest.MaxCmdConnectionCnt=10000</span><br><span class="line">StressTest.MaxThreadCnt=2024</span><br><span class="line">StressTest.HangTime=2000</span><br></pre></td></tr></table></figure>
+<p> <code>sudo watch -n 0.5 &quot;netstat -nv | grep 8001 | grep -i &quot;establish&quot; | wc -l &quot;</code>可以看到数目是3K到4K之间波动，并且测试期间手动与服务器通信是比较流畅的</p>
+</li>
 </ul>
 <h3 id="出现的问题"><a href="#出现的问题" class="headerlink" title="出现的问题"></a>出现的问题</h3><ul>
 <li><p>测试程序开50k个链接连server进行操作（50k个测试是依次提交给线程池，边提交线程池边运行），server需要openListenFd，由OS指定端口，但是在测试程序成功进行了15k多一点的测试后，server的这个openListenFd失败，errno是<code>Address already in use</code>。</p>
