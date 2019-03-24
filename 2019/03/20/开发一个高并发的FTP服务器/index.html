@@ -117,18 +117,18 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
 
 
-  <meta name="description" content="需求 根据RFC959 高并发(C5K~C10K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  123456789101112">
+  <meta name="description" content="需求 根据RFC959 高并发(C2K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  12345678910111213141">
 <meta name="keywords" content="FTP 服务器,高并发">
 <meta property="og:type" content="article">
 <meta property="og:title" content="开发一个高并发的FTP服务器">
 <meta property="og:url" content="https://h-zex.github.io/2019/03/20/开发一个高并发的FTP服务器/index.html">
 <meta property="og:site_name" content="H-ZeX">
-<meta property="og:description" content="需求 根据RFC959 高并发(C5K~C10K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  123456789101112">
+<meta property="og:description" content="需求 根据RFC959 高并发(C2K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  12345678910111213141">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-03-21T06:50:32.724Z">
+<meta property="og:updated_time" content="2019-03-24T03:59:31.108Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="开发一个高并发的FTP服务器">
-<meta name="twitter:description" content="需求 根据RFC959 高并发(C5K~C10K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  123456789101112">
+<meta name="twitter:description" content="需求 根据RFC959 高并发(C2K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  12345678910111213141">
 
 
 
@@ -427,7 +427,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-03-21 14:50:32" itemprop="dateModified" datetime="2019-03-21T14:50:32+08:00">2019-03-21</time>
+                <time title="Modified: 2019-03-24 11:59:31" itemprop="dateModified" datetime="2019-03-24T11:59:31+08:00">2019-03-24</time>
               
             
           </span>
@@ -500,7 +500,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
       
         <h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><ul>
 <li>根据RFC959</li>
-<li>高并发(C5K~C10K)</li>
+<li>高并发(C2K)</li>
 </ul>
 <h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><ul>
 <li><p>在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）</p>
