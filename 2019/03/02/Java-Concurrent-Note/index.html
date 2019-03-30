@@ -124,7 +124,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="以下大部分是《java并发编程实战》的笔记，以JCIP简称之  对象的状态 （非正式意义上），对象的状态是指存储在状态变量中的数据，可能包括其他依赖对象的域（例如HashMap的Map.Entry对象） 对象的状态中包含了任何可能影响其外部可见行为的数据  线程安全性的定义 正确性的含义 某个类的行为与其规范完全一致。在良好的规范中通常会定义各种不变性条件（Invariant）来约束对象的状态，">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-03-06T16:17:41.041Z">
+<meta property="og:updated_time" content="2019-03-27T04:24:54.495Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My Java Concurrent Note">
 <meta name="twitter:description" content="以下大部分是《java并发编程实战》的笔记，以JCIP简称之  对象的状态 （非正式意义上），对象的状态是指存储在状态变量中的数据，可能包括其他依赖对象的域（例如HashMap的Map.Entry对象） 对象的状态中包含了任何可能影响其外部可见行为的数据  线程安全性的定义 正确性的含义 某个类的行为与其规范完全一致。在良好的规范中通常会定义各种不变性条件（Invariant）来约束对象的状态，">
@@ -426,7 +426,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-03-07 00:17:41" itemprop="dateModified" datetime="2019-03-07T00:17:41+08:00">2019-03-07</time>
+                <time title="Modified: 2019-03-27 12:24:54" itemprop="dateModified" datetime="2019-03-27T12:24:54+08:00">2019-03-27</time>
               
             
           </span>
@@ -611,6 +611,8 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <p>这种保证还延伸到正确创建的对象中所有final类型的域，在没有额外同步的情况下，也可以安全的访问final类型的域。不过，如果这些final域指向的是可变对象，那么访问这些域所指向的对象的状态时还是需要同步</p>
 </li>
 <li><p>（？）考虑以下声明：<code>final Map&lt;String, Double&gt;accounts = new HashKap&lt;&gt;()</code>；其他线程会在构造函数完成构造之后才看到这个 accounts 变量。如果不使用 final，就不能保证其他线程看到的是 accounts 更新后的值，它们可能都只是看到 null, 而不是新构造的 HashMap</p>
+</li>
+<li><p>在发布不可变对象时，没有使用同步，也可以安全地访问该对象</p>
 </li>
 </ul>
 <h3 id="原子变量"><a href="#原子变量" class="headerlink" title="原子变量"></a>原子变量</h3><ul>
