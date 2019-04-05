@@ -124,7 +124,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="本笔记大部分是《深入理解java虚拟机第二版》的笔记，该书基于java1.7  Override 准确式内存管理：即虚拟机可以知道内存中某个位置的数据具体是什么类型   运行时数据区域 方法区  线程共享  存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等  虚拟机规范把方法区描述为堆的一个逻辑部分（但是有一个别名：Non-Heap）  HotSpot用永久代实现。其他虚拟机">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-03-14T12:06:25.882Z">
+<meta property="og:updated_time" content="2019-04-05T06:30:39.493Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My JVM Note">
 <meta name="twitter:description" content="本笔记大部分是《深入理解java虚拟机第二版》的笔记，该书基于java1.7  Override 准确式内存管理：即虚拟机可以知道内存中某个位置的数据具体是什么类型   运行时数据区域 方法区  线程共享  存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等  虚拟机规范把方法区描述为堆的一个逻辑部分（但是有一个别名：Non-Heap）  HotSpot用永久代实现。其他虚拟机">
@@ -426,7 +426,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-03-14 20:06:25" itemprop="dateModified" datetime="2019-03-14T20:06:25+08:00">2019-03-14</time>
+                <time title="Modified: 2019-04-05 14:30:39" itemprop="dateModified" datetime="2019-04-05T14:30:39+08:00">2019-04-05</time>
               
             
           </span>
@@ -443,7 +443,14 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JAVA/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a></span>
 
                 
                 
@@ -769,7 +776,9 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <ul>
 <li><p>老年代的收集器</p>
 </li>
-<li><p>使用多线程、标记-整理算法</p>
+<li><p>以获取最短回收停顿时间为目标的收集器</p>
+</li>
+<li><p>使用多线程、标记-清除算法</p>
 </li>
 <li><p>它第一次实现了让垃圾收集线程与用户线程(基本上)同时工作</p>
 </li>
@@ -1001,7 +1010,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">32</span>
+                    <span class="site-state-item-count">33</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -1044,7 +1053,11 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                     
                       
                     
-                    <span class="site-state-item-count">14</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -1185,7 +1198,9 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                     
                       
                     
-                    <span class="site-state-item-count">60</span>
+                      
+                    
+                    <span class="site-state-item-count">61</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
