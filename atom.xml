@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://h-zex.github.io/"/>
-  <updated>2019-04-05T06:21:59.516Z</updated>
+  <updated>2019-04-05T08:24:41.998Z</updated>
   <id>https://h-zex.github.io/</id>
   
   <author>
@@ -17,11 +17,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>IDEA 没有在侧边栏高亮行差异</title>
+    <title>IDEA 没有在侧边栏高亮行差异的解决方法</title>
     <link href="https://h-zex.github.io/2019/04/05/idea-%E6%B2%A1%E6%9C%89%E5%9C%A8%E4%BE%A7%E8%BE%B9%E6%A0%8F%E9%AB%98%E4%BA%AE%E8%A1%8C%E5%B7%AE%E5%BC%82/"/>
     <id>https://h-zex.github.io/2019/04/05/idea-没有在侧边栏高亮行差异/</id>
     <published>2019-04-05T06:14:30.000Z</published>
-    <updated>2019-04-05T06:21:59.516Z</updated>
+    <updated>2019-04-05T08:24:41.998Z</updated>
     
     <content type="html"><![CDATA[<ul><li>如果使用了git管理项目，IDE可以在侧边栏显示行差异<a href="https://www.jetbrains.com/help/idea/viewing-changes-information.html" target="_blank" rel="noopener">IDEA-Review project history</a></li><li>这需要开启<code>editor&gt;general&gt;other&gt;highlight modified lines in gutter</code></li><li>还需要在的setting的那个页面的<code>version control</code>那里把对应的目录register <img src="/2019/04/05/idea-没有在侧边栏高亮行差异/p1.png"></li></ul>]]></content>
     
