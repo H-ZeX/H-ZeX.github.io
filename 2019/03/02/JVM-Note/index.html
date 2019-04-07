@@ -124,7 +124,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="本笔记大部分是《深入理解java虚拟机第二版》的笔记，该书基于java1.7  Override 准确式内存管理：即虚拟机可以知道内存中某个位置的数据具体是什么类型   运行时数据区域 方法区  线程共享  存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等  虚拟机规范把方法区描述为堆的一个逻辑部分（但是有一个别名：Non-Heap）  HotSpot用永久代实现。其他虚拟机">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-04-05T06:30:39.493Z">
+<meta property="og:updated_time" content="2019-04-06T08:20:04.069Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My JVM Note">
 <meta name="twitter:description" content="本笔记大部分是《深入理解java虚拟机第二版》的笔记，该书基于java1.7  Override 准确式内存管理：即虚拟机可以知道内存中某个位置的数据具体是什么类型   运行时数据区域 方法区  线程共享  存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等  虚拟机规范把方法区描述为堆的一个逻辑部分（但是有一个别名：Non-Heap）  HotSpot用永久代实现。其他虚拟机">
@@ -426,7 +426,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-05 14:30:39" itemprop="dateModified" datetime="2019-04-05T14:30:39+08:00">2019-04-05</time>
+                <time title="Modified: 2019-04-06 16:20:04" itemprop="dateModified" datetime="2019-04-06T16:20:04+08:00">2019-04-06</time>
               
             
           </span>
@@ -819,10 +819,23 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </ul>
 </li>
 </ul>
-<h3 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h3><ul>
-<li>例子 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ClassLoader myLoader = <span class="keyword">new</span> ClassLoader() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Class&lt;?&gt; loadClass(String name) <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            String fileName = name.substring(name.lastIndexOf(<span class="string">"."</span>) + <span class="number">1</span>) + <span class="string">".class"</span>;</span><br><span class="line">            InputStream is = getClass().getResourceAsStream(fileName);</span><br><span class="line">            <span class="keyword">if</span> (is == <span class="keyword">null</span>) &#123;</span><br><span class="line">                System.out.println(<span class="string">"use super loader"</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">super</span>.loadClass(name);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">byte</span>[] b = <span class="keyword">new</span> <span class="keyword">byte</span>[is.available()];</span><br><span class="line">            is.read(b);</span><br><span class="line">            <span class="keyword">return</span> defineClass(name, b, <span class="number">0</span>, b.length);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> ClassNotFoundException(name);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-</li>
+<h3 id="类加载"><a href="#类加载" class="headerlink" title="类加载"></a>类加载</h3><blockquote>
+<p>在实际情况中， 每个Class文件都有可能代表着Java语言中的一个类或接口， 后文中直接对“类”的描述都包括了类和接口的可能性</p>
+</blockquote>
+<h5 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h5><ul>
+<li>在Java语言里面，类型的加载、 连接和初始化过程都是在程序运行期间完成的， 这种策略虽然会令类加载时稍微增加一些性能开销， 但是会为Java应用程序提供高度的灵活性，例如在运行时才指定某个接口的实现类</li>
+<li>验证、准备、解析三个部分统称为连接</li>
 </ul>
+<h5 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h5><ul>
+<li>加载（loading）</li>
+<li>验证</li>
+<li>准备</li>
+<li>解析</li>
+<li>初始化</li>
+<li>使用</li>
+<li>卸载</li>
+</ul>
+<h5 id="ClassLoader例子"><a href="#ClassLoader例子" class="headerlink" title="ClassLoader例子"></a>ClassLoader例子</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ClassLoader myLoader = <span class="keyword">new</span> ClassLoader() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Class&lt;?&gt; loadClass(String name) <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            String fileName = name.substring(name.lastIndexOf(<span class="string">"."</span>) + <span class="number">1</span>) + <span class="string">".class"</span>;</span><br><span class="line">            InputStream is = getClass().getResourceAsStream(fileName);</span><br><span class="line">            <span class="keyword">if</span> (is == <span class="keyword">null</span>) &#123;</span><br><span class="line">                System.out.println(<span class="string">"use super loader"</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">super</span>.loadClass(name);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">byte</span>[] b = <span class="keyword">new</span> <span class="keyword">byte</span>[is.available()];</span><br><span class="line">            is.read(b);</span><br><span class="line">            <span class="keyword">return</span> defineClass(name, b, <span class="number">0</span>, b.length);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> ClassNotFoundException(name);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 <h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><blockquote>
 <p>以下可能有HotSpot专有的参数</p>
 </blockquote>
@@ -923,8 +936,8 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/03/02/Java-Concurrent-Note/" rel="next" title="My Java Concurrent Note">
-                <i class="fa fa-chevron-left"></i> My Java Concurrent Note
+              <a href="/2018/10/18/GF-2-n上算术运算的实现/" rel="next" title="$GF(2^n)$上算术运算的实现">
+                <i class="fa fa-chevron-left"></i> $GF(2^n)$上算术运算的实现
               </a>
             
           </div>
@@ -1010,7 +1023,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-count">32</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -1053,9 +1066,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-count">14</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -1267,7 +1278,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Override"><span class="nav-text">Override</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行时数据区域"><span class="nav-text">运行时数据区域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HotSpot在Java堆中对象的创建、布局、访问"><span class="nav-text">HotSpot在Java堆中对象的创建、布局、访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类加载的时机"><span class="nav-text">类加载的时机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HotSpot-VM的结构"><span class="nav-text">HotSpot VM的结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HotSpot-Runtime"><span class="nav-text">HotSpot Runtime</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GC"><span class="nav-text">GC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类加载器"><span class="nav-text">类加载器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数"><span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实验和调优"><span class="nav-text">实验和调优</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Override"><span class="nav-text">Override</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行时数据区域"><span class="nav-text">运行时数据区域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HotSpot在Java堆中对象的创建、布局、访问"><span class="nav-text">HotSpot在Java堆中对象的创建、布局、访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类加载的时机"><span class="nav-text">类加载的时机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HotSpot-VM的结构"><span class="nav-text">HotSpot VM的结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HotSpot-Runtime"><span class="nav-text">HotSpot Runtime</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GC"><span class="nav-text">GC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类加载"><span class="nav-text">类加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数"><span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实验和调优"><span class="nav-text">实验和调优</span></a></li></ol></div>
             
 
           </div>
