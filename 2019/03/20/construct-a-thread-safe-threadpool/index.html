@@ -117,18 +117,18 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
 
 
-  <meta name="description" content="CSAPP提到的汇编相关知识点">
-<meta name="keywords" content="汇编">
+  <meta name="description" content="构造一个线程安全的ThreadPool线程安全的两个要点 原子性：一组操作要么不执行，要么完全执行  内存可见性：一个线程对于某个对象、变量的修改对于另一个线程是否可见，什么时候可见，该数据可见时其他数据的的可见情况   使用pthread时保证内存可见性 由于笔者对pthread的内存模型不熟悉、不清楚c++中的volatile语义是否编译器相关的，所以，在构造这个ThreadPool时不敢使用">
+<meta name="keywords" content="原子性,线程安全,线程池,内存可见性">
 <meta property="og:type" content="article">
-<meta property="og:title" content="汇编相关">
-<meta property="og:url" content="https://h-zex.github.io/2017/08/06/汇编相关/index.html">
+<meta property="og:title" content="构造一个线程安全的ThreadPool">
+<meta property="og:url" content="https://h-zex.github.io/2019/03/20/construct-a-thread-safe-threadpool/index.html">
 <meta property="og:site_name" content="H-ZeX">
-<meta property="og:description" content="CSAPP提到的汇编相关知识点">
+<meta property="og:description" content="构造一个线程安全的ThreadPool线程安全的两个要点 原子性：一组操作要么不执行，要么完全执行  内存可见性：一个线程对于某个对象、变量的修改对于另一个线程是否可见，什么时候可见，该数据可见时其他数据的的可见情况   使用pthread时保证内存可见性 由于笔者对pthread的内存模型不熟悉、不清楚c++中的volatile语义是否编译器相关的，所以，在构造这个ThreadPool时不敢使用">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-08-04T04:48:35.588Z">
+<meta property="og:updated_time" content="2019-04-11T12:33:37.569Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="汇编相关">
-<meta name="twitter:description" content="CSAPP提到的汇编相关知识点">
+<meta name="twitter:title" content="构造一个线程安全的ThreadPool">
+<meta name="twitter:description" content="构造一个线程安全的ThreadPool线程安全的两个要点 原子性：一组操作要么不执行，要么完全执行  内存可见性：一个线程对于某个对象、变量的修改对于另一个线程是否可见，什么时候可见，该数据可见时其他数据的的可见情况   使用pthread时保证内存可见性 由于笔者对pthread的内存模型不熟悉、不清楚c++中的volatile语义是否编译器相关的，所以，在构造这个ThreadPool时不敢使用">
 
 
 
@@ -137,7 +137,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
 
 
-  <link rel="canonical" href="https://h-zex.github.io/2017/08/06/汇编相关/"/>
+  <link rel="canonical" href="https://h-zex.github.io/2019/03/20/construct-a-thread-safe-threadpool/"/>
 
 
 
@@ -147,7 +147,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
   };
 </script>
 
-  <title>汇编相关 | H-ZeX</title>
+  <title>构造一个线程安全的ThreadPool | H-ZeX</title>
   
 
 
@@ -375,7 +375,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://h-zex.github.io/2017/08/06/汇编相关/"/>
+    <link itemprop="mainEntityOfPage" href="https://h-zex.github.io/2019/03/20/construct-a-thread-safe-threadpool/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="H-ZeX"/>
@@ -392,7 +392,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
         
         
-          <h1 class="post-title" itemprop="name headline">汇编相关
+          <h1 class="post-title" itemprop="name headline">构造一个线程安全的ThreadPool
 
               
             
@@ -418,7 +418,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
               
 
-              <time title="Created: 2017-08-06 22:35:44" itemprop="dateCreated datePublished" datetime="2017-08-06T22:35:44+08:00">2017-08-06</time>
+              <time title="Created: 2019-03-20 09:58:41" itemprop="dateCreated datePublished" datetime="2019-03-20T09:58:41+08:00">2019-03-20</time>
             
 
             
@@ -435,7 +435,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-08-04 12:48:35" itemprop="dateModified" datetime="2018-08-04T12:48:35+08:00">2018-08-04</time>
+                <time title="Modified: 2019-04-11 20:33:37" itemprop="dateModified" datetime="2019-04-11T20:33:37+08:00">2019-04-11</time>
               
             
           </span>
@@ -452,7 +452,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/CSAPP/" itemprop="url" rel="index"><span itemprop="name">CSAPP</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/并发编程/" itemprop="url" rel="index"><span itemprop="name">并发编程</span></a></span>
 
                 
                 
@@ -470,8 +470,8 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                   <i class="fa fa-comment-o"></i>
                 </span>
             
-                <a href="/2017/08/06/汇编相关/#comments" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2017/08/06/汇编相关/" itemprop="commentCount"></span>
+                <a href="/2019/03/20/construct-a-thread-safe-threadpool/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2019/03/20/construct-a-thread-safe-threadpool/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -484,8 +484,6 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
           
 
-          
-            <div class="post-description">CSAPP提到的汇编相关知识点</div>
           
 
         </div>
@@ -501,61 +499,60 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
       
 
       
-        <h4 id="MOV"><a href="#MOV" class="headerlink" title="MOV"></a>MOV</h4><ul>
-<li>操作数不能都是memory</li>
-<li>register must match the suffix</li>
-<li>movq 的立即数必须再32bit补码能表示的范围内，然后该立即数被符号扩展</li>
-<li>movabsq可以有任意的64bit立即数（没有明确指出是否是补码），但是destination必须是register</li>
-<li>movz、movs系列have a register or memory location as the source and a register as the destination.</li>
-<li>cltq: SignExtend(%eax) -&gt; %rax</li>
-<li>movzlq不存在，可以用movl实现。<strong>但是movzbq、movzwq为什么存在，不是可以用movzbl、movzwl实现（practice problem3.4第四题）。同样的，sal、shl为什么同时存在</strong></li>
-</ul>
-<h4 id="其他指令"><a href="#其他指令" class="headerlink" title="其他指令"></a>其他指令</h4><ul>
-<li>leaq:<ul>
-<li>has no other size variants</li>
-<li>The destination operand must be a register.</li>
-</ul>
+        <h2 id="构造一个线程安全的ThreadPool"><a href="#构造一个线程安全的ThreadPool" class="headerlink" title="构造一个线程安全的ThreadPool"></a>构造一个线程安全的ThreadPool</h2><h4 id="线程安全的两个要点"><a href="#线程安全的两个要点" class="headerlink" title="线程安全的两个要点"></a>线程安全的两个要点</h4><ul>
+<li><p>原子性：一组操作要么不执行，要么完全执行</p>
 </li>
-<li>Unary Operations:<ul>
-<li>operand can be either a register or a memory location. </li>
-</ul>
-</li>
-<li>Binary Operations:<ul>
-<li>the second operand is used as both a source and a destination</li>
-<li>the first operand can be either an immediate value, a register, or a memory location. The second can be either a register or a memory location.</li>
-<li>the two operands can’t both be memory location</li>
-<li>when the second operand is a memory location, the processor must read the value from memory, perform the operation, and then write the result back to memory.</li>
-</ul>
-</li>
-<li>Shift Operations<ul>
-<li>shift amount is given first and the value to shift is given second. 因为第二个操作数是register或者memory location，所以不能用立即数作为the value to shift</li>
-<li>shift amount can be imm value or %cl</li>
-<li>a shift instruction operating on data values that are w bits long determines the shift amount from the low-order m bits of register %cl, where $2^m=w$. The higher-order bits are ignored.For example, when register %cl has hexadecimal value 0xFF, then instruction salb would shift by 7, while salw would shift by 15, sall would shift by 31, and salq would shift 63</li>
-<li>destination can be register or memory location</li>
-</ul>
+<li><p>内存可见性：一个线程对于某个对象、变量的修改对于另一个线程是否可见，什么时候可见，该数据可见时其他数据的的可见情况</p>
 </li>
 </ul>
-<h2 id="浮点指令"><a href="#浮点指令" class="headerlink" title="浮点指令"></a>浮点指令</h2><ul>
-<li>vmovss, vmovd的操作数可以是（第一个source，第二个destination）<ul>
-<li>memory， XMM</li>
-<li>XMM， memory</li>
-<li>按照书上的描述，好像还可以XMM， XMM</li>
-</ul>
+<h4 id="使用pthread时保证内存可见性"><a href="#使用pthread时保证内存可见性" class="headerlink" title="使用pthread时保证内存可见性"></a>使用pthread时保证内存可见性</h4><ul>
+<li><p>由于笔者对pthread的内存模型不熟悉、不清楚c++中的<code>volatile</code>语义是否编译器相关的，所以，在构造这个ThreadPool时不敢使用<code>volatile</code>等来实现内存可见性。而是通过加锁以充当内存屏障来实现——虽然性能上会受到影响，但是至少可以保证正确性</p>
 </li>
-<li>vmovaps, vmovapd可以从XMM to XMM，读写内存时，地址需要16字节对齐。</li>
-<li>vcvttss2si,, vcvttss2siq的destination都是通用寄存器（非XMM）</li>
-<li>vcvtsi2ss, vcvtsi2sd, vcvtsi2ssq, vcvtsi2sdq的destination都是XMM，第二个source操作数都是XMM（可能只是书上讲的情形有这个要求而已）</li>
-<li>vunpcklps, vcvtps2pd：single to double（其实是有vcvtsd2ss）</li>
-<li>vmovddup, vcvtpd2psx：double to single（其实是有vcvtsi2sdq）</li>
-<li>vaddss, vsubss, vmulss, vdivss, vmaxss, vminss, sqrtss第一个source是XMM或者memory，第二个source和destination必须是XMM</li>
-<li>vaddsd, vsubsd, vmulsd, vdivsd, vmaxsd, vminsd, sqrtsd同样</li>
+<li><p>pthread创建线程时，传递的<code>start_routine</code>参数必须是static方法，这意味着，需要把ThreadPool的<code>this</code>指针传递过去。但是，一个严重的问题，<code>this</code>指针是在原线程初始化的，ThreadPool对象也是在原线程构造的，那么，如何保证新线程看到一致的、正确构造的ThreadPool对象？在java内存模型中，这是无法保证的，必须使用其他办法来保证（<code>volatile</code>、<code>final</code>、<code>AtomicReference</code>等）。笔者不清楚pthread是否可以保证传递过去的参数的内存可见性，虽然实验中，clang++7开<code>-O3</code>，测试了5k多次，在另一个线程都可以看到正确的对象，但是因为不确定这是否是编译器相关的。所以，笔者使用了一个全局mutex，充当内存屏障——每次写该变量时持有该mutex，每次读时也要持有，以保证新线程可以看到正确构造的、一致的对象</p>
+</li>
+<li><p>有另一个问题，mutex对象的内存可见性如何保证？按照JCIP（java concurrency in practice）的说法，即使是一个线程安全的对象，也需要被安全的发布（发布（publish）：使对象能够在当前作用域之外的代码中使用）。保护this指针的mutex是全局变量，那么我认为其可见性应该是可以保证的，因为在编译期就已经初始化完成该mutex（欢迎指正！）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">pthread_mutex_t</span> poolPtrAndSigToBlockMutex = PTHREAD_MUTEX_INITIALIZER;</span><br></pre></td></tr></table></figure>
+<p>而对于那些是类内变量（非static）的mutex，因为每次获得threadPool对象时，都是在持有保护<code>this</code>指针的mutex时解引用<code>this</code>指针，所以我认为可以保证另一个线程可以看到完整的、一致的对象（欢迎指正！）</p>
+</li>
 </ul>
-<h4 id="MISC"><a href="#MISC" class="headerlink" title="MISC"></a>MISC</h4><ul>
-<li>intel format have reverse order operands;</li>
-<li>Different instructions allow different ranges of immediate values; the assembler will automatically select the most compact way of encoding a value </li>
-<li>Such a reference has four components: an immediate offset Imm, a base register r<sub>b</sub>, an index register r<sub>i</sub>, and a scale factor s, where s must be 1, 2, 4, or 8. Both the base and index must be 64-bit registers.</li>
-<li>Any instruction that generates a 32-bit value for a register also sets thehigh-order portion of the register to 0</li>
-<li>后缀的匹配</li>
+<h4 id="this指针逸出问题"><a href="#this指针逸出问题" class="headerlink" title="this指针逸出问题"></a><code>this</code>指针逸出问题</h4><ul>
+<li>根据JCIP，逸出（escape）的含义是在对象构造完成前就发布该对象，从而另一个线程看到一个没有完全构造的对象</li>
+<li>如果在构造函数里启动线程，那么就是典型的<code>this</code>指针逸出——在构造函数还没运行完前，另一个线程就已经看到了<code>this</code>指针，从而看到了一个没有完全构造的对象</li>
+<li>解决方法是使用一个start函数，用户获得ThreadPool实例后，手动调用start方法，以启动工作线程</li>
+</ul>
+<h4 id="状态转换的证明"><a href="#状态转换的证明" class="headerlink" title="状态转换的证明"></a>状态转换的证明</h4><ul>
+<li><p>ThreadPool需要维护自己当前处于哪一个状态</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NEW, RUNNING, GRACEFUL_SHUTDOWN, IMMEDIATE_SHUTDOWN</span><br></pre></td></tr></table></figure>
+<p>并且保证程序中只有合法的状态转移。这需要证明。</p>
+</li>
+<li><p>在我的实现的线程池中，状态的转换是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NEW-&gt;RUNNING-&gt;GRACEFUL_SHUTDOWN or IMMEDIATE_SHUTDOWN</span><br><span class="line">or</span><br><span class="line">NEW-&gt;GRACEFUL_SHUTDOWN or IMMEDIATE_SHUTDOWN</span><br></pre></td></tr></table></figure>
+<p>证明是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">In the constructor, the state is set to NEW.</span><br><span class="line">In the start method, the state is set to RUNNING.</span><br><span class="line">In the shutdown method, the state set to GRACEFUL_SHUTDOWN or IMMEDIATE_SHUTDOWN.</span><br><span class="line"></span><br><span class="line">proof of the state transformation safety.</span><br><span class="line">For any instance of this ThreadPool,</span><br><span class="line">the constructor run only one time,</span><br><span class="line">so for any instance, if it is not NEW state,</span><br><span class="line">it will never be NEW state.</span><br><span class="line">After the shutdown method is called,</span><br><span class="line">no other public method except destructor and getInstance can be called,</span><br><span class="line">so if it is shutdown state, it will always be shutdown state.</span><br><span class="line">Every time the state is modify, it is protected by taskQueAndStateMutex,</span><br><span class="line">so there is no thread safety problem.</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h4><ul>
+<li><p>因为使用了全局变量mutex，所以这个类只能是单例模式</p>
+</li>
+<li><p>在java中，有一个DCL（double check locking），其代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Object instance = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (instance == <span class="keyword">null</span>)</span><br><span class="line">        instance = <span class="keyword">new</span> Object();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> instance;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个写法有个问题，另一个线程可能看到一个<code>instance</code>引用已经被初始化完成，但是对象构造函数还未完成的对象——因为内存重排序，编译器可以先初始化引用再完成构造函数的运行</p>
+</li>
+<li><p>因为不清楚pthread是否也会有这种问题，所以对于获得ThreadPool实例的<code>getInstance</code>方法，每次都要加锁，然后才检查instance指针</p>
+</li>
+</ul>
+<h4 id="使用条件变量的注意事项"><a href="#使用条件变量的注意事项" class="headerlink" title="使用条件变量的注意事项"></a>使用条件变量的注意事项</h4><ul>
+<li><p>wait Condition变量前要检查条件是否满足，否则可能出现：条件以满足，所以生产者不再notify，然后消费者就一直hang在cond wait那里</p>
+</li>
+<li><p>检查条件时要使用<code>while</code>而不是<code>if</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 正面例子</span></span><br><span class="line"><span class="keyword">while</span> (<span class="keyword">not</span> satify condition) &#123;</span><br><span class="line">    cond.wait()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 反面例子</span></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">not</span> satify condition) &#123;</span><br><span class="line">    cond.wait</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一个很重要的原因：某个线程正在等待，然后被唤醒，这时候，突然一个新线程（该线程之前并没有在等待该cond）进来，拿走了资源，结果醒来的线程拿不到资源，所以应该继续等。另外wiki（<a href="https://en.wikipedia.org/wiki/Spurious_wakeup" target="_blank" rel="noopener">Spurious wakeup</a>）上还讲了另一个原因，就是说在现代处理器上，要保证没有假醒需要较高的代价。不过，JCIP（java concurrency in practice）上虽然有打比方说“因为线路故障导致烤面包机提前响起”，但是没有明确说存在这种硬件上导致的假醒</p>
+</li>
+</ul>
+<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><ul>
+<li>链接：<a href="https://github.com/H-ZeX/FTP-Implement/blob/master/src/main/tools/ThreadPool.hpp" target="_blank" rel="noopener">https://github.com/H-ZeX/FTP-Implement/blob/master/src/main/tools/ThreadPool.hpp</a></li>
+<li>测试代码链接：<a href="https://github.com/H-ZeX/FTP-Implement/blob/master/src/test/tools/ThreadPoolTest.hpp" target="_blank" rel="noopener">https://github.com/H-ZeX/FTP-Implement/blob/master/src/test/tools/ThreadPoolTest.hpp</a></li>
+<li>代码依赖于项目中的基础设施，所以不能直接使用</li>
 </ul>
 
       
@@ -580,7 +577,13 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
       
         <div class="post-tags">
           
-            <a href="/tags/汇编/" rel="tag"># 汇编</a>
+            <a href="/tags/原子性/" rel="tag"># 原子性</a>
+          
+            <a href="/tags/线程安全/" rel="tag"># 线程安全</a>
+          
+            <a href="/tags/线程池/" rel="tag"># 线程池</a>
+          
+            <a href="/tags/内存可见性/" rel="tag"># 内存可见性</a>
           
         </div>
       
@@ -593,8 +596,8 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/08/06/CSAPP3e-第二章作业/" rel="next" title="CSAPP3e 第二章作业">
-                <i class="fa fa-chevron-left"></i> CSAPP3e 第二章作业
+              <a href="/2019/03/19/高并发情况下backlog过低出现的问题/" rel="next" title="高并发情况下backlog过低出现的问题">
+                <i class="fa fa-chevron-left"></i> 高并发情况下backlog过低出现的问题
               </a>
             
           </div>
@@ -603,8 +606,8 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/08/11/初学GUI的一些理解（瞎猜）/" rel="prev" title="初学GUI的一些理解（瞎猜）">
-                初学GUI的一些理解（瞎猜） <i class="fa fa-chevron-right"></i>
+              <a href="/2019/03/20/构造一个线程安全的ThreadPool/" rel="prev" title="构造一个线程安全的ThreadPool">
+                构造一个线程安全的ThreadPool <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -937,7 +940,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#MOV"><span class="nav-text">MOV</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其他指令"><span class="nav-text">其他指令</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#浮点指令"><span class="nav-text">浮点指令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MISC"><span class="nav-text">MISC</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#构造一个线程安全的ThreadPool"><span class="nav-text">构造一个线程安全的ThreadPool</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#线程安全的两个要点"><span class="nav-text">线程安全的两个要点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用pthread时保证内存可见性"><span class="nav-text">使用pthread时保证内存可见性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#this指针逸出问题"><span class="nav-text">this指针逸出问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#状态转换的证明"><span class="nav-text">状态转换的证明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#单例模式"><span class="nav-text">单例模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用条件变量的注意事项"><span class="nav-text">使用条件变量的注意事项</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#代码"><span class="nav-text">代码</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -1139,43 +1142,6 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
   
   
 
-  
-    
-      <script type="text/x-mathjax-config">
-  
-
-  MathJax.Hub.Config({
-    tex2jax: {
-      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-      processEscapes: true,
-      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-      
-      equationNumbers: {
-        autoNumber: "AMS"
-      }
-    }
-  });
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-      for (i = 0; i < all.length; i += 1) {
-        all[i].SourceElement().parentNode.className += ' has-jax';
-      }
-  });
-</script>
-<script src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-<style>
-.MathJax_Display {
-  overflow: auto hidden;
-}
-</style>
-
-    
   
 
 
