@@ -124,7 +124,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="以下大部分是《java并发编程实战》的笔记，以JCIP简称之  对象的状态 （非正式意义上），对象的状态是指存储在状态变量中的数据，可能包括其他依赖对象的域（例如HashMap的Map.Entry对象） 对象的状态中包含了任何可能影响其外部可见行为的数据  线程安全性的定义 正确性的含义  某个类的行为与其规范完全一致。在良好的规范中通常会定义各种不变性条件（Invariant）来约束对象的状态">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-04-05T06:30:41.111Z">
+<meta property="og:updated_time" content="2019-04-11T11:47:01.427Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My Java Concurrent Note">
 <meta name="twitter:description" content="以下大部分是《java并发编程实战》的笔记，以JCIP简称之  对象的状态 （非正式意义上），对象的状态是指存储在状态变量中的数据，可能包括其他依赖对象的域（例如HashMap的Map.Entry对象） 对象的状态中包含了任何可能影响其外部可见行为的数据  线程安全性的定义 正确性的含义  某个类的行为与其规范完全一致。在良好的规范中通常会定义各种不变性条件（Invariant）来约束对象的状态">
@@ -151,6 +151,14 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
 
 
+
+  <script async src="//www.googletagmanager.com/gtag/js?id=UA-137821328-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-137821328-1');
+  </script>
 
 
 
@@ -426,7 +434,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-05 14:30:41" itemprop="dateModified" datetime="2019-04-05T14:30:41+08:00">2019-04-05</time>
+                <time title="Modified: 2019-04-11 19:47:01" itemprop="dateModified" datetime="2019-04-11T19:47:01+08:00">2019-04-11</time>
               
             
           </span>
@@ -731,12 +739,22 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li><p>逸出（escape）：某个不该发布的对象被发布</p>
 </li>
 <li><p>不可变对象<strong>可以通过任意的机制发布</strong></p>
+<ul>
+<li><p>3.4节，不可变对象那里，代码3-13使用了<code>volatile</code>来保证其他线程看到最新的引用。另外，3.5.2节说，即使发布不可变对象时，没有使用同步，仍然可以安全的访问该对象（上面那一段说，“即使某个对象的引用对于其他线程可见，也不意味着对象的状态对于使用该对象的线程一定是可见的”）。这里的“不需要同步”的含义是指，不需要同步即可以保证对象状态的可见性，而不是说，每次更新引用，都会让其他线程看到新的引用值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SynTest</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> FC fc = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">            fc = <span class="keyword">new</span> FC();</span><br><span class="line">        &#125;);</span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">while</span> (fc == <span class="keyword">null</span>) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">int</span> n = fc.n * <span class="number">10</span>;</span><br><span class="line">            <span class="keyword">assert</span> n * <span class="number">10</span> == <span class="number">50</span> * <span class="number">20</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">        t2.start();</span><br><span class="line">        Thread.sleep(<span class="number">100</span>);</span><br><span class="line">        t1.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">FC</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> n = <span class="number">10</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>第二个线程没有退出。所以，其实不可变对象的发布时不需要同步的含义应该是“另一个线程可以看到完整的对象状态”。（很奇怪，如果把两个<code>start</code>的位置颠倒，或者是去掉<code>sleep</code>，则会导致成功结束)</p>
+</li>
+<li>Java内存模型为不可变对象的共享提供了一种特殊的初始化安全性保证</li>
+<li>即使在发布不可变对象的引用时没有使用同步，也可以安全的访问该对象。为了实现这种安全，对象必须满足上面提到的不可变对象的所有要求</li>
+<li>这种保证还包括被<strong>正确创建对象</strong>中的所有final类型的域。但是如果这些域是可变对象，那么在访问时还是需要同步</li>
+</ul>
 </li>
 <li>事实不可变对象（比如某个<code>Date</code>对象被构造后，就只执行读操作，类似于java要求lambda可以读取的lambda外变量是“事实不可变的”）<strong>必须通过安全的方式发布</strong></li>
 <li>可变对象<strong>必须通过安全的方式发布</strong>，并且必须是线程安全的或者某个锁保护起来</li>
 </ul>
 <h5 id="可变对象的正确的发布"><a href="#可变对象的正确的发布" class="headerlink" title="可变对象的正确的发布"></a>可变对象的正确的发布</h5><ul>
-<li><p>即使某个对象的引用对于其他线程是可见的，也不意味着对象状态对于使用该对象的线程是一定可见的。为了确保对象状态呈现出一致性视图（对象的引用与对象的状态必须同时对其他线程可见），必须要使用<strong>同步</strong>（包括发布时和使存用时）</p>
+<li><p>即使某个对象的引用对于其他线程是可见的，也不意味着对象状态对于使用该对象的线程是一定可见的。为了确保对象状态呈现出一致性视图（对象的引用与对象的状态必须同时对其他线程可见），必须要使用<strong>同步</strong>（包括发布时和使用时）</p>
 </li>
 <li><p>常用的发布模式</p>
 <ul>
@@ -760,11 +778,6 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </li>
 </ul>
 </li>
-</ul>
-<h5 id="不可变对象的正确的发布"><a href="#不可变对象的正确的发布" class="headerlink" title="不可变对象的正确的发布"></a>不可变对象的正确的发布</h5><ul>
-<li>Java内存模型为不可变对象的共享提供了一种特殊的初始化安全性保证</li>
-<li>即使在发布不可变对象的引用时没有使用同步，也可以安全的访问该对象。为了实现这种安全，对象必须满足上面提到的不可变对象的所有要求</li>
-<li>这种保证还包括被<strong>正确创建对象</strong>中的所有final类型的域。但是如果这些域是可变对象，那么在访问时还是需要同步</li>
 </ul>
 <h3 id="lambda使用外部的对象（或value-type的变量）"><a href="#lambda使用外部的对象（或value-type的变量）" class="headerlink" title="lambda使用外部的对象（或value type的变量）"></a>lambda使用外部的对象（或value type的变量）</h3><blockquote>
 <p>以下均为我个人根据final域的特性认为的——不知道final域与final变量的差别是什么</p>
@@ -828,6 +841,14 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </ul>
 </li>
 </ul>
+<h3 id="实例分析"><a href="#实例分析" class="headerlink" title="实例分析"></a>实例分析</h3><h4 id="一个线程安全的车辆追踪器的代码解析"><a href="#一个线程安全的车辆追踪器的代码解析" class="headerlink" title="一个线程安全的车辆追踪器的代码解析"></a>一个线程安全的车辆追踪器的代码解析</h4><ul>
+<li><p>不可变的Point类，因为不可变，所以复制map时只需要复制map的结构，无需复制Point的内容。返回的unmodifableMap也类似如此。（代码来源，JCIP代码清单4.7和4.6）</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DelegatingVehicleTracker</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ConcurrentMap&lt;String, Point&gt; locations;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, Point&gt; unmodifiableMap;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 构造函数的安全依赖于用户——如果用户在构造函数运行时，</span></span><br><span class="line">    <span class="comment">// 修改参数points的内容，那么locations的视图就可能是不一致的。</span></span><br><span class="line">    <span class="comment">// 并且，用户需要自己保证这个DelegatingVehicleTracker类是安全的发布的，</span></span><br><span class="line">    <span class="comment">// 从而，保证在构造函数运行完之前，类内的其他非静态函数不会被调用</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DelegatingVehicleTracker</span><span class="params">(Map&lt;String, Point&gt; points)</span> </span>&#123;</span><br><span class="line">        locations = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;(points);</span><br><span class="line">        unmodifiableMap = Collections.unmodifiableMap(locations);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回的unmodifiableMap内部是没有同步的，</span></span><br><span class="line">    <span class="comment">// 那么，locations的修改是如何反映到unmodifiableMap的？</span></span><br><span class="line">    <span class="comment">// 通过ConcurrentMap来保证</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Map&lt;String, Point&gt; <span class="title">getLocations</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> unmodifiableMap;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Point <span class="title">getLocation</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> locations.get(id);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setLocation</span><span class="params">(String id, <span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (locations.replace(id, <span class="keyword">new</span> Point(x, y)) == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(</span><br><span class="line">                    <span class="string">"invalid vehicle name: "</span> + id);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Point</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> x, y;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Point</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.x = x;</span><br><span class="line">            <span class="keyword">this</span>.y = y;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>可变的线程安全的Point，如果在point的状态上施加不变性任何约束，那么以下就不是线程安全的，因为用户可以修改返回的point对象。（代码来源，JCIP代码清单4.11，4.12）</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PublishingVehicleTracker</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, SafePoint&gt; locations;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, SafePoint&gt; unmodifiableMap;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PublishingVehicleTracker</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            Map&lt;String, SafePoint&gt; locations)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.locations</span><br><span class="line">                = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;(locations);</span><br><span class="line">        <span class="keyword">this</span>.unmodifiableMap</span><br><span class="line">                = Collections.unmodifiableMap(<span class="keyword">this</span>.locations);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Map&lt;String, SafePoint&gt; <span class="title">getLocations</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> unmodifiableMap;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SafePoint <span class="title">getLocation</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> locations.get(id);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setLocation</span><span class="params">(String id, <span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!locations.containsKey(id))</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(</span><br><span class="line">                    <span class="string">"invalid vehicle name: "</span> + id);</span><br><span class="line">        locations.get(id).set(x, y);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SafePoint</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> x, y;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="title">SafePoint</span><span class="params">(<span class="keyword">int</span>[] a)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>(a[<span class="number">0</span>], a[<span class="number">1</span>]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 此处，如果实现为`this(p.x, p.y)`就会有竞态条件，</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">SafePoint</span><span class="params">(SafePoint p)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>(p.get());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">SafePoint</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.x = x;</span><br><span class="line">            <span class="keyword">this</span>.y = y;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">int</span>[] get() &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;x, y&#125;;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.x = x;</span><br><span class="line">            <span class="keyword">this</span>.y = y;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
 <h3 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h3><blockquote>
 <p>来自JCIP的5.2.1，不清楚JDK5之后有没有修改</p>
 </blockquote>
@@ -837,303 +858,6 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li>迭代器具有弱一致性，而不是fail-fast（HashMap等的是fail-fast，从而如果迭代时发现数量变化了，就会抛出<code>ConcurrentModificationException</code>），不会抛出<code>ConcurrentModificationException</code>。可以容忍并发的修改</li>
 <li><code>size</code>返回的只是估计值</li>
 <li>内部没有实现对map加锁以独占访问（对比之下，同步容器<code>Hashtable</code>，<code>synchronizedMap</code>中可以通过获取map的锁来实现独占），所以不能在用户代码通过获取map的锁来独占（所以如果确实需要独占，应该放弃ConcurrentHashMap）</li>
-</ul>
-<h3 id="串行线程的封闭"><a href="#串行线程的封闭" class="headerlink" title="串行线程的封闭"></a>串行线程的封闭</h3><ul>
-<li>线程封闭对象的要求：<ul>
-<li>只能由单个线程拥有</li>
-<li>通过安全的发布来转移所有权（安全的发布确保对象状态对于新的所有者来说是可见的（不止这个作用？））</li>
-<li>所有权转以后，只有接受所有权的线程才可以访问（独占的所有权）</li>
-</ul>
-</li>
-<li>可以使用阻塞队列、ConcurrentHashMap的remove方法、AtomicReference的compareAndSet来完成</li>
-</ul>
-<h3 id="Interrupt"><a href="#Interrupt" class="headerlink" title="Interrupt"></a>Interrupt</h3><ul>
-<li>每个线程都有一个<code>boolean</code>的中断标志</li>
-<li><code>Thread.interrupted</code>方法将返回当前线程是否被中断，并<strong>清除中断标志</strong></li>
-<li><code>Thread.currentThread().interrupt()</code>将中断当前线程</li>
-<li>阻塞库方法，例如<code>Thread.sleep</code>，<code>Object.wait</code>会检查线程何时中断，并在发现时提前返回</li>
-</ul>
-<h3 id="InterruptedException"><a href="#InterruptedException" class="headerlink" title="InterruptedException"></a>InterruptedException</h3><ul>
-<li>当一个方法会抛出这个异常时，表示这是一个阻塞方法，如果这个方法被中断，那么它将努力提前结束阻塞状态</li>
-<li>当在代码中调用将抛出该异常的方法时，我们的方法也就成了一个阻塞方法，必须要对中断进行响应。有两种选择<ul>
-<li>传递<code>InterruptedException</code>：不捕获该异常，或者捕获后重新抛出</li>
-<li>恢复中断：调用当前线程的interrupt方法恢复中断状态</li>
-</ul>
-</li>
-<li>只有在对Thread进行扩展并且可以控制调用栈上的所有更高层代码时才可以屏蔽该异常</li>
-</ul>
-<h3 id="MISC-1"><a href="#MISC-1" class="headerlink" title="MISC"></a>MISC</h3><ul>
-<li>JVM只有在所有（非守护）线程全部终止后才会退出，因为如果无法正确的关闭Executor，JVM无法关闭</li>
-<li>一个<code>Thread</code>对象即使没有引用了，但是已经start，这个线程还是在运行</li>
-</ul>
-<h3 id="Timer-vs-SingleThreadExecutor"><a href="#Timer-vs-SingleThreadExecutor" class="headerlink" title="Timer vs SingleThreadExecutor"></a>Timer vs SingleThreadExecutor</h3><ul>
-<li><h3 id="Thread安全策略"><a href="#Thread安全策略" class="headerlink" title="Thread安全策略"></a>Thread安全策略</h3></li>
-<li><p>使用<code>Executors.privilegedThreadFactory()</code>可以创建出线程工厂，用这种方式创建出来的线程，将于创建<code>privilegedThreadFactory</code>的线程拥有相同的访问权限、<code>AccessControlContext</code>和<code>contextClassLoader</code></p>
-</li>
-<li>如果不使用该方法，线程池创建的线程将从在需要新线程时调用execute或submit的客户程序中继承访问权限</li>
-</ul>
-<h3 id="SingleThreadExecutor"><a href="#SingleThreadExecutor" class="headerlink" title="SingleThreadExecutor"></a>SingleThreadExecutor</h3><ul>
-<li>确保不会并发执行任务。为了避免用户代码修改返回的ThreadPoolExecutor对象，从而改变不并发执行的语义，所以对其进行包装使得无法类型转换为ThreadPoolExecutor来修改那些特性</li>
-<li><code>Executors.unconfigurableExecutorService()</code>包装的Executor就具有冻结配置的特性</li>
-</ul>
-<h3 id="ThreadPoolExecutor"><a href="#ThreadPoolExecutor" class="headerlink" title="ThreadPoolExecutor"></a>ThreadPoolExecutor</h3><h5 id="afterExecute和beforeExecute方法"><a href="#afterExecute和beforeExecute方法" class="headerlink" title="afterExecute和beforeExecute方法"></a>afterExecute和beforeExecute方法</h5><ul>
-<li><p>以下是<code>runWorker</code>方法内的片段</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    beforeExecute(wt, task);</span><br><span class="line">    Throwable thrown = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        task.run();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (RuntimeException x) &#123;</span><br><span class="line">        thrown = x; <span class="keyword">throw</span> x;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Error x) &#123;</span><br><span class="line">        thrown = x; <span class="keyword">throw</span> x;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable x) &#123;</span><br><span class="line">        thrown = x; <span class="keyword">throw</span> <span class="keyword">new</span> Error(x);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        afterExecute(task, thrown);</span><br><span class="line">    &#125;</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    task = <span class="keyword">null</span>;</span><br><span class="line">    w.completedTasks++;</span><br><span class="line">    w.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可以看出</p>
-<ul>
-<li>如果beforeExecute抛出异常，则不会执行task和afterExecute</li>
-<li>无论task抛出什么异常，都会执行afterExecute</li>
-</ul>
-</li>
-</ul>
-<h5 id="submit的策略"><a href="#submit的策略" class="headerlink" title="submit的策略"></a>submit的策略</h5><ul>
-<li><p>如果运行的corePoolSize线程少于corePoolSize，则会创建一个新线程来处理请求，即使其他工作线程处于空闲状态也是如此。否则，如果正在运行少于maximumPoolSize的线程，则只有在队列已满时才会创建一个新线程来处理请求</p>
-</li>
-<li><p>源码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> c = ctl.get();</span><br><span class="line"><span class="keyword">if</span> (workerCountOf(c) &lt; corePoolSize) &#123;</span><br><span class="line">    <span class="keyword">if</span> (addWorker(command, <span class="keyword">true</span>))</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    c = ctl.get();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (isRunning(c) &amp;&amp; workQueue.offer(command)) &#123;</span><br><span class="line">    <span class="keyword">int</span> recheck = ctl.get();</span><br><span class="line">    <span class="keyword">if</span> (! isRunning(recheck) &amp;&amp; remove(command))</span><br><span class="line">        reject(command);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (workerCountOf(recheck) == <span class="number">0</span>)</span><br><span class="line">        addWorker(<span class="keyword">null</span>, <span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (!addWorker(command, <span class="keyword">false</span>))</span><br><span class="line">    reject(command);</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>如果core线程还有剩（就是当前启动的线程数少于核心线程数），那么新加<br>worker（等价于新加线程，加入线程后，会run firstTask——<code>prestartAllCoreThreads</code>方法加入的核心worker的firstTask都是null，从而run firstTask不会去运行task）</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** Delegates main run loop to outer runWorker  */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    runWorker(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 这是内部的Worker（实现了Runnable接口）的run方法，在addWorker后会调用该worker的thread的start方法，从而调用该run方法</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>否则就尝试push到工作队列里（即使核心线程不忙，也是直接push到队列中，然后核心线程从队列中获得task）（worker运行的线程会阻塞的等待工作队列有东西返回）</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (task != <span class="keyword">null</span> || (task = getTask()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">    w.lock();</span><br><span class="line">    <span class="comment">// If pool is stopping, ensure thread is interrupted;</span></span><br><span class="line">    <span class="comment">// 这来自ThreadPoolExecutor的runWorker方法，worker将run方法委托给这个方法</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>如果工作队列已经满了就会尝试去添加非核心线程</p>
-</li>
-<li><p>因为在添加到工作队列时，使用的是<code>offer</code>，所以即使是<code>SynchronousQueue</code>，也不会阻塞，而是没有线程正在等待接受就立刻返回</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SynchronousQueue&lt;E&gt; <span class="keyword">public</span> <span class="keyword">boolean</span> offer</span><br><span class="line">Inserts the specified element into <span class="keyword">this</span> queue, <span class="keyword">if</span> another thread is waiting to receive it.</span><br><span class="line">Returns: <span class="keyword">true</span> <span class="keyword">if</span> the element was added to <span class="keyword">this</span> queue, <span class="keyword">else</span> <span class="keyword">false</span></span><br><span class="line"><span class="comment">// 截取自SynchronousQueue的doc</span></span><br></pre></td></tr></table></figure>
-<p>因为，如果核心线程已满，但是这个queue无法被offer，那么说明核心线程都忙（会不会出现<code>executor.prestartAllCoreThreads</code>跑完但是有的线程还没到等待点的情况，从而虽然有的线程不忙但是还是无法offer？），所以尝试启动新的非核心线程</p>
-</li>
-<li><p>这意味着，queue不能太小：否则，如果无法添加新线程，而有的线程虽然不忙，但是可能没能及时得到cpu时间去把task从队列中拿出来，就会导致执行<code>RejectedExecutionHandler</code></p>
-</li>
-<li><p>要特别注意<code>execute</code>的这一个片段</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (isRunning(c) &amp;&amp; workQueue.offer(command)) &#123;</span><br><span class="line">    <span class="keyword">int</span> recheck = ctl.get();</span><br><span class="line">    <span class="keyword">if</span> (! isRunning(recheck) &amp;&amp; remove(command))</span><br><span class="line">        reject(command);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (workerCountOf(recheck) == <span class="number">0</span>)</span><br><span class="line">        addWorker(<span class="keyword">null</span>, <span class="keyword">false</span>);</span><br></pre></td></tr></table></figure>
-<p>即使coreSize==0（maxSize为0是非法的）， 并且这是无界队列，线程池还是会保证至少有一个线程在跑</p>
-</li>
-<li><p>如果使用了无界队列，其实maxSize也没什么用，因为总是会添加队列成功——除非超过了<code>Integer.MAX_VALUE</code>。</p>
-</li>
-<li><p>队列的作用在于</p>
-<ul>
-<li>防止core线程不忙但是没能及时从队列中pop出task导致添加多余的线程</li>
-<li>使得系统平缓应对小波峰——避免一有风吹草动系统就跟着波动（怎么感觉有点像惊群效应）。小波峰的含义是，对用户的响应的延迟在接受范围内</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h3><h4 id="动态锁顺序死锁"><a href="#动态锁顺序死锁" class="headerlink" title="动态锁顺序死锁"></a>动态锁顺序死锁</h4><ul>
-<li><p>在持有锁时调用某个外部方法，那么将可能出现死锁，或阻塞时间过长</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Warning: deadlock-prone!</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Taxi</span> </span>&#123;</span><br><span class="line">    <span class="meta">@GuardedBy</span>(<span class="string">"this"</span>) <span class="keyword">private</span> Point location, destination;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Dispatcher dispatcher;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Taxi</span><span class="params">(Dispatcher dispatcher)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.dispatcher = dispatcher;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> Point <span class="title">getLocation</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> location;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">setLocation</span><span class="params">(Point location)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.location = location;</span><br><span class="line">        <span class="keyword">if</span> (location.equals(destination))</span><br><span class="line">            dispatcher.notifyAvailable(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dispatcher</span> </span>&#123;</span><br><span class="line">    <span class="meta">@GuardedBy</span>(<span class="string">"this"</span>) <span class="keyword">private</span> <span class="keyword">final</span> Set&lt;Taxi&gt; taxis;</span><br><span class="line">    <span class="meta">@GuardedBy</span>(<span class="string">"this"</span>) <span class="keyword">private</span> <span class="keyword">final</span> Set&lt;Taxi&gt; availableTaxis;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Dispatcher</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        taxis = <span class="keyword">new</span> HashSet&lt;Taxi&gt;();</span><br><span class="line">        availableTaxis = <span class="keyword">new</span> HashSet&lt;Taxi&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">notifyAvailable</span><span class="params">(Taxi taxi)</span> </span>&#123;</span><br><span class="line">        availableTaxis.add(taxi);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> Image <span class="title">getImage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Image image = <span class="keyword">new</span> Image();</span><br><span class="line">        <span class="keyword">for</span> (Taxi t : taxis)</span><br><span class="line">            image.drawMarker(t.getLocation());</span><br><span class="line">        <span class="keyword">return</span> image;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>某个线程调用<code>setLocation</code>，然后在持有该Taxis的锁时调用Dispatcher的<code>notifyAvaiable</code>。同时，另一个线程调用getImage，持有dispatcher的锁然后请求taxis的锁。从而死锁</p>
-</li>
-<li><p>开放调用：调用某个方法时不需要持有锁。即可能使用开放调用，可以更容易找到需要获得多个锁的代码路径。如果因为开放调用而导致某些操作不是原子的，那么可以通过一些协议来避免该路径被并发执行——比如搞一个标志，然后其他线程看到该标志为xx时就不执行</p>
-</li>
-</ul>
-<h4 id="资源死锁"><a href="#资源死锁" class="headerlink" title="资源死锁"></a>资源死锁</h4><ul>
-<li>比如某个线程持有某个链接池的链接等待另一个链接池的链接，另一个线程顺序颠倒地持有和请求</li>
-<li>线程依赖死锁<ul>
-<li>当线程池不够大，而线程池里的任务依赖于同一线程池的任务，那么会导致，某个任务正在跑，然后其依赖于处于队列中的任务，从而死锁</li>
-<li>这种就要求线程池要经过一定的配置——比如不能太小等。所以要将配置策略文档化</li>
-<li>只有当任务相互独立时，为线程池或工作队列设置界限才是合理的。任务之间存在依赖性，有界的线程池或队列就可能导致线程饥饿死锁</li>
-<li>解决方法<ul>
-<li>使用无界的线程池，比如<code>newCachedThreadPool</code></li>
-<li>使用有界的线程池，并使用<code>SynchronousQueue</code>作为工作队列（这样当线程池满的时候调用者就会被阻塞从而知道子任务无法运行），以及<code>Caller-Runs</code>饱和策略</li>
-<li>为什么不使用0长度的其他blockingQueue而使用SynchronousQueue（以下均为个人观点）<ul>
-<li>一方面，其他blockingQueue不支持0长度。所以有可能有一个被等待的子任务就死锁了</li>
-<li>另一方面，如果无法增加核心worker（新建线程），那么task都跑到队列中，这时候，如果没有线程在等待从队列中获得task，队列就会立刻返回（因为使用的是<code>offer</code>而不是会阻塞的<code>put</code>），从而在可能死锁时（就是子任务没线程能运行时），可以执行拒绝策略。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="饥饿和优先级"><a href="#饥饿和优先级" class="headerlink" title="饥饿和优先级"></a>饥饿和优先级</h3><ul>
-<li>在 Java 程序设计语言中，每一个线程有一个优先级。</li>
-<li>默认情况下， 一个线程继承它的父线程的优先级。</li>
-<li>可以用<code>setPriority</code> 方法提高或降低任何一个线程的优先级</li>
-<li>可以将优先级设置为在 MIN_PRIORITY (在 Thread 类中定义为 1 ) 与 MAX_PRIORITY (定义为 10 ) 之间的任何值。NORM_PRIORITY 被定义为 5</li>
-<li>每当线程调度器有机会选择新线程时， 它首先选择具有较高优先级的线程。但是，线程优先级是高度依赖于系统的</li>
-<li><p>如果有几个高优先级的线程没有进入非活动状态， 低优先级的线程<strong>可能</strong>永远也不能执行</p>
-</li>
-<li><p>尽量不要改变线程优先级，如果改变了，那么程序的行为就与平台相关了。并且可能导致饥饿</p>
-</li>
-<li>在大多数java应用程序中，所有线程都具有相同的<code>Thread.NORM_PRIORITY</code>，我测试了Daemon线程和非Daemon线程，都是<code>5</code>（linux 4.18.0-13）</li>
-<li><code>Thread.yield</code>和<code>Thread.sleep(0)</code>的语义都是未定义的，JVM可以将他们实现为空操作，也可以把他们视为线程调度的参考。在unix系统中并不要求他们拥有<code>sleep（0）</code>的语义——将当前线程放在该优先级对应的运行队列末尾，并将执行全交给相同优先级的其他线程，尽管有些JVM是按照这种方法来实现yield的</li>
-</ul>
-<h3 id="活锁"><a href="#活锁" class="headerlink" title="活锁"></a>活锁</h3><ul>
-<li>不会阻塞线程但是也无法继续执行，因为线程总是不断重复执行相同的操作，而且总是失败<ul>
-<li>比如：某个消息被处理时一定会失败，然而开发者错误的将这种错误当做可以修复的错误，从而把该消息又加入了消息队列头部，从而消息处理器会反复调用，并返回相同的结果，从而程序无法继续执行下去</li>
-</ul>
-</li>
-<li>Livelock can also occur when multiple cooperating threads change their state in response to the others in such a way that no thread can ever make progress<ul>
-<li>This is similar to what happens when two overly polite people are walking in opposite directions in a hallway: each steps out of the other’s way, and now they are again in each other’s way.so they both step aside again, and again, and again</li>
-<li>解决方法：重试时引入随机性，比如信道上冲突时，随机退避一段时间</li>
-</ul>
-</li>
-</ul>
-<h3 id="加速比的计算"><a href="#加速比的计算" class="headerlink" title="加速比的计算"></a>加速比的计算</h3><ul>
-<li>$\text{speedup}\leq \frac{1}{F+\frac{(1-F)}{N}}$</li>
-<li>其中$F$是串行化的比例，$N$是CPU数目，比如$F=10%$，$N=10$，则在加速比为5.3</li>
-</ul>
-<h3 id="非竞争同步和竞争同步"><a href="#非竞争同步和竞争同步" class="headerlink" title="非竞争同步和竞争同步"></a>非竞争同步和竞争同步</h3><ul>
-<li>非竞争同步可以完全在JVM中处理，竞争同步可能需要操作系统的介入</li>
-</ul>
-<h5 id="非竞争同步"><a href="#非竞争同步" class="headerlink" title="非竞争同步"></a>非竞争同步</h5><ul>
-<li>volatile通常是非竞争同步</li>
-<li>synchronized针对无竞争同步进行了优化</li>
-<li>在java5时（作者编写JCIP时）一个Fast-Path的非竞争同步将消耗20~250个时钟周期</li>
-<li>其对程序整体性能的影响很低</li>
-</ul>
-<h5 id="竞争同步"><a href="#竞争同步" class="headerlink" title="竞争同步"></a>竞争同步</h5><ul>
-<li>JVM将根据历史等待时间选择在发生锁竞争被阻塞时是否要spin-wait，但是大多数JVM只是将线程挂起</li>
-</ul>
-<h3 id="Daemon"><a href="#Daemon" class="headerlink" title="Daemon"></a>Daemon</h3><ul>
-<li><code>Thread.setDaemon()</code>:  This method must be invoked before the thread is started</li>
-<li>当只剩下守护线程时， 虚拟机就退出了，由于如果只剩下守护线程， 就没必要继续运行程序了。</li>
-<li>守护线程应该永远不去访问固有资源， 如文件、 数据库，因为它会在任何时候甚至在一个操作的中间发生中断。</li>
-</ul>
-<h3 id="UncaughtExceptionHandler"><a href="#UncaughtExceptionHandler" class="headerlink" title="UncaughtExceptionHandler"></a>UncaughtExceptionHandler</h3><ul>
-<li>可以用 <code>setUncaughtExceptionHandler</code> 方法为任何线程安装一个处理器。也可以用 Thread类的静态方法 <code>setDefaultUncaughtExceptionHandler</code> 为所有线程安装一个默认的处理器</li>
-</ul>
-<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><ul>
-<li><p>有安全性测试和活跃性测试</p>
-<ul>
-<li>安全性测试：不发生任何错误的行为</li>
-<li>活跃性测试：某个良好的行为终究发生</li>
-</ul>
-</li>
-<li><p>测试时可以使用以下随机数发生器</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">xorShift</span><span class="params">(<span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">    y ^= (y &lt;&lt; <span class="number">6</span>);</span><br><span class="line">    y ^= (y &gt;&gt;&gt; <span class="number">21</span>);</span><br><span class="line">    y ^= (y &lt;&lt; <span class="number">7</span>);</span><br><span class="line">    <span class="keyword">return</span> y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>可以使用<code>/home/hzx/MyStudy/notes/java/JSR166TestCase.java</code>作为测试基类（来自于<a href="http://gee.cs.oswego.edu/cgi-bin/viewcvs.cgi/jsr166/src/test/tck/JSR166TestCase.java）" target="_blank" rel="noopener">http://gee.cs.oswego.edu/cgi-bin/viewcvs.cgi/jsr166/src/test/tck/JSR166TestCase.java）</a></p>
-</li>
-</ul>
-<h3 id="Lock类"><a href="#Lock类" class="headerlink" title="Lock类"></a>Lock类</h3><ul>
-<li>Lock实现中必须提供与内部锁相同的内存可见性语义</li>
-<li>加锁语义、调度算法、顺序保证、性能特性方面可以与内置所有所不同</li>
-</ul>
-<h4 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h4><ul>
-<li>获取ReentrantLock时，有着与进入同步代码块相同的内存语义</li>
-<li>释放时，有着与退出同步代码块相同的内存语义</li>
-</ul>
-<h3 id="Thread-suspend"><a href="#Thread-suspend" class="headerlink" title="Thread.suspend"></a>Thread.suspend</h3><ul>
-<li>与 stop 不同，suspend 不会破坏对象。但是，如果用 suspend 挂起一个持有一个锁的线程， 那么，该锁在恢复之前是不可用的。 如果调用suspend 方法的线程试图获得同一个锁， 那么程序死锁</li>
-</ul>
-<h3 id="Fork-Join"><a href="#Fork-Join" class="headerlink" title="Fork-Join"></a>Fork-Join</h3><ul>
-<li>fork-join 框架使用了一种有效的智能方法来平衡可用线程的工作负载，这种方法称为工作密取（work stealing)。每个工作线程都有一个双端队列 ( deque ) 来完成任务。一个工作线程将子任务压人其双端队列的队头。（只有一个线程可以访问队头，所以不需要加锁。）一个工作线程空闲时，它会从另一个双端队列的队尾“ 密取” 一个任务</li>
-</ul>
-<h3 id="Thread-状态"><a href="#Thread-状态" class="headerlink" title="Thread 状态"></a>Thread 状态</h3><ul>
-<li><p>状态转换</p>
-<ul>
-<li>当一个线程被阻塞或等待时（或终止时） ，另一个线程被调度为运行状态</li>
-<li>当一个线程被重新激活（例如， 因为超时期满或成功地获得了一个锁)， 调度器检查它是否具有比当前运行线程更高的优先级。 如果是这样，调度器从当前运行线程中挑选一个， 剥夺其运行权，选择一个新的线程运行。</li>
-</ul>
-</li>
-<li><p>new：当用 new 操作符创建一个新线程时， 如 <code>new Thread(r)</code>， 该线程还没有开始运行。这意味着它的状态是 new。当一个线程处于新创建状态时， 程序还没有开始运行线程中的代码。在线程运行之前还有一些基础工作要做</p>
-</li>
-<li>Runnable：一旦调用 start 方法，线程处于 runnable 状态。一个可运行的线桿<strong>可能正在运行也可能没有运行</strong>， 这取决于操作系统给线程提供运行的时间。（A thread in the runnable state is executing in the Java virtual machine but it may be waiting for other resources from the operating system such as processor）（Java 的规范说明没有将它作为一个单独状态。一个正在运行中的线程仍然处于可运行状态)</li>
-<li><p>Blocked：当线程处于被阻塞或等待状态时，它暂时不活动。它不运行任何代码且消耗最少的资源。直到线程调度器重新激活它。（ 细节取决于它是怎样达到非活动状态的) 。当所有其他线程释放该锁，并且线程调度器允许本线程持有它的时候，该线程将变成非阻塞状态</p>
-<ul>
-<li>当一个线程试图获取一个内部的对象锁（而不是 java.util.concurrent 库中的锁，) 而该锁被其他线程持有， 则该线程进人阻塞状态。（Thread state for a thread blocked waiting for a <strong>monitor lock.</strong> A thread in the blocked state is waiting for a monitor lock to enter a synchronized block/method or reenter a synchronized block/method after calling Object.wait.）。当所有其他线程释放该锁，并且线程调度器允许本线程持有它的时候，该线程将变成非阻塞状态</li>
-</ul>
-</li>
-<li><p>WAITING</p>
-<ul>
-<li><p>当线程等待另一个线程通知调度器一个条件时， 它自己进入<strong>等待状态</strong>。（使用<code>Object.wait</code>或<code>Thread.join</code>方法，或是等待<code>java.util.concurrent</code>库中的Lock或Condition时，就会出现这种情况）</p>
-</li>
-<li><p>Thread state for a waiting thread. A thread is in the waiting state due to calling one of the following methods:</p>
-<ul>
-<li>Object.wait with no timeout</li>
-<li>Thread.join with no timeout</li>
-<li>LockSupport.park</li>
-</ul>
-<p>A thread in the waiting state is waiting for another thread to perform a particular action.</p>
-</li>
-</ul>
-</li>
-<li><p>TIMED_WAITING</p>
-<ul>
-<li>Thread state for a waiting thread with a specified waiting time. A thread is in the timed waiting state due to calling one of the following methods with a specified positive waiting time:<ul>
-<li>Thread.sleep</li>
-<li>Object.wait with timeout</li>
-<li>Thread.join with timeout</li>
-<li>LockSupport.parkNanos</li>
-<li>LockSupport.parkUntil</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>TERMINATED</p>
-<ul>
-<li>Thread state for a terminated thread. The thread has <strong>completed execution</strong></li>
-<li>线程因如下两个原因之一而被终止<ul>
-<li>因为 run 方法正常退出而自然死亡。</li>
-<li>因为一个没有捕获的异常终止了 nm 方法而意外死亡</li>
-<li>可以调用线程的 stop 方法杀死一个线程。 该方法抛出 <code>ThreadDeath</code> 错误对象,由此杀死线程。但是，stop 方法已过时</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="条件变量"><a href="#条件变量" class="headerlink" title="条件变量"></a>条件变量</h3><ul>
-<li><p>构成前提条件的变量必须由对象的锁来保护，从而使得它们在测试前提条件的同时保持不变。如果前提条件尚未满足，就必须释放锁</p>
-</li>
-<li><p>条件队列：每个对象都可以作为一个条件队列。其使得一组线程（等待线程集合）能够通过某种方式来等待特定的条件变为真</p>
-</li>
-<li><p>Monitor Condition</p>
-<ul>
-<li>如果调用同步方法的线程必须被阻塞或是其他原因不能立刻进行，它能够在一个监视条件上等待，这将导致该客户线程暂时<strong>释放监视锁</strong>，并<strong>挂起（WAITING / TIMED_WAITING）</strong>在监视条件上</li>
-<li>同步方法线程回复。一旦早先挂起在某监视条件上的同步方法线程获取通知，它将继续在最初的等待监视条件的点上执行，执行的条件是唤醒后抢占到监视锁。当线程从wait方法中被唤醒时，他在重新请求锁时不具有任何特殊的优先级，而要与任何其他尝试进入同步代码块的线程一起正常的在锁上竞争</li>
-<li><p>当调用wait时，需要持有锁，否则会抛出<code>IllegalMonitorStateException</code></p>
-</li>
-<li><p>不提供公平的队列</p>
-</li>
-<li>只有一个条件变量</li>
-</ul>
-</li>
-<li><p>应该将条件队列相关联的条件谓词以及在这些谓词上等待的操作都写入文档</p>
-</li>
-<li><p>调用wait之前要测试条件谓词，并且从wait中返回时再次进行测试。要在循环中调用wait</p>
-<ul>
-<li>信号丢失：如果线程A通知了一个条件队列，但是线程B随后调用wait，那么wait并不会立刻醒来，而是要等待另一个通知来唤醒它。所以在wait之前要检查条件谓词</li>
-<li>Spurious wakeup：（来自<a href="https://en.wikipedia.org/wiki/Spurious_wakeup" target="_blank" rel="noopener">wiki</a>。内容可能有争议）。比如，当只有一个资源变得可用时，本来我们调用notify，那么可以相信醒来的那个一定可以拿到资源。但是，并不是如此，实际操作系统中，有时会出现即使是上面那种情况，醒来后还是发现资源不可用</li>
-<li>有个问题：wait唤醒后需要抢占锁，那么，是否有可能某线程虽然被notify唤醒，也就是只有一个等待该条件的线程醒来获得资源，但是同时外界来了一个线程，并且竞争锁先成功，那么这个被唤醒的不就没资源了吗，从而类似假醒</li>
-</ul>
-</li>
-<li><p>确保使用与条件队列相关联的锁来保护条件谓词的各个状态变量</p>
-</li>
-<li><p>调用wait、notify、notifyAll时，要持有与条件队列相关的锁</p>
-</li>
-<li><p>检查条件谓词之后以及开始执行相关操作之前，不要释放锁</p>
-</li>
-<li><p>调用notify时，JVM会从条件队列上等待的多个线程中选择一个来唤醒，而调用notifyAll时则会唤醒所有在这个条件队列上等待的线程。调用notify或notifyAll时必须持有条件队列对象的锁，而如果这些等待的线程此时不能重新获得锁，那么无法从wait返回，因此发出通知的线程要尽快释放锁</p>
-</li>
-<li><p>在一个条件队列上等待同一个条件谓词</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseBoundedBuffer</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> V[] buf;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> tail;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> head;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> count;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">BaseBoundedBuffer</span><span class="params">(<span class="keyword">int</span> capacity)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.buf = (V[]) <span class="keyword">new</span> Object[capacity];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">doPut</span><span class="params">(V v)</span> </span>&#123;</span><br><span class="line">        buf[tail] = v;</span><br><span class="line">        <span class="keyword">if</span> (++tail == buf.length)</span><br><span class="line">            tail = <span class="number">0</span>;</span><br><span class="line">        ++count;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">final</span> V <span class="title">doTake</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        V v = buf[head];</span><br><span class="line">        buf[head] = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (++head == buf.length)</span><br><span class="line">            head = <span class="number">0</span>;</span><br><span class="line">        --count;</span><br><span class="line">        <span class="keyword">return</span> v;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">isFull</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> count == buf.length;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> count == <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BoundedBuffer</span>&lt;<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">BaseBoundedBuffer</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// CONDITION PREDICATE: not-full (!isFull())</span></span><br><span class="line"><span class="comment">// CONDITION PREDICATE: not-empty (!isEmpty())</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">BoundedBuffer</span><span class="params">(<span class="keyword">int</span> size)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(size);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// BLOCKS-UNTIL: not-full</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(V v)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (isFull())</span><br><span class="line">            wait();</span><br><span class="line">        doPut(v);</span><br><span class="line">        notifyAll();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// BLOCKS-UNTIL: not-empty</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> V <span class="title">take</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (isEmpty())</span><br><span class="line">            wait();</span><br><span class="line">        V v = doTake();</span><br><span class="line">        notifyAll();</span><br><span class="line">        <span class="keyword">return</span> v;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这种情况下有个问题：调用notify后，take被叫醒，然而还是empty——此时isFull不满足，所以本应该put方法被得到通知被执行，所以这个信号就好像丢失了</p>
-</li>
-<li><p>只有在同时满足以下两个条件时，才能用单一的notify而不是notifyAll</p>
-<ul>
-<li>所有等待的线程类型相同。只有一个条件谓词与条件队列相关，并且每个线程从wait返回后将执行相同的操作</li>
-<li>在条件变量上每次通知最多只能唤醒一个线程来执行</li>
-</ul>
-</li>
-<li><p>使用notifyAll比notify更容易正确，所以除非notifyAll对性能影响过大，否则应该优先使用notifyAll</p>
-</li>
-</ul>
-<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ul>
-<li><p>对象的正确发布的责任是否是在使用者而不是在线程安全类，即线程安全类也要求被正确发布</p>
-</li>
-<li><p>问题：3.4节，不可变对象那里，代码3-13使用了<code>volatile</code>来保证其他线程看到最新的引用。另外，3.5.2节说，即使发布不可变对象时，没有使用同步，仍然可以安全的访问该对象（上面那一段说，“即使某个对象的引用对于其他线程可见，也不意味着对象的状态对于使用该对象的线程一定是可见的”）。那么，这里的“不需要同步”的含义是否是指，不需要同步即可以保证对象状态的可见性，而不是说，每次更新引用，都会让其他线程看到新的引用值。</p>
-<p>答案：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SynTest</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> FC fc = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">            fc = <span class="keyword">new</span> FC();</span><br><span class="line">        &#125;);</span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">while</span> (fc == <span class="keyword">null</span>) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">int</span> n = fc.n * <span class="number">10</span>;</span><br><span class="line">            <span class="keyword">assert</span> n * <span class="number">10</span> == <span class="number">50</span> * <span class="number">20</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">        t2.start();</span><br><span class="line">        Thread.sleep(<span class="number">100</span>);</span><br><span class="line">        t1.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">FC</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> n = <span class="number">10</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>第二个线程没有退出。所以，其实不可变对象的发布时不需要同步的含义应该是“另一个线程可以看到完整的对象状态”。</p>
-<p>很奇怪，如果把两个<code>start</code>的位置颠倒，或者是去掉<code>sleep</code>，则会导致成功结束。</p>
-</li>
-<li><p>代码3-13那里，有个<code>cache.getFactors(i)</code>，这个操作应该不是原子的吧，那么如果<code>.</code>操作符完成之前，<code>cache</code>值被更新（即引用被更新），含义是什么</p>
-</li>
-<li></li>
 </ul>
 
       
@@ -1252,7 +976,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-count">32</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -1297,7 +1021,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                     
                       
                     
-                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-count">14</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -1440,7 +1164,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                     
                       
                     
-                    <span class="site-state-item-count">61</span>
+                    <span class="site-state-item-count">60</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -1509,7 +1233,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的状态"><span class="nav-text">对象的状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程安全性的定义"><span class="nav-text">线程安全性的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JCIP中“同步”的含义"><span class="nav-text">JCIP中“同步”的含义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#竞态条件"><span class="nav-text">竞态条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据竞争"><span class="nav-text">数据竞争</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原子性"><span class="nav-text">原子性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#volatile变量"><span class="nav-text">volatile变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的初始化"><span class="nav-text">对象的初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#this逸出"><span class="nav-text">this逸出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Final域"><span class="nav-text">Final域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原子变量"><span class="nav-text">原子变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Double-Checked-Locking-DCL"><span class="nav-text">Double Checked Locking(DCL)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁"><span class="nav-text">锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#synchronized"><span class="nav-text">synchronized</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存可见性"><span class="nav-text">内存可见性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不可变对象"><span class="nav-text">不可变对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#正确的发布"><span class="nav-text">正确的发布</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lambda使用外部的对象（或value-type的变量）"><span class="nav-text">lambda使用外部的对象（或value type的变量）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内部类与final变量"><span class="nav-text">内部类与final变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#volatile-vs-锁"><span class="nav-text">volatile vs 锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存模型"><span class="nav-text">内存模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设计线程安全类"><span class="nav-text">设计线程安全类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于现有的线程安全类添加特性"><span class="nav-text">基于现有的线程安全类添加特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖状态的操作"><span class="nav-text">依赖状态的操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用私有的锁-vs-使用对象的内置锁"><span class="nav-text">使用私有的锁 vs 使用对象的内置锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ConcurrentHashMap"><span class="nav-text">ConcurrentHashMap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#串行线程的封闭"><span class="nav-text">串行线程的封闭</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Interrupt"><span class="nav-text">Interrupt</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InterruptedException"><span class="nav-text">InterruptedException</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC-1"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Timer-vs-SingleThreadExecutor"><span class="nav-text">Timer vs SingleThreadExecutor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Thread安全策略"><span class="nav-text">Thread安全策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SingleThreadExecutor"><span class="nav-text">SingleThreadExecutor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ThreadPoolExecutor"><span class="nav-text">ThreadPoolExecutor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#死锁"><span class="nav-text">死锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#动态锁顺序死锁"><span class="nav-text">动态锁顺序死锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#资源死锁"><span class="nav-text">资源死锁</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#饥饿和优先级"><span class="nav-text">饥饿和优先级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#活锁"><span class="nav-text">活锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加速比的计算"><span class="nav-text">加速比的计算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#非竞争同步和竞争同步"><span class="nav-text">非竞争同步和竞争同步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Daemon"><span class="nav-text">Daemon</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UncaughtExceptionHandler"><span class="nav-text">UncaughtExceptionHandler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试"><span class="nav-text">测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lock类"><span class="nav-text">Lock类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ReentrantLock"><span class="nav-text">ReentrantLock</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Thread-suspend"><span class="nav-text">Thread.suspend</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fork-Join"><span class="nav-text">Fork-Join</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Thread-状态"><span class="nav-text">Thread 状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#条件变量"><span class="nav-text">条件变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-text">问题</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的状态"><span class="nav-text">对象的状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程安全性的定义"><span class="nav-text">线程安全性的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JCIP中“同步”的含义"><span class="nav-text">JCIP中“同步”的含义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#竞态条件"><span class="nav-text">竞态条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据竞争"><span class="nav-text">数据竞争</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原子性"><span class="nav-text">原子性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#volatile变量"><span class="nav-text">volatile变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的初始化"><span class="nav-text">对象的初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#this逸出"><span class="nav-text">this逸出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Final域"><span class="nav-text">Final域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原子变量"><span class="nav-text">原子变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Double-Checked-Locking-DCL"><span class="nav-text">Double Checked Locking(DCL)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁"><span class="nav-text">锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#synchronized"><span class="nav-text">synchronized</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存可见性"><span class="nav-text">内存可见性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不可变对象"><span class="nav-text">不可变对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#正确的发布"><span class="nav-text">正确的发布</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lambda使用外部的对象（或value-type的变量）"><span class="nav-text">lambda使用外部的对象（或value type的变量）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内部类与final变量"><span class="nav-text">内部类与final变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#volatile-vs-锁"><span class="nav-text">volatile vs 锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存模型"><span class="nav-text">内存模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设计线程安全类"><span class="nav-text">设计线程安全类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于现有的线程安全类添加特性"><span class="nav-text">基于现有的线程安全类添加特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖状态的操作"><span class="nav-text">依赖状态的操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用私有的锁-vs-使用对象的内置锁"><span class="nav-text">使用私有的锁 vs 使用对象的内置锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例分析"><span class="nav-text">实例分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一个线程安全的车辆追踪器的代码解析"><span class="nav-text">一个线程安全的车辆追踪器的代码解析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ConcurrentHashMap"><span class="nav-text">ConcurrentHashMap</span></a></li></ol></div>
             
 
           </div>
