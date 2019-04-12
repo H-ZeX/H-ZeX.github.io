@@ -117,18 +117,18 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
 
 
-  <meta name="description" content="构造一个线程安全的ThreadPool线程安全的两个要点 原子性：一组操作要么不执行，要么完全执行  内存可见性：一个线程对于某个对象、变量的修改对于另一个线程是否可见，什么时候可见，该数据可见时其他数据的的可见情况   使用pthread时保证内存可见性 由于笔者对pthread的内存模型不熟悉、不清楚c++中的volatile语义是否编译器相关的，所以，在构造这个ThreadPool时不敢使用">
+  <meta name="description" content="代码 链接：https://github.com/H-ZeX/FTP-Implement/blob/master/src/main/tools/ThreadPool.hpp 测试代码链接：https://github.com/H-ZeX/FTP-Implement/blob/master/src/test/tools/ThreadPoolTest.hpp 代码依赖于项目中的基础设施，所以不能直接使">
 <meta name="keywords" content="原子性,线程安全,线程池,内存可见性">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Construct a Thread-Safe ThreadPool">
 <meta property="og:url" content="https://h-zex.github.io/2019/03/20/construct-a-thread-safe-threadpool/index.html">
 <meta property="og:site_name" content="H-ZeX">
-<meta property="og:description" content="构造一个线程安全的ThreadPool线程安全的两个要点 原子性：一组操作要么不执行，要么完全执行  内存可见性：一个线程对于某个对象、变量的修改对于另一个线程是否可见，什么时候可见，该数据可见时其他数据的的可见情况   使用pthread时保证内存可见性 由于笔者对pthread的内存模型不熟悉、不清楚c++中的volatile语义是否编译器相关的，所以，在构造这个ThreadPool时不敢使用">
+<meta property="og:description" content="代码 链接：https://github.com/H-ZeX/FTP-Implement/blob/master/src/main/tools/ThreadPool.hpp 测试代码链接：https://github.com/H-ZeX/FTP-Implement/blob/master/src/test/tools/ThreadPoolTest.hpp 代码依赖于项目中的基础设施，所以不能直接使">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-04-11T12:36:50.533Z">
+<meta property="og:updated_time" content="2019-04-12T16:25:17.627Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Construct a Thread-Safe ThreadPool">
-<meta name="twitter:description" content="构造一个线程安全的ThreadPool线程安全的两个要点 原子性：一组操作要么不执行，要么完全执行  内存可见性：一个线程对于某个对象、变量的修改对于另一个线程是否可见，什么时候可见，该数据可见时其他数据的的可见情况   使用pthread时保证内存可见性 由于笔者对pthread的内存模型不熟悉、不清楚c++中的volatile语义是否编译器相关的，所以，在构造这个ThreadPool时不敢使用">
+<meta name="twitter:description" content="代码 链接：https://github.com/H-ZeX/FTP-Implement/blob/master/src/main/tools/ThreadPool.hpp 测试代码链接：https://github.com/H-ZeX/FTP-Implement/blob/master/src/test/tools/ThreadPoolTest.hpp 代码依赖于项目中的基础设施，所以不能直接使">
 
 
 
@@ -435,7 +435,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-11 20:36:50" itemprop="dateModified" datetime="2019-04-11T20:36:50+08:00">2019-04-11</time>
+                <time title="Modified: 2019-04-13 00:25:17" itemprop="dateModified" datetime="2019-04-13T00:25:17+08:00">2019-04-13</time>
               
             
           </span>
@@ -499,7 +499,12 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
       
 
       
-        <h2 id="构造一个线程安全的ThreadPool"><a href="#构造一个线程安全的ThreadPool" class="headerlink" title="构造一个线程安全的ThreadPool"></a>构造一个线程安全的ThreadPool</h2><h4 id="线程安全的两个要点"><a href="#线程安全的两个要点" class="headerlink" title="线程安全的两个要点"></a>线程安全的两个要点</h4><ul>
+        <h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><ul>
+<li>链接：<a href="https://github.com/H-ZeX/FTP-Implement/blob/master/src/main/tools/ThreadPool.hpp" target="_blank" rel="noopener">https://github.com/H-ZeX/FTP-Implement/blob/master/src/main/tools/ThreadPool.hpp</a></li>
+<li>测试代码链接：<a href="https://github.com/H-ZeX/FTP-Implement/blob/master/src/test/tools/ThreadPoolTest.hpp" target="_blank" rel="noopener">https://github.com/H-ZeX/FTP-Implement/blob/master/src/test/tools/ThreadPoolTest.hpp</a></li>
+<li>代码依赖于项目中的基础设施，所以不能直接使用</li>
+</ul>
+<h4 id="线程安全的两个要点"><a href="#线程安全的两个要点" class="headerlink" title="线程安全的两个要点"></a>线程安全的两个要点</h4><ul>
 <li><p>原子性：一组操作要么不执行，要么完全执行</p>
 </li>
 <li><p>内存可见性：一个线程对于某个对象、变量的修改对于另一个线程是否可见，什么时候可见，该数据可见时其他数据的的可见情况</p>
@@ -548,11 +553,6 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 正面例子</span></span><br><span class="line"><span class="keyword">while</span> (<span class="keyword">not</span> satify condition) &#123;</span><br><span class="line">    cond.wait()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 反面例子</span></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">not</span> satify condition) &#123;</span><br><span class="line">    cond.wait</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>一个很重要的原因：某个线程正在等待，然后被唤醒，这时候，突然一个新线程（该线程之前并没有在等待该cond）进来，拿走了资源，结果醒来的线程拿不到资源，所以应该继续等。另外wiki（<a href="https://en.wikipedia.org/wiki/Spurious_wakeup" target="_blank" rel="noopener">Spurious wakeup</a>）上还讲了另一个原因，就是说在现代处理器上，要保证没有假醒需要较高的代价。不过，JCIP（java concurrency in practice）上虽然有打比方说“因为线路故障导致烤面包机提前响起”，但是没有明确说存在这种硬件上导致的假醒</p>
 </li>
-</ul>
-<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><ul>
-<li>链接：<a href="https://github.com/H-ZeX/FTP-Implement/blob/master/src/main/tools/ThreadPool.hpp" target="_blank" rel="noopener">https://github.com/H-ZeX/FTP-Implement/blob/master/src/main/tools/ThreadPool.hpp</a></li>
-<li>测试代码链接：<a href="https://github.com/H-ZeX/FTP-Implement/blob/master/src/test/tools/ThreadPoolTest.hpp" target="_blank" rel="noopener">https://github.com/H-ZeX/FTP-Implement/blob/master/src/test/tools/ThreadPoolTest.hpp</a></li>
-<li>代码依赖于项目中的基础设施，所以不能直接使用</li>
 </ul>
 
       
@@ -940,7 +940,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#构造一个线程安全的ThreadPool"><span class="nav-text">构造一个线程安全的ThreadPool</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#线程安全的两个要点"><span class="nav-text">线程安全的两个要点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用pthread时保证内存可见性"><span class="nav-text">使用pthread时保证内存可见性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#this指针逸出问题"><span class="nav-text">this指针逸出问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#状态转换的证明"><span class="nav-text">状态转换的证明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#单例模式"><span class="nav-text">单例模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用条件变量的注意事项"><span class="nav-text">使用条件变量的注意事项</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#代码"><span class="nav-text">代码</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#代码"><span class="nav-text">代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#线程安全的两个要点"><span class="nav-text">线程安全的两个要点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用pthread时保证内存可见性"><span class="nav-text">使用pthread时保证内存可见性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#this指针逸出问题"><span class="nav-text">this指针逸出问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#状态转换的证明"><span class="nav-text">状态转换的证明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#单例模式"><span class="nav-text">单例模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用条件变量的注意事项"><span class="nav-text">使用条件变量的注意事项</span></a></li></ol></div>
             
 
           </div>
