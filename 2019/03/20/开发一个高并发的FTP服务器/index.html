@@ -125,7 +125,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="需求 根据RFC959 高并发(C3K~C4K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  1234567891011121">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-04-11T02:20:17.537Z">
+<meta property="og:updated_time" content="2019-04-13T01:34:36.696Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="开发一个高并发的FTP服务器">
 <meta name="twitter:description" content="需求 根据RFC959 高并发(C3K~C4K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  1234567891011121">
@@ -435,7 +435,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-11 10:20:17" itemprop="dateModified" datetime="2019-04-11T10:20:17+08:00">2019-04-11</time>
+                <time title="Modified: 2019-04-13 09:34:36" itemprop="dateModified" datetime="2019-04-13T09:34:36+08:00">2019-04-13</time>
               
             
           </span>
@@ -552,7 +552,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <h4 id="信号处理"><a href="#信号处理" class="headerlink" title="信号处理"></a>信号处理</h4><ul>
 <li>按照CSAPP建议的6条规则，逐一介绍以下</li>
 <li>handler要尽可能简单，比如只是设置一个flag</li>
-<li>handler里只能调用<strong>异步信号安全</strong>的函数（比如只访问全局变量的函数，比如不能被信号中断的函数）。异步信号安全不同于线程安全，线程安全中，对于非线程安全的函数的调用，可以通过持有同一把锁来实现线程安全；但是因为信号是异步的，所以如果在持有锁时信号到来，handler运行，则会死锁——因为handler调用该函数前也要持有锁，CSAPP 3rd（英文版）的P757有一个异步线程安全的函数的表，其中不包括<code>exit</code>、<code>printf</code>等常见函数</li>
+<li>handler里只能调用<strong>异步信号安全</strong>的函数（比如只访问局部变量的函数，比如不能被信号中断的函数）。异步信号安全不同于线程安全，线程安全中，对于非线程安全的函数的调用，可以通过持有同一把锁来实现线程安全；但是因为信号是异步的，所以如果在持有锁时信号到来，handler运行，则会死锁——因为handler调用该函数前也要持有锁，CSAPP 3rd（英文版）的P757有一个异步线程安全的函数的表，其中不包括<code>exit</code>、<code>printf</code>等常见函数</li>
 <li>保存和恢复errno。因为信号handler中调用的函数可能会在失败时设置errno，所以可能会干扰正常程序中的errno，所以需要在刚进入handler时保存errno，而在退出前恢复errno</li>
 <li>如果访问了全局的数据结构，那么需要阻塞所有信号。因为笔者的handler中只是设置了一个flag，而对<code>bool</code>型的flag的<strong>读或写</strong>，intel保证是原子的，所以无需如此<blockquote>
 <p>引用自<em>Intel® 64 and IA-32 Architectures Software Developer’s Manual</em> (2018 5 18), Vol.3A ch8</p>
