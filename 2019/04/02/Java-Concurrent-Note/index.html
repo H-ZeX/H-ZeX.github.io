@@ -124,7 +124,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="以下大部分是java Concurrency in Practice的笔记，以JCIP简称之  对象的状态 （非正式意义上），对象的状态是指存储在状态变量中的数据，可能包括其他依赖对象的域（例如HashMap的Map.Entry对象） 对象的状态中包含了任何可能影响其外部可见行为的数据  线程安全性的定义 正确性的含义  某个类的行为与其规范完全一致。在良好的规范中通常会定义各种不变性条件（In">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-04-12T04:54:38.012Z">
+<meta property="og:updated_time" content="2019-04-14T09:18:20.882Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My Java Concurrent Note">
 <meta name="twitter:description" content="以下大部分是java Concurrency in Practice的笔记，以JCIP简称之  对象的状态 （非正式意义上），对象的状态是指存储在状态变量中的数据，可能包括其他依赖对象的域（例如HashMap的Map.Entry对象） 对象的状态中包含了任何可能影响其外部可见行为的数据  线程安全性的定义 正确性的含义  某个类的行为与其规范完全一致。在良好的规范中通常会定义各种不变性条件（In">
@@ -434,7 +434,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-12 12:54:38" itemprop="dateModified" datetime="2019-04-12T12:54:38+08:00">2019-04-12</time>
+                <time title="Modified: 2019-04-14 17:18:20" itemprop="dateModified" datetime="2019-04-14T17:18:20+08:00">2019-04-14</time>
               
             
           </span>
@@ -619,6 +619,14 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </ul>
 </li>
 </ul>
+<h3 id="文档"><a href="#文档" class="headerlink" title="文档"></a>文档</h3><p>－应该详细记载的内容</p>
+<ul>
+<li>同步策略（什么状态由什么锁保护、可见性如何维护）</li>
+<li>加锁顺序</li>
+<li>没有加锁情况下的同步策略（比如使用一个flag阻止其他线程在flag为true之前使用某资源）</li>
+<li>资源池的配置（避免资源依赖死锁）</li>
+<li>如果不能通过open call来避免死锁，那么应该详细记载如何避免在调用时出现死锁</li>
+</ul>
 <h3 id="对象的初始化"><a href="#对象的初始化" class="headerlink" title="对象的初始化"></a>对象的初始化</h3><ul>
 <li>即使某个对象的引用对于其他线程是可见的，也并不意味着对象状态对于使用该对象的线程一定是可见的</li>
 <li>为了确保对象状态能够呈现出一致的视图，必须使用同步</li>
@@ -718,12 +726,12 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </ul>
 </li>
 </ul>
-<h3 id="不可变对象"><a href="#不可变对象" class="headerlink" title="不可变对象"></a>不可变对象</h3><h5 id="需要满足的条件"><a href="#需要满足的条件" class="headerlink" title="需要满足的条件"></a>需要满足的条件</h5><ul>
+<h3 id="不可变对象"><a href="#不可变对象" class="headerlink" title="不可变对象"></a>不可变对象</h3><h4 id="需要满足的条件"><a href="#需要满足的条件" class="headerlink" title="需要满足的条件"></a>需要满足的条件</h4><ul>
 <li>对象创建后其状态不能修改</li>
 <li>对象的所有域是final类型的（可以不用，比如<code>String</code>的<code>hashCode</code>这个field）</li>
 <li>对象是正确创建的（创建期间，this没有逸出）</li>
 </ul>
-<h5 id="misc"><a href="#misc" class="headerlink" title="misc"></a>misc</h5><ul>
+<h4 id="misc"><a href="#misc" class="headerlink" title="misc"></a>misc</h4><ul>
 <li><p>对象内部可以使用可变对象来管理状态</p>
 </li>
 <li><p>例子</p>
@@ -753,7 +761,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li>事实不可变对象（比如某个<code>Date</code>对象被构造后，就只执行读操作，类似于java要求lambda可以读取的lambda外变量是“事实不可变的”）<strong>必须通过安全的方式发布</strong></li>
 <li>可变对象<strong>必须通过安全的方式发布</strong>，并且必须是线程安全的或者某个锁保护起来</li>
 </ul>
-<h5 id="可变对象的正确的发布"><a href="#可变对象的正确的发布" class="headerlink" title="可变对象的正确的发布"></a>可变对象的正确的发布</h5><ul>
+<h4 id="可变对象的正确的发布"><a href="#可变对象的正确的发布" class="headerlink" title="可变对象的正确的发布"></a>可变对象的正确的发布</h4><ul>
 <li><p>即使某个对象的引用对于其他线程是可见的，也不意味着对象状态对于使用该对象的线程是一定可见的。为了确保对象状态呈现出一致性视图（对象的引用与对象的状态必须同时对其他线程可见），必须要使用<strong>同步</strong>（包括发布时和使用时）</p>
 </li>
 <li><p>常用的发布模式</p>
@@ -800,6 +808,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <h3 id="内存模型"><a href="#内存模型" class="headerlink" title="内存模型"></a>内存模型</h3><ul>
 <li>内存屏障<ul>
 <li>Other processors exhibit a weaker memory model, where special instructions, called <strong>memory barriers</strong>, are required to flush or invalidate the local processor cache in order to see writes made by other processors or make writes by this processor visible to others. These memory barriers are usually performed when lock and unlock actions are taken; they are invisible to programmers in a high level language.</li>
+<li>内存屏障可以刷新缓存，使缓存无效、刷新硬件写缓存、stall execution pipelines，还会抑制编译器的优化，使得大多数操作不能被重排序</li>
 </ul>
 </li>
 </ul>
@@ -1237,7 +1246,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的状态"><span class="nav-text">对象的状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程安全性的定义"><span class="nav-text">线程安全性的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JCIP中“同步”的含义"><span class="nav-text">JCIP中“同步”的含义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#竞态条件"><span class="nav-text">竞态条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据竞争"><span class="nav-text">数据竞争</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原子性"><span class="nav-text">原子性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#volatile变量"><span class="nav-text">volatile变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的初始化"><span class="nav-text">对象的初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#this逸出"><span class="nav-text">this逸出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Final域"><span class="nav-text">Final域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原子变量"><span class="nav-text">原子变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Double-Checked-Locking-DCL"><span class="nav-text">Double Checked Locking(DCL)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁"><span class="nav-text">锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#synchronized"><span class="nav-text">synchronized</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存可见性"><span class="nav-text">内存可见性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不可变对象"><span class="nav-text">不可变对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#正确的发布"><span class="nav-text">正确的发布</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lambda使用外部的对象（或value-type的变量）"><span class="nav-text">lambda使用外部的对象（或value type的变量）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内部类与final变量"><span class="nav-text">内部类与final变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#volatile-vs-锁"><span class="nav-text">volatile vs 锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存模型"><span class="nav-text">内存模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设计线程安全类"><span class="nav-text">设计线程安全类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于现有的线程安全类添加特性"><span class="nav-text">基于现有的线程安全类添加特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖状态的操作"><span class="nav-text">依赖状态的操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用私有的锁-vs-使用对象的内置锁"><span class="nav-text">使用私有的锁 vs 使用对象的内置锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例分析"><span class="nav-text">实例分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一个线程安全的车辆追踪器的代码解析"><span class="nav-text">一个线程安全的车辆追踪器的代码解析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ConcurrentHashMap"><span class="nav-text">ConcurrentHashMap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#condition"><span class="nav-text">condition</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Condition-signal要在持有锁时才能调用"><span class="nav-text">Condition.signal要在持有锁时才能调用</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的状态"><span class="nav-text">对象的状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程安全性的定义"><span class="nav-text">线程安全性的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JCIP中“同步”的含义"><span class="nav-text">JCIP中“同步”的含义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#竞态条件"><span class="nav-text">竞态条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据竞争"><span class="nav-text">数据竞争</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原子性"><span class="nav-text">原子性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#volatile变量"><span class="nav-text">volatile变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文档"><span class="nav-text">文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的初始化"><span class="nav-text">对象的初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#this逸出"><span class="nav-text">this逸出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Final域"><span class="nav-text">Final域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原子变量"><span class="nav-text">原子变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Double-Checked-Locking-DCL"><span class="nav-text">Double Checked Locking(DCL)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁"><span class="nav-text">锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#synchronized"><span class="nav-text">synchronized</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存可见性"><span class="nav-text">内存可见性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不可变对象"><span class="nav-text">不可变对象</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#需要满足的条件"><span class="nav-text">需要满足的条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#misc"><span class="nav-text">misc</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#正确的发布"><span class="nav-text">正确的发布</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#可变对象的正确的发布"><span class="nav-text">可变对象的正确的发布</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lambda使用外部的对象（或value-type的变量）"><span class="nav-text">lambda使用外部的对象（或value type的变量）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内部类与final变量"><span class="nav-text">内部类与final变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#volatile-vs-锁"><span class="nav-text">volatile vs 锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存模型"><span class="nav-text">内存模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设计线程安全类"><span class="nav-text">设计线程安全类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于现有的线程安全类添加特性"><span class="nav-text">基于现有的线程安全类添加特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖状态的操作"><span class="nav-text">依赖状态的操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用私有的锁-vs-使用对象的内置锁"><span class="nav-text">使用私有的锁 vs 使用对象的内置锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例分析"><span class="nav-text">实例分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一个线程安全的车辆追踪器的代码解析"><span class="nav-text">一个线程安全的车辆追踪器的代码解析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ConcurrentHashMap"><span class="nav-text">ConcurrentHashMap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#condition"><span class="nav-text">condition</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Condition-signal要在持有锁时才能调用"><span class="nav-text">Condition.signal要在持有锁时才能调用</span></a></li></ol></li></ol></div>
             
 
           </div>
