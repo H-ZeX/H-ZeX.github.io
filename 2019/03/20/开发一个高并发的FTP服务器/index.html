@@ -125,7 +125,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="需求 根据RFC959 高并发(C3K~C4K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  1234567891011121">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-04-15T04:24:52.430Z">
+<meta property="og:updated_time" content="2019-04-15T04:31:35.909Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="开发一个高并发的FTP服务器">
 <meta name="twitter:description" content="需求 根据RFC959 高并发(C3K~C4K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  1234567891011121">
@@ -435,7 +435,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-15 12:24:52" itemprop="dateModified" datetime="2019-04-15T12:24:52+08:00">2019-04-15</time>
+                <time title="Modified: 2019-04-15 12:31:35" itemprop="dateModified" datetime="2019-04-15T12:31:35+08:00">2019-04-15</time>
               
             
           </span>
@@ -582,7 +582,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <ul>
 <li>登录</li>
 <li>列出某个目录</li>
-<li>上传100KB或7B的文件</li>
+<li>上传100KB的文件</li>
 <li>根据配置，<code>sleep(HANG_TIME)</code>，在C3K～C4K的测试结果中，<code>HANG_TIME=0</code></li>
 </ul>
 </li>
