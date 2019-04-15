@@ -125,7 +125,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="需求 根据RFC959 高并发(C3K~C4K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  1234567891011121">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-04-15T04:31:35.909Z">
+<meta property="og:updated_time" content="2019-04-15T04:37:46.408Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="开发一个高并发的FTP服务器">
 <meta name="twitter:description" content="需求 根据RFC959 高并发(C3K~C4K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  1234567891011121">
@@ -435,7 +435,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-15 12:31:35" itemprop="dateModified" datetime="2019-04-15T12:31:35+08:00">2019-04-15</time>
+                <time title="Modified: 2019-04-15 12:37:46" itemprop="dateModified" datetime="2019-04-15T12:37:46+08:00">2019-04-15</time>
               
             
           </span>
@@ -610,6 +610,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </li>
 </ul>
 <h4 id="压测结果"><a href="#压测结果" class="headerlink" title="压测结果"></a>压测结果</h4><ul>
+<li>笔者的测试与server都跑在同一台机器上</li>
 <li>笔者在自己的机器上(Intel i7-8550U, 16G内存，没有SSD)，<code>StressTest.MaxCmdConnectionCnt</code>设为<code>10240</code>及以下时，测试可以顺利完成。并且在测试过程使用linux的<code>ftp</code>命令与server通信，是比较流畅的</li>
 <li><p>在如下设置测试参数后</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">StressTest.MaxCmdConnectionCnt=10000</span><br><span class="line">StressTest.MaxThreadCnt=4024</span><br><span class="line">StressTest.HangTime=0</span><br></pre></td></tr></table></figure>
