@@ -125,7 +125,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="代码 链接：https://github.com/H-ZeX/FTP-Implement/blob/master/src/main/tools/ThreadPool.hpp 测试代码链接：https://github.com/H-ZeX/FTP-Implement/blob/master/src/test/tools/ThreadPoolTest.hpp 代码依赖于项目中的基础设施，所以不能直接使">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-04-12T16:25:17.627Z">
+<meta property="og:updated_time" content="2019-04-16T10:57:14.165Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Construct a Thread-Safe ThreadPool">
 <meta name="twitter:description" content="代码 链接：https://github.com/H-ZeX/FTP-Implement/blob/master/src/main/tools/ThreadPool.hpp 测试代码链接：https://github.com/H-ZeX/FTP-Implement/blob/master/src/test/tools/ThreadPoolTest.hpp 代码依赖于项目中的基础设施，所以不能直接使">
@@ -435,7 +435,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-13 00:25:17" itemprop="dateModified" datetime="2019-04-13T00:25:17+08:00">2019-04-13</time>
+                <time title="Modified: 2019-04-16 18:57:14" itemprop="dateModified" datetime="2019-04-16T18:57:14+08:00">2019-04-16</time>
               
             
           </span>
@@ -519,6 +519,26 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">pthread_mutex_t</span> poolPtrAndSigToBlockMutex = PTHREAD_MUTEX_INITIALIZER;</span><br></pre></td></tr></table></figure>
 <p>而对于那些是类内变量（非static）的mutex，因为每次获得threadPool对象时，都是在持有保护<code>this</code>指针的mutex时解引用<code>this</code>指针，所以我认为可以保证另一个线程可以看到完整的、一致的对象（欢迎指正！）</p>
 </li>
+<li><p>（2019.4.16更新）</p>
+<ul>
+<li>在<em>PROGRAMMING WITH POSIX THREADS</em>的3.4，有这么一段<blockquote>
+<p>Pthreads provides a few basic rules about memory visibility. You can count on all implementations of the standard to follow these rules: </p>
+<ol>
+<li>Whatever memory values a thread can see when it calls pthread_create can also be seen by the new thread when it starts. Any data written to memory after the call to pthread_create may not necessarily be seen by the new thread, even if the write occurs before the thread starts. </li>
+<li>Whatever memory values a thread can see when it unlocks a mutex, either directly or by waiting on a condition variable, can also be seen by any thread that later locks the same mutex. Again, data written after the mutex is unlocked may not necessarily be seen by the thread that locks the mutex, even if the write occurs before the lock. </li>
+<li>Whatever memory values a thread can see when it terminates, either by cancellation, returning from its start function, or by calling pthread_exit, can also be seen by the thread that joins with the terminated thread by calling pthread_join. And, of course, data written after the thread terminates may not necessarily be seen by the thread that joins, even if the write occurs before the join. </li>
+<li>Whatever memory values a thread can see when it signals or broadcasts a condition variable can also be seen by any thread that is awakened by that signal or broadcast. And, one more time, data written after the signal or broadcast may not necessarily be seen by the thread that wakes up, even if the write occurs before it awakens.</li>
+</ol>
+</blockquote>
+</li>
+<li>在<a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap04.html#tag_04_12" target="_blank" rel="noopener">The Open Group Base Specifications Issue 7, 2018 edition</a>有这么一段<blockquote>
+<p>4.12 Memory Synchronization</p>
+<p>Applications shall ensure that access to any memory location by more than one thread of control (threads or processes) is restricted such that no thread of control can read or modify a memory location while another thread of control may be modifying it. Such access is restricted using functions that synchronize thread execution and also synchronize memory with respect to other threads. The following functions <strong>synchronize memory</strong>(是不是就是内存屏障？) with respect to other threads:</p>
+<p><code>fork()</code><br><code>pthread_barrier_wait()</code><br><code>pthread_cond_broadcast()</code><br><code>pthread_cond_signal()</code><br><code>pthread_cond_timedwait()</code><br><code>pthread_cond_wait()</code><br><code>pthread_create()</code><br><code>pthread_join()</code><br><code>pthread_mutex_lock()</code><br><code>pthread_mutex_timedlock()</code><br><code>pthread_mutex_trylock()</code><br><code>pthread_mutex_unlock()</code><br><code>pthread_spin_lock()</code><br><code>pthread_spin_trylock()</code><br><code>pthread_spin_unlock()</code><br><code>pthread_rwlock_rdlock()</code><br><code>pthread_rwlock_timedrdlock()</code><br><code>pthread_rwlock_timedwrlock()</code><br><code>pthread_rwlock_tryrdlock()</code><br><code>pthread_rwlock_trywrlock()</code><br><code>pthread_rwlock_unlock()</code><br><code>pthread_rwlock_wrlock()</code><br><code>sem_post()</code><br><code>sem_timedwait()</code><br><code>sem_trywait()</code><br><code>sem_wait()</code><br><code>semctl()</code><br><code>semop()</code><br><code>wait()</code><br><code>waitpid()</code></p>
+</blockquote>
+</li>
+</ul>
+</li>
 </ul>
 <h4 id="this指针逸出问题"><a href="#this指针逸出问题" class="headerlink" title="this指针逸出问题"></a><code>this</code>指针逸出问题</h4><ul>
 <li>根据JCIP，逸出（escape）的含义是在对象构造完成前就发布该对象，从而另一个线程看到一个没有完全构造的对象</li>
@@ -596,8 +616,8 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/03/20/构造一个线程安全的ThreadPool/" rel="next" title="构造一个线程安全的ThreadPool">
-                <i class="fa fa-chevron-left"></i> 构造一个线程安全的ThreadPool
+              <a href="/2019/03/19/高并发情况下backlog过低出现的问题/" rel="next" title="高并发情况下backlog过低出现的问题">
+                <i class="fa fa-chevron-left"></i> 高并发情况下backlog过低出现的问题
               </a>
             
           </div>
@@ -683,7 +703,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-count">32</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

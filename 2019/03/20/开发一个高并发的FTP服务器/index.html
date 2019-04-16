@@ -125,7 +125,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="需求 根据RFC959 高并发(C3K~C4K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  1234567891011121">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-04-15T04:53:26.314Z">
+<meta property="og:updated_time" content="2019-04-16T10:58:51.028Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="开发一个高并发的FTP服务器">
 <meta name="twitter:description" content="需求 根据RFC959 高并发(C3K~C4K)  架构 在主线程使用epoll，监听listen在21端口的fd，和所有用户的命令链接的fd（以下均以cmdFd简称之）  一旦某个fd就绪，就将其封装成任务对象提交给线程池去执行  每个用户关联一个Session对象，根据RFC的要求，可以实现为，任意时刻只有小于等于一个线程在handle这个session对象  1234567891011121">
@@ -435,7 +435,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-15 12:53:26" itemprop="dateModified" datetime="2019-04-15T12:53:26+08:00">2019-04-15</time>
+                <time title="Modified: 2019-04-16 18:58:51" itemprop="dateModified" datetime="2019-04-16T18:58:51+08:00">2019-04-16</time>
               
             
           </span>
@@ -521,7 +521,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </li>
 </ul>
 <h3 id="线程安全的线程池类的设计"><a href="#线程安全的线程池类的设计" class="headerlink" title="线程安全的线程池类的设计"></a>线程安全的线程池类的设计</h3><ul>
-<li>见笔者的另一篇博文<a href="https://h-zex.github.io/2019/03/20/%E6%9E%84%E9%80%A0%E4%B8%80%E4%B8%AA%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84ThreadPool/">构造一个线程安全的ThreadPool</a></li>
+<li>见笔者的另一篇博文<a href="https://h-zex.github.io/2019/03/20/construct-a-thread-safe-threadpool/">Construct a Thread-Safe ThreadPool</a></li>
 </ul>
 <h3 id="Utility"><a href="#Utility" class="headerlink" title="Utility"></a>Utility</h3><ul>
 <li><p>对于POSIX的 read、write等IO函数、accept等网络函数、epoll、pthread等函数创建wrap函数，用于处理各种错误，使得业务方可以简单的使用</p>
@@ -758,7 +758,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-count">32</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
