@@ -124,7 +124,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="以下大部分是java Concurrency in Practice的笔记，以JCIP简称之  对象的状态 （非正式意义上），对象的状态是指存储在状态变量中的数据，可能包括其他依赖对象的域（例如HashMap的Map.Entry对象） 对象的状态中包含了任何可能影响其外部可见行为的数据  线程安全性的定义 正确性的含义  某个类的行为与其规范完全一致。在良好的规范中通常会定义各种不变性条件（In">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-04-16T02:49:18.580Z">
+<meta property="og:updated_time" content="2019-04-18T10:28:57.170Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My Java Concurrent Note">
 <meta name="twitter:description" content="以下大部分是java Concurrency in Practice的笔记，以JCIP简称之  对象的状态 （非正式意义上），对象的状态是指存储在状态变量中的数据，可能包括其他依赖对象的域（例如HashMap的Map.Entry对象） 对象的状态中包含了任何可能影响其外部可见行为的数据  线程安全性的定义 正确性的含义  某个类的行为与其规范完全一致。在良好的规范中通常会定义各种不变性条件（In">
@@ -434,7 +434,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-16 10:49:18" itemprop="dateModified" datetime="2019-04-16T10:49:18+08:00">2019-04-16</time>
+                <time title="Modified: 2019-04-18 18:28:57" itemprop="dateModified" datetime="2019-04-18T18:28:57+08:00">2019-04-18</time>
               
             
           </span>
@@ -581,7 +581,10 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li><p>正确的使用方式</p>
 <ul>
 <li>确保他们状态的可见性</li>
-<li>确保它们所引用的状态的可见性</li>
+<li>确保它们所引用的状态的可见性<blockquote>
+<p>This declares a volatile reference to an array, which might not be what you want. With a volatile reference to an array, reads and writes of the reference to the array are treated as volatile, but <strong>the array elements are non-volatile</strong>. To get volatile array elements, you will need to use one of the atomic array classes in java.util.concurrent (provided in Java 5.0). (ref from <code>FindBugs</code>)</p>
+</blockquote>
+</li>
 <li>标志一些重要的程序生命周期事件的发生</li>
 </ul>
 </li>
@@ -592,11 +595,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li>在访问变量时不需要加锁</li>
 </ul>
 </li>
-<li><p>关于重排序</p>
-<blockquote>
-<p><a href="https://www.cs.umd.edu/~pugh/java/memoryModel/jsr-133-faq.html" target="_blank" rel="noopener">来自于</a></p>
-<p>正确性有待验证</p>
-</blockquote>
+<li><p>关于重排序(<a href="https://www.cs.umd.edu/~pugh/java/memoryModel/jsr-133-faq.html" target="_blank" rel="noopener">来自于</a>)</p>
 <ul>
 <li><p>旧内存模型</p>
 <ul>
@@ -625,7 +624,10 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li>加锁顺序</li>
 <li>没有加锁情况下的同步策略（比如使用一个flag阻止其他线程在flag为true之前使用某资源）</li>
 <li>资源池的配置（避免资源依赖死锁）</li>
-<li>如果不能通过open call来避免死锁，那么应该详细记载如何避免在调用时出现死锁</li>
+<li>如果不能通过open call来避免死锁，那么应该详细记载如何避免在调用时出现死锁<ul>
+<li>应该将条件队列相关联的条件谓词以及在这些谓词上等待的操作都写入文档</li>
+</ul>
+</li>
 </ul>
 <h3 id="对象的初始化"><a href="#对象的初始化" class="headerlink" title="对象的初始化"></a>对象的初始化</h3><ul>
 <li>即使某个对象的引用对于其他线程是可见的，也并不意味着对象状态对于使用该对象的线程一定是可见的</li>
@@ -692,8 +694,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li>内存可见性——某个线程修改了对象状态后，其他线程可以看到发生的状态的变化</li>
 <li>每个对象都有一个内部锁，该锁有一个内部条件（条件对应Object对象的final方法<code>wait</code>、<code>notify</code>、<code>notifyAll</code>方法）（所以一旦某个对象的一个<code>synchronized</code>方法被调用后，该对象的另一个<code>synchronized</code>方法会被阻塞）</li>
 <li>调用synchronized静态方法获得相关的类对象（Class对象）的内部锁。要注意，使用不同的classLoader加载出来的Class对象是不同的</li>
-<li><p>监视器</p>
-<ul>
+<li>监视器<ul>
 <li>用Java的术语来讲，监视器具有如下特性：<ul>
 <li>监视器是只包含私有域的类。</li>
 <li>每个监视器类的对象有一个相关的锁。</li>
@@ -709,8 +710,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </li>
 </ul>
 </li>
-<li><p>局限</p>
-<ul>
+<li>局限<ul>
 <li>不能中断一个正在试图获得锁的线程</li>
 <li>没有超时</li>
 <li>只有单一的条件</li>
