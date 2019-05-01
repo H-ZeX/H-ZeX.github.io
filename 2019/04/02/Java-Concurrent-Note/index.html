@@ -124,7 +124,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="以下大部分是java Concurrency in Practice的笔记，以JCIP简称之  对象的状态 （非正式意义上），对象的状态是指存储在状态变量中的数据，可能包括其他依赖对象的域（例如HashMap的Map.Entry对象） 对象的状态中包含了任何可能影响其外部可见行为的数据  线程安全性的定义 正确性的含义  某个类的行为与其规范完全一致。在良好的规范中通常会定义各种不变性条件（In">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-04-18T10:28:57.170Z">
+<meta property="og:updated_time" content="2019-04-23T07:41:02.548Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My Java Concurrent Note">
 <meta name="twitter:description" content="以下大部分是java Concurrency in Practice的笔记，以JCIP简称之  对象的状态 （非正式意义上），对象的状态是指存储在状态变量中的数据，可能包括其他依赖对象的域（例如HashMap的Map.Entry对象） 对象的状态中包含了任何可能影响其外部可见行为的数据  线程安全性的定义 正确性的含义  某个类的行为与其规范完全一致。在良好的规范中通常会定义各种不变性条件（In">
@@ -434,7 +434,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-18 18:28:57" itemprop="dateModified" datetime="2019-04-18T18:28:57+08:00">2019-04-18</time>
+                <time title="Modified: 2019-04-23 15:41:02" itemprop="dateModified" datetime="2019-04-23T15:41:02+08:00">2019-04-23</time>
               
             
           </span>
@@ -611,7 +611,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </li>
 <li><p>Effectively, the semantics of volatile have been strengthened substantially, almost to the level of synchronization. Each read or write of a volatile field acts like “half” a synchronization, for purposes of visibility.</p>
 </li>
-<li><p>Note that it is important for both threads to access the same volatile variable in order to properly set up the happens-before relationship. It is not the case that everything visible to thread A when it writes volatile field <code>f</code> becomes visible to thread B after it reads volatile field <code>g</code>. <strong>The release and acquire have to “match” </strong>(i.e., be performed on the same volatile field) to have the right semantics</p>
+<li><p>Note that it is important for both threads to access the same volatile variable in order to properly set up the happens-before relationship. It is not the case that everything visible to thread A when it writes volatile field <code>f</code> becomes visible to thread B after it reads volatile field <code>g</code>. <strong>The release and acquire have to “match”</strong>(i.e., be performed on the same volatile field) to have the right semantics</p>
 </li>
 </ul>
 </li>
@@ -660,11 +660,9 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li>如果有大量线程要访问相同的原子值， 性能会大幅下降， 因为乐观更新需要太多次重试。</li>
 <li>Java SE 8 提供了 LongAdder 和 LongAccumulator 类来解决这个问题。LongAdder 包括多个变量（加数)， 其总和为当前值。可以有多个线程更新不同的加数，线程个数增加时会自动提供新的加数。通常情况下， 只有当所有工作都完成之后才需要总和的值， 对于这种情况，这种方法会很高效。性能会有显著的提升。</li>
 </ul>
-<h3 id="Double-Checked-Locking-DCL"><a href="#Double-Checked-Locking-DCL" class="headerlink" title="Double Checked Locking(DCL)"></a>Double Checked Locking(DCL)</h3><blockquote>
-<p><a href="https://www.cs.umd.edu/~pugh/java/memoryModel/jsr-133-faq.html" target="_blank" rel="noopener">来自于</a></p>
-<p>正确性有待进一步验证</p>
-</blockquote>
-<ul>
+<h3 id="Double-Checked-Locking-DCL"><a href="#Double-Checked-Locking-DCL" class="headerlink" title="Double Checked Locking(DCL)"></a>Double Checked Locking(DCL)</h3><ul>
+<li><p><a href="https://www.cs.umd.edu/~pugh/java/memoryModel/jsr-133-faq.html" target="_blank" rel="noopener">来自于</a></p>
+</li>
 <li><p>示例代码</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// double-checked-locking - don't do this!</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Something instance = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> Something <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (instance == <span class="keyword">null</span>)</span><br><span class="line">        instance = <span class="keyword">new</span> Something();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> instance;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
@@ -675,7 +673,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li><p>Under the new memory model, making the <code>instance</code> field volatile will “fix” the problems with double-checked locking, because then there will be a happens-before relationship between the initialization of the <code>Something</code> by the constructing thread and the return of its value by the thread that reads it.（我猜，这个happen-before是不是就是<code>程序顺序规则</code>（each action in a thread haappens-before every action in that thread that come later in the program order）和<code>传递性</code>和<code>volatile 变量规则</code>的结合——就是<code>instance=new Something()</code>在单线程中必须保证构造操作在赋值给instance操作之前，然后volatile又保证了写入在读取之前，所以一旦另一个线程读取了instance，则根据传递性，构造操作已经完成了）</p>
 </li>
 <li><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Something</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Something</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">LazyHolder</span> </span>&#123;</span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">final</span> Something INSTANCE = <span class="keyword">new</span> Something();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Something <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> LazyHolder.INSTANCE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>This code is guaranteed to be correct because of the initialization guarantees for static fields; if a field is set in a static initializer, it is guaranteed to be made visible, correctly, to any thread that accesses that class.</p>
+<p>This code is guaranteed to be correct because of <strong>the initialization guarantees for static fields; if a field is set in a static initializer, it is guaranteed to be made visible, correctly, to any thread that accesses that class</strong>.</p>
 </li>
 </ul>
 <h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><ul>
@@ -805,11 +803,23 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <h3 id="MISC"><a href="#MISC" class="headerlink" title="MISC"></a>MISC</h3><ul>
 <li>开发服务器应用时，要始终加上<code>-server</code>参数，client模式的JVM优化与server的不一样</li>
 </ul>
-<h3 id="内存模型"><a href="#内存模型" class="headerlink" title="内存模型"></a>内存模型</h3><ul>
-<li>内存屏障<ul>
-<li>Other processors exhibit a weaker memory model, where special instructions, called <strong>memory barriers</strong>, are required to flush or invalidate the local processor cache in order to see writes made by other processors or make writes by this processor visible to others. These memory barriers are usually performed when lock and unlock actions are taken; they are invisible to programmers in a high level language.</li>
-<li>内存屏障可以刷新缓存，使缓存无效、刷新硬件写缓存、stall execution pipelines，还会抑制编译器的优化，使得大多数操作不能被重排序</li>
+<h3 id="内存屏障"><a href="#内存屏障" class="headerlink" title="内存屏障"></a>内存屏障</h3><ul>
+<li>MFENCE, LFENCE, SFENCE (Ref from intel manual 325462-sdm-vol-1-2abcd-3abcd)<blockquote>
+<ul>
+<li>MFENCE: Performs a serializing operation on all load-from-memory and store-to-memory instructions that were issued prior the MFENCE instruction. <strong>This serializing operation guarantees that every load and store instruction that precedes the MFENCE instruction in program order becomes globally visible before any load or store instruction that follows the MFENCE instruction.</strong> The MFENCE instruction is ordered with respect to all load and store instructions, other MFENCE instructions, any LFENCE and SFENCE instructions, and any serializing instructions (such as the CPUID instruction). MFENCE does not serialize the instruction stream.</li>
+<li>SFENCE: Orders processor execution relative to all memory stores prior to the SFENCE instruction. <strong>The processor ensures that every store prior to SFENCE is globally visible before any store after SFENCE becomes globally visible.</strong> The SFENCE instruction is ordered with respect to memory stores, other SFENCE instructions, MFENCE instructions, and any serializing instructions (such as the CPUID instruction). It is not ordered with respect to memory loads or the LFENCE instruction.</li>
+<li>LFENCE: <strong>Performs a serializing operation on all load-from-memory instructions that were issued prior the LFENCE instruction. Specifically, LFENCE does not execute until all prior instructions have completed locally, and no later instruction begins execution until LFENCE completes</strong>. In particular, an instruction that loads from memory and that precedes an LFENCE receives data from memory prior to completion of the LFENCE. (An LFENCE that follows an instruction that stores to memory might complete before the data being stored have become globally visible.) Instructions following an LFENCE may be fetched from memory before the LFENCE, but they will not execute until the LFENCE completes.</li>
 </ul>
+</blockquote>
+</li>
+<li>read barrier, write barrier, (<a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/memory-barriers.txt?id=HEAD" target="_blank" rel="noopener">Ref</a>)<blockquote>
+<ul>
+<li>Read barrier: <strong>A read barrier is a data dependency barrier plus a guarantee that all the LOAD operations specified before the barrier will appear to happen before all the LOAD operations specified after the barrier with respect to the other components of the system.</strong> A read barrier is a partial ordering on loads only; <strong>it is not required to have any effect on stores</strong>. Read memory barriers imply data dependency barriers, and so can substitute for them. [!] Note that read barriers should normally be paired with write barriers; see the “SMP barrier pairing” subsection.</li>
+<li>Data dependency barrier:  <strong>A data dependency barrier is a weaker form of read barrier. In the case where two loads are performed such that the second depends on the result of the first</strong> (eg: the first load retrieves the address to which the second load will be directed), a data dependency barrier would be required to make sure that the target of the second load is updated after the address obtained by the first load is accessed. </li>
+<li>General memory barriers. <strong>A general memory barrier gives a guarantee that all the LOAD and STORE operations specified before the barrier will appear to happen before all the LOAD and STORE operations specified after the barrier with respect to the other components of the system</strong>. </li>
+<li>Write memory barrier: <strong>A write memory barrier gives a guarantee that all the STORE operations specified before the barrier will appear to happen before all the STORE operations specified after the barrier with respect to the other components of the system</strong>. </li>
+</ul>
+</blockquote>
 </li>
 </ul>
 <h3 id="设计线程安全类"><a href="#设计线程安全类" class="headerlink" title="设计线程安全类"></a>设计线程安全类</h3><ul>
@@ -916,6 +926,10 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2019/05/01/My-CSAPP-Note/" rel="prev" title="My CSAPP Note">
+                My CSAPP Note <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -989,7 +1003,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">32</span>
+                    <span class="site-state-item-count">33</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -1177,7 +1191,9 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                     
                       
                     
-                    <span class="site-state-item-count">60</span>
+                      
+                    
+                    <span class="site-state-item-count">61</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -1246,7 +1262,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的状态"><span class="nav-text">对象的状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程安全性的定义"><span class="nav-text">线程安全性的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JCIP中“同步”的含义"><span class="nav-text">JCIP中“同步”的含义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#竞态条件"><span class="nav-text">竞态条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据竞争"><span class="nav-text">数据竞争</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原子性"><span class="nav-text">原子性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#volatile变量"><span class="nav-text">volatile变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文档"><span class="nav-text">文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的初始化"><span class="nav-text">对象的初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#this逸出"><span class="nav-text">this逸出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Final域"><span class="nav-text">Final域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原子变量"><span class="nav-text">原子变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Double-Checked-Locking-DCL"><span class="nav-text">Double Checked Locking(DCL)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁"><span class="nav-text">锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#synchronized"><span class="nav-text">synchronized</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存可见性"><span class="nav-text">内存可见性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不可变对象"><span class="nav-text">不可变对象</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#需要满足的条件"><span class="nav-text">需要满足的条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#misc"><span class="nav-text">misc</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#正确的发布"><span class="nav-text">正确的发布</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#可变对象的正确的发布"><span class="nav-text">可变对象的正确的发布</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lambda使用外部的对象（或value-type的变量）"><span class="nav-text">lambda使用外部的对象（或value type的变量）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内部类与final变量"><span class="nav-text">内部类与final变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#volatile-vs-锁"><span class="nav-text">volatile vs 锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存模型"><span class="nav-text">内存模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设计线程安全类"><span class="nav-text">设计线程安全类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于现有的线程安全类添加特性"><span class="nav-text">基于现有的线程安全类添加特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖状态的操作"><span class="nav-text">依赖状态的操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用私有的锁-vs-使用对象的内置锁"><span class="nav-text">使用私有的锁 vs 使用对象的内置锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例分析"><span class="nav-text">实例分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一个线程安全的车辆追踪器的代码解析"><span class="nav-text">一个线程安全的车辆追踪器的代码解析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ConcurrentHashMap"><span class="nav-text">ConcurrentHashMap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#condition"><span class="nav-text">condition</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Condition-signal要在持有锁时才能调用"><span class="nav-text">Condition.signal要在持有锁时才能调用</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的状态"><span class="nav-text">对象的状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程安全性的定义"><span class="nav-text">线程安全性的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JCIP中“同步”的含义"><span class="nav-text">JCIP中“同步”的含义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#竞态条件"><span class="nav-text">竞态条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据竞争"><span class="nav-text">数据竞争</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原子性"><span class="nav-text">原子性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#volatile变量"><span class="nav-text">volatile变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文档"><span class="nav-text">文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的初始化"><span class="nav-text">对象的初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#this逸出"><span class="nav-text">this逸出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Final域"><span class="nav-text">Final域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原子变量"><span class="nav-text">原子变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Double-Checked-Locking-DCL"><span class="nav-text">Double Checked Locking(DCL)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁"><span class="nav-text">锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#synchronized"><span class="nav-text">synchronized</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存可见性"><span class="nav-text">内存可见性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不可变对象"><span class="nav-text">不可变对象</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#需要满足的条件"><span class="nav-text">需要满足的条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#misc"><span class="nav-text">misc</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#正确的发布"><span class="nav-text">正确的发布</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#可变对象的正确的发布"><span class="nav-text">可变对象的正确的发布</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lambda使用外部的对象（或value-type的变量）"><span class="nav-text">lambda使用外部的对象（或value type的变量）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内部类与final变量"><span class="nav-text">内部类与final变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#volatile-vs-锁"><span class="nav-text">volatile vs 锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存屏障"><span class="nav-text">内存屏障</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设计线程安全类"><span class="nav-text">设计线程安全类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于现有的线程安全类添加特性"><span class="nav-text">基于现有的线程安全类添加特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖状态的操作"><span class="nav-text">依赖状态的操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用私有的锁-vs-使用对象的内置锁"><span class="nav-text">使用私有的锁 vs 使用对象的内置锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例分析"><span class="nav-text">实例分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一个线程安全的车辆追踪器的代码解析"><span class="nav-text">一个线程安全的车辆追踪器的代码解析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ConcurrentHashMap"><span class="nav-text">ConcurrentHashMap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#condition"><span class="nav-text">condition</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Condition-signal要在持有锁时才能调用"><span class="nav-text">Condition.signal要在持有锁时才能调用</span></a></li></ol></li></ol></div>
             
 
           </div>
