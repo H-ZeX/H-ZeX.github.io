@@ -125,7 +125,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="Linux调度 linux内核设计与实现第4章 不同进程有不同的调度算法（这种模块化结构称为调度器类）。每个调度器都有一个优先级，不同调度器之间如何协调？拥有一个可执行进程的最高优先级的调度器会胜出，去选择接下来要执行那个进程（The highest priority scheduler class that has a runnable process wins, selecting who r">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-05-01T02:23:59.662Z">
+<meta property="og:updated_time" content="2019-07-29T05:37:21.350Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My Linux Note">
 <meta name="twitter:description" content="Linux调度 linux内核设计与实现第4章 不同进程有不同的调度算法（这种模块化结构称为调度器类）。每个调度器都有一个优先级，不同调度器之间如何协调？拥有一个可执行进程的最高优先级的调度器会胜出，去选择接下来要执行那个进程（The highest priority scheduler class that has a runnable process wins, selecting who r">
@@ -418,12 +418,24 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
               
 
-              <time title="Created: 2019-05-01 10:22:59 / Modified: 10:23:59" itemprop="dateCreated datePublished" datetime="2019-05-01T10:22:59+08:00">2019-05-01</time>
+              <time title="Created: 2019-05-01 10:22:59" itemprop="dateCreated datePublished" datetime="2019-05-01T10:22:59+08:00">2019-05-01</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-07-29 13:37:21" itemprop="dateModified" datetime="2019-07-29T13:37:21+08:00">2019-07-29</time>
               
             
           </span>
@@ -750,6 +762,20 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li>如果使用了信号，应该使用<code>epoll_pwait</code>来避免race condition</li>
 </ul>
 </li>
+<li><blockquote>
+<ul>
+<li>值得一提的时，epoll的效率在某些情况下比select或者poll要低，这个是曾经做过测试的。具体的业务场景就是：几乎所有连接都处于活跃状态，并且有频繁的业务数据发送和接受，这个时候select或者poll的能力要强于epoll。下面贴一张比较久远的测试数据表格，可以看到这个现象。一个用select实现的echo server，传输的数据量是52B一次的小报文。 (<a href="http://zbo.space/2016/05/24/netio/" target="_blank" rel="noopener">Ref</a>)</li>
+<li><p>select</p>
+<p> |连接数量|cpu(%)|一次回射平均延时(μs)|<br> |:-:|:-:|:-:|<br> |100|94.5|1394|<br> |500|95|9507|<br> |1000|95|19852|</p>
+</li>
+<li><p>epoll</p>
+<p> |连接数量|cpu(%)|一次回射平均延时(μs)|<br> |:-:|:-:|:-:|<br> |100|93|1930|<br> |500|93|11120|<br> |1000|95|23857|</p>
+</li>
+<li>(或许是因为使用了中断，所以不如轮询快？另外，select是数组，epoll应该是链表（？）所以cache miss高？不过听说kqueue可以合并中断，还可以把中断改成轮询)</li>
+<li>原理其它答案讲得差不多了，我就补一句，从kernel层面将，事件产生有可能不是由硬件中断触发的，在一定情况下kernel的确会轮询，因为响应硬件中断是一个成本比较高的操作。以网卡为例，当数据量很少的时候，每来一个数据包网卡都回产生一个中断，kernel响应这个中断，从网卡缓冲区中读出数据放进协议栈处理，当满足一定条件时，kernel回调用户代码，这里的“回调”一般情况下是指从一个kernel syscall中返回(在此之前用户代码一直处于block状态)。当数据量很大时，每个包都产生一个中断就划不来了，此时kernel可以启动interrupt coalescing机制，让网卡做中断合并，也就是说来足够多的数据包或者等待一个timeout才会产生一个中断，kernel在响应中断时会把所有数据一起读出来处理，这样可以有效的降低中断次数。当数据量更大时，网卡缓冲区里几乎总是有未处理的数据，此时kernel干脆会禁掉网卡的中断，切换到轮询处理的模式，说白了就是跑一个忙循环不停地读网卡缓冲区里的数据，这样综合开销更低。<br>作者：徐辰<br>链接：<a href="https://www.zhihu.com/question/20122137/answer/54153089" target="_blank" rel="noopener">https://www.zhihu.com/question/20122137/answer/54153089</a><br>来源：知乎<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</li>
+</ul>
+</blockquote>
+</li>
 </ul>
 <h3 id="惊群"><a href="#惊群" class="headerlink" title="惊群"></a>惊群</h3><ul>
 <li><blockquote>
@@ -768,6 +794,14 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </li>
 </ul>
 <h4 id="free"><a href="#free" class="headerlink" title="free"></a>free</h4>   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">free  displays the total amount of free and used physical and swap memory</span><br><span class="line">in the system, as well as the buffers and caches used by the kernel.  The</span><br><span class="line">information  is  gathered by parsing /proc/meminfo. The displayed columns</span><br><span class="line">are:</span><br><span class="line"></span><br><span class="line">total  Total installed memory (MemTotal and SwapTotal in /proc/meminfo)</span><br><span class="line"></span><br><span class="line">used   Used memory (calculated as total - free - buffers - cache)</span><br><span class="line"></span><br><span class="line">free   Unused memory (MemFree and SwapFree in /proc/meminfo)</span><br><span class="line"></span><br><span class="line">shared Memory used (mostly) by tmpfs (Shmem in /proc/meminfo)</span><br><span class="line"></span><br><span class="line">buffers</span><br><span class="line">       Memory used by kernel buffers (Buffers in /proc/meminfo)</span><br><span class="line"></span><br><span class="line">cache  Memory used by the page cache and slabs (Cached  and  SReclaimable</span><br><span class="line">       in /proc/meminfo)</span><br><span class="line"></span><br><span class="line">buff/cache</span><br><span class="line">       Sum of buffers and cache</span><br><span class="line"></span><br><span class="line">available</span><br><span class="line">       Estimation of how much memory is available for starting new appli‐</span><br><span class="line">       cations, without swapping. Unlike the data provided by  the  cache</span><br><span class="line">       or  free fields, this field takes into account page cache and also</span><br><span class="line">       that not all reclaimable memory slabs will  be  reclaimed  due  to</span><br><span class="line">       items  being  in  use (MemAvailable in /proc/meminfo, available on</span><br><span class="line">       kernels 3.14, emulated on kernels 2.6.27+, otherwise the  same  as</span><br><span class="line">       free)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Buffers vs Cached(<a href="https://access.redhat.com/solutions/406773#diag" target="_blank" rel="noopener">Ref</a>, <a href="https://www.kernel.org/doc/Documentation/filesystems/proc.txt" target="_blank" rel="noopener">Ref</a>)<ul>
+<li>Buffers: Memory in buffer cache, so relatively temporary storage for raw disk blocks. This shouldn’t get very large.</li>
+<li>Cached: Memory in the pagecache (Diskcache and Shared Memory)<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">    Buffers: Relatively temporary storage for raw disk blocks</span><br><span class="line">            shouldn&apos;t get tremendously large (20MB or so)</span><br><span class="line">    Cached: in-memory cache for files read from the disk (the</span><br><span class="line">            pagecache).  Doesn&apos;t include SwapCached</span><br><span class="line">SwapCached: Memory that once was swapped out, is swapped back in but</span><br><span class="line">            still also is in the swapfile (if memory is needed it</span><br><span class="line">            doesn&apos;t need to be swapped out AGAIN because it is already</span><br><span class="line">            in the swapfile. This saves I/O)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
 <h4 id="vmstat"><a href="#vmstat" class="headerlink" title="vmstat"></a>vmstat</h4>   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">FIELD DESCRIPTION FOR VM MODE</span><br><span class="line">   Procs</span><br><span class="line">       r: The number of runnable processes (running or waiting for run time).</span><br><span class="line">       b: The number of processes in uninterruptible sleep.</span><br><span class="line"></span><br><span class="line">   Memory</span><br><span class="line">       swpd: the amount of virtual memory used.</span><br><span class="line">       free: the amount of idle memory.</span><br><span class="line">       buff: the amount of memory used as buffers.</span><br><span class="line">       cache: the amount of memory used as cache.</span><br><span class="line">       inact: the amount of inactive memory.  (-a option)</span><br><span class="line">       active: the amount of active memory.  (-a option)</span><br><span class="line"></span><br><span class="line">   Swap</span><br><span class="line">       si: Amount of memory swapped in from disk (/s).</span><br><span class="line">       so: Amount of memory swapped to disk (/s).</span><br><span class="line"></span><br><span class="line">   IO</span><br><span class="line">       bi: Blocks received from a block device (blocks/s).</span><br><span class="line">       bo: Blocks sent to a block device (blocks/s).</span><br><span class="line"></span><br><span class="line">   System</span><br><span class="line">       in: The number of interrupts per second, including the clock.</span><br><span class="line">       cs: The number of context switches per second.</span><br><span class="line"></span><br><span class="line">   CPU</span><br><span class="line">       These are percentages of total CPU time.</span><br><span class="line">       us: Time spent running non-kernel code.  (user time, including nice time)</span><br><span class="line">       sy: Time spent running kernel code.  (system time)</span><br><span class="line">       id: Time spent idle.  Prior to Linux 2.5.41, this includes IO-wait time.</span><br><span class="line">       wa: Time spent waiting for IO.  Prior to Linux 2.5.41, included in idle.</span><br><span class="line">       st: Time stolen from a virtual machine.  Prior to Linux 2.6.11, unknown.</span><br></pre></td></tr></table></figure>
 <ul>
 <li>buff vs cache<blockquote>
@@ -778,6 +812,38 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </ul>
 </blockquote>
 </li>
+</ul>
+<h3 id="HugePage"><a href="#HugePage" class="headerlink" title="HugePage"></a>HugePage</h3><ul>
+<li>好处<ul>
+<li>增加TLB命中率</li>
+<li>减小页表大小</li>
+<li>如果可以把多级页表的级数减少，则可以减小查页表时间</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>有一些需要页对齐的场景那么为了对齐浪费的空间就比较多</li>
+<li>页表提供的内存保护是以页为单位的</li>
+<li>缺页时需要调入的东西增加</li>
+<li>共享内存时需要共享整数个页那么大的块（我认为如此，因为是通过在页表中填入相同的物理页地址来共享内存的）</li>
+<li><p>Cache的命中率可能会降低，比如如果有的东西需要放在相邻的两个页上，那么4K页时，其实两个东西都可以缓存在L1，但是对于4M的页则不行</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Model name:          Intel(R) Core(TM) i7-8550U CPU @ 1.80GHz</span><br><span class="line">L1d cache:           32K</span><br><span class="line">L1i cache:           32K</span><br><span class="line">L2 cache:            256K</span><br><span class="line">L3 cache:            8192K</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>因为程序所占用的物理内存都需要在页表有记录，那么hugePage意味着小应用会占用更多内存</p>
+</li>
+<li>mmap<blockquote>
+<p>on Linux, the mapping will be created at a nearby page boundary.<br>offset must be a multiple of the page size as returned by sysconf(_SC_PAGE_SIZE).</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li>其他影响<ul>
+<li>块（文件系统的一种抽象，文件系统的最小寻址单元，只能基于块来访问文件系统）不能比page大（This is an artificial constraint that could go away in the future），所以hugepage会使得块可以很大</li>
+</ul>
+</li>
+</ul>
+<h3 id="malloc"><a href="#malloc" class="headerlink" title="malloc"></a>malloc</h3><ul>
+<li>调用并分配1GB的内存，是否物理内存就会少1G？一方面，CopyOnWrite，所以如果没有写，是不会的。另一方面，空闲链表</li>
 </ul>
 <h3 id="MISC-1"><a href="#MISC-1" class="headerlink" title="MISC"></a>MISC</h3><ul>
 <li>需要对目录有<code>x</code>权限才能cd进目录</li>
@@ -831,6 +897,10 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/02/LeetCode-11-Container-With-Most-Water/" rel="prev" title="LeetCode 11.Container With Most Water">
+                LeetCode 11.Container With Most Water <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -905,7 +975,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">34</span>
+                    <span class="site-state-item-count">35</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -952,7 +1022,11 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                     
                       
                     
-                    <span class="site-state-item-count">15</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -1101,7 +1175,13 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                     
                       
                     
-                    <span class="site-state-item-count">63</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">66</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -1170,7 +1250,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux调度"><span class="nav-text">Linux调度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CFS"><span class="nav-text">CFS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Real-time-scheduling"><span class="nav-text">Real-time scheduling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Multiprocessor-scheduling"><span class="nav-text">Multiprocessor scheduling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Adjusting-priority"><span class="nav-text">Adjusting priority</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#misc"><span class="nav-text">misc</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程状态"><span class="nav-text">进程状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#僵尸进程、孤儿进程"><span class="nav-text">僵尸进程、孤儿进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SO-REUSEPORT"><span class="nav-text">SO_REUSEPORT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PTHREAD-STACK-MIN"><span class="nav-text">PTHREAD_STACK_MIN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IO"><span class="nav-text">IO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络编程"><span class="nav-text">网络编程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#epoll"><span class="nav-text">epoll</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#惊群"><span class="nav-text">惊群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命令"><span class="nav-text">命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#top"><span class="nav-text">top</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#free"><span class="nav-text">free</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vmstat"><span class="nav-text">vmstat</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC-1"><span class="nav-text">MISC</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux调度"><span class="nav-text">Linux调度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CFS"><span class="nav-text">CFS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Real-time-scheduling"><span class="nav-text">Real-time scheduling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Multiprocessor-scheduling"><span class="nav-text">Multiprocessor scheduling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Adjusting-priority"><span class="nav-text">Adjusting priority</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#misc"><span class="nav-text">misc</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程状态"><span class="nav-text">进程状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#僵尸进程、孤儿进程"><span class="nav-text">僵尸进程、孤儿进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SO-REUSEPORT"><span class="nav-text">SO_REUSEPORT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PTHREAD-STACK-MIN"><span class="nav-text">PTHREAD_STACK_MIN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IO"><span class="nav-text">IO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络编程"><span class="nav-text">网络编程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#epoll"><span class="nav-text">epoll</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#惊群"><span class="nav-text">惊群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命令"><span class="nav-text">命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#top"><span class="nav-text">top</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#free"><span class="nav-text">free</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vmstat"><span class="nav-text">vmstat</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HugePage"><span class="nav-text">HugePage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#malloc"><span class="nav-text">malloc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC-1"><span class="nav-text">MISC</span></a></li></ol></div>
             
 
           </div>
