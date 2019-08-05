@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    showProcessingMessages: false,
+    messageStyle: "none",
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+        inlineMath:  [ ["$", "$"] ],
+        displayMath: [ ["$$","$$"] ],
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre','code','a'],
+        ignoreClass:"comment-content"
+    },
+    "HTML-CSS": {
+        availableFonts: ["STIX","TeX"],
+        showMathMenu: false
+    }
+});
+MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+</script>
+<script src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+  
+
+
+
+
+  <meta name="description" content="串行线程的封闭 线程封闭对象的要求： 只能由单个线程拥有 通过安全的发布来转移所有权（安全的发布确保对象状态对于新的所有者来说是可见的（不止这个作用？）） 所有权转以后，只有接受所有权的线程才可以访问（独占的所有权）   可以使用阻塞队列、ConcurrentHashMap的remove方法、AtomicReference的compareAndSet来完成  Interrupt 每个线程都有一个b">
+<meta property="og:type" content="article">
+<meta property="og:title" content="My Java Concurrent Note(2)">
+<meta property="og:url" content="https://h-zex.github.io/2019/07/10/java-concurrency-note-2/index.html">
+<meta property="og:site_name" content="H-ZeX">
+<meta property="og:description" content="串行线程的封闭 线程封闭对象的要求： 只能由单个线程拥有 通过安全的发布来转移所有权（安全的发布确保对象状态对于新的所有者来说是可见的（不止这个作用？）） 所有权转以后，只有接受所有权的线程才可以访问（独占的所有权）   可以使用阻塞队列、ConcurrentHashMap的remove方法、AtomicReference的compareAndSet来完成  Interrupt 每个线程都有一个b">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-08-05T17:16:57.367Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="My Java Concurrent Note(2)">
+<meta name="twitter:description" content="串行线程的封闭 线程封闭对象的要求： 只能由单个线程拥有 通过安全的发布来转移所有权（安全的发布确保对象状态对于新的所有者来说是可见的（不止这个作用？）） 所有权转以后，只有接受所有权的线程才可以访问（独占的所有权）   可以使用阻塞队列、ConcurrentHashMap的remove方法、AtomicReference的compareAndSet来完成  Interrupt 每个线程都有一个b">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="H-ZeX" type="application/atom+xml"/>
+
+
+
+
+  <link rel="canonical" href="https://h-zex.github.io/2019/07/10/java-concurrency-note-2/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>My Java Concurrent Note(2) | H-ZeX</title>
+  
+
+
+
+
+  <script async src="//www.googletagmanager.com/gtag/js?id=UA-137821328-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-137821328-1');
+  </script>
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">H-ZeX</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">H-ZeX's Coding Life</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br/>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br/>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-友情链接">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/link" rel="section"><i class="menu-item-icon fa fa-fw fa-link"></i> <br/>友情链接</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://h-zex.github.io/2019/07/10/java-concurrency-note-2/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="H-ZeX"/>
+      <meta itemprop="description" content=""/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="H-ZeX"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">My Java Concurrent Note(2)
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-07-10 12:49:04" itemprop="dateCreated datePublished" datetime="2019-07-10T12:49:04+08:00">2019-07-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-08-06 01:16:57" itemprop="dateModified" datetime="2019-08-06T01:16:57+08:00">2019-08-06</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JAVA/Concurrency/" itemprop="url" rel="index"><span itemprop="name">Concurrency</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <a href="/2019/07/10/java-concurrency-note-2/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2019/07/10/java-concurrency-note-2/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="串行线程的封闭"><a href="#串行线程的封闭" class="headerlink" title="串行线程的封闭"></a>串行线程的封闭</h3><ul>
+<li>线程封闭对象的要求：<ul>
+<li>只能由单个线程拥有</li>
+<li>通过安全的发布来转移所有权（安全的发布确保对象状态对于新的所有者来说是可见的（不止这个作用？））</li>
+<li>所有权转以后，只有接受所有权的线程才可以访问（独占的所有权）</li>
+</ul>
+</li>
+<li>可以使用阻塞队列、ConcurrentHashMap的remove方法、AtomicReference的compareAndSet来完成</li>
+</ul>
+<h3 id="Interrupt"><a href="#Interrupt" class="headerlink" title="Interrupt"></a>Interrupt</h3><ul>
+<li>每个线程都有一个<code>boolean</code>的中断标志</li>
+<li><code>Thread.interrupted</code>方法将返回当前线程是否被中断，并<strong>清除中断标志</strong></li>
+<li><code>Thread.currentThread().interrupt()</code>将中断当前线程</li>
+<li>阻塞库方法，例如<code>Thread.sleep</code>，<code>Object.wait</code>会检查线程何时中断，并在发现时提前返回</li>
+</ul>
+<h4 id="InterruptedException"><a href="#InterruptedException" class="headerlink" title="InterruptedException"></a>InterruptedException</h4><ul>
+<li>当一个方法会抛出这个异常时，表示这是一个阻塞方法，如果这个方法被中断，那么它将努力提前结束阻塞状态</li>
+<li>当在代码中调用将抛出该异常的方法时，我们的方法也就成了一个阻塞方法，必须要对中断进行响应。有两种选择<ul>
+<li>传递<code>InterruptedException</code>：不捕获该异常，或者捕获后重新抛出</li>
+<li>恢复中断：调用当前线程的interrupt方法恢复中断状态</li>
+</ul>
+</li>
+<li>只有在对Thread进行扩展并且可以控制调用栈上的所有更高层代码时才可以屏蔽该异常</li>
+</ul>
+<h4 id="不可中断的操作"><a href="#不可中断的操作" class="headerlink" title="不可中断的操作"></a>不可中断的操作</h4><ul>
+<li>请求内置锁（synchronized）</li>
+</ul>
+<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><h4 id="MISC"><a href="#MISC" class="headerlink" title="MISC"></a>MISC</h4><ul>
+<li>一个<code>Thread</code>对象即使没有引用了，但是已经start，这个线程还是在运行</li>
+</ul>
+<h4 id="安全策略"><a href="#安全策略" class="headerlink" title="安全策略"></a>安全策略</h4><ul>
+<li>使用<code>Executors.privilegedThreadFactory()</code>可以创建出线程工厂，用这种方式创建出来的线程，将于创建<code>privilegedThreadFactory</code>的线程拥有相同的访问权限、<code>AccessControlContext</code>和<code>contextClassLoader</code></li>
+<li>如果不使用该方法，线程池创建的线程将从在需要新线程时调用execute或submit的客户程序中继承访问权限</li>
+</ul>
+<h4 id="Daemon"><a href="#Daemon" class="headerlink" title="Daemon"></a>Daemon</h4><ul>
+<li><code>Thread.setDaemon()</code>:  This method must be invoked before the thread is started</li>
+<li>当只剩下守护线程时，虚拟机就退出了，由于如果只剩下守护线程，就没必要继续运行程序了。</li>
+<li>守护线程应该永远不去访问固有资源， 如文件、 数据库，因为它会在任何时候甚至在一个操作的中间发生中断。</li>
+</ul>
+<h4 id="Thread-suspend"><a href="#Thread-suspend" class="headerlink" title="Thread.suspend"></a>Thread.suspend</h4><ul>
+<li>与 stop 不同，suspend 不会破坏对象。但是，如果用 suspend 挂起一个持有一个锁的线程， 那么，该锁在恢复之前是不可用的。 如果调用suspend 方法的线程试图获得同一个锁， 那么程序死锁</li>
+</ul>
+<h4 id="Thread状态"><a href="#Thread状态" class="headerlink" title="Thread状态"></a>Thread状态</h4><ul>
+<li><p>状态转换</p>
+<ul>
+<li>当一个线程被阻塞或等待时（或终止时） ，另一个线程被调度为运行状态</li>
+<li>当一个线程被重新激活（例如， 因为超时期满或成功地获得了一个锁)， 调度器检查它是否具有比当前运行线程更高的优先级。 如果是这样，调度器从当前运行线程中挑选一个， 剥夺其运行权，选择一个新的线程运行。</li>
+</ul>
+</li>
+<li><p>new：当用 new 操作符创建一个新线程时， 如 <code>new Thread(r)</code>， 该线程还没有开始运行。这意味着它的状态是 new。当一个线程处于新创建状态时， 程序还没有开始运行线程中的代码。在线程运行之前还有一些基础工作要做</p>
+</li>
+<li>Runnable：一旦调用 start 方法，线程处于 runnable 状态。一个可运行的线桿<strong>可能正在运行也可能没有运行</strong>， 这取决于操作系统给线程提供运行的时间。（A thread in the runnable state is executing in the Java virtual machine but it may be waiting for other resources from the operating system such as processor）（Java 的规范说明没有将它作为一个单独状态。一个正在运行中的线程仍然处于可运行状态)</li>
+<li><p>Blocked：当线程处于被阻塞或等待状态时，它暂时不活动。它不运行任何代码且消耗最少的资源。直到线程调度器重新激活它。（ 细节取决于它是怎样达到非活动状态的) 。当所有其他线程释放该锁，并且线程调度器允许本线程持有它的时候，该线程将变成非阻塞状态</p>
+<ul>
+<li>当一个线程试图获取一个内部的对象锁（而不是 java.util.concurrent 库中的锁，) 而该锁被其他线程持有， 则该线程进人阻塞状态。（Thread state for a thread blocked waiting for a <strong>monitor lock.</strong> A thread in the blocked state is waiting for a monitor lock to enter a synchronized block/method or reenter a synchronized block/method after calling Object.wait.）。当所有其他线程释放该锁，并且线程调度器允许本线程持有它的时候，该线程将变成非阻塞状态</li>
+</ul>
+</li>
+<li><p>WAITING</p>
+<ul>
+<li><p>当线程等待另一个线程通知调度器一个条件时， 它自己进入<strong>等待状态</strong>。（使用<code>Object.wait</code>或<code>Thread.join</code>方法，或是等待<code>java.util.concurrent</code>库中的Lock或Condition时，就会出现这种情况）</p>
+</li>
+<li><p>Thread state for a waiting thread. A thread is in the waiting state due to calling one of the following methods:</p>
+<ul>
+<li>Object.wait with no timeout</li>
+<li>Thread.join with no timeout</li>
+<li>LockSupport.park</li>
+</ul>
+<p>A thread in the waiting state is waiting for another thread to perform a particular action.</p>
+</li>
+</ul>
+</li>
+<li><p>TIMED_WAITING</p>
+<ul>
+<li>Thread state for a waiting thread with a specified waiting time. A thread is in the timed waiting state due to calling one of the following methods with a specified positive waiting time:<ul>
+<li>Thread.sleep</li>
+<li>Object.wait with timeout</li>
+<li>Thread.join with timeout</li>
+<li>LockSupport.parkNanos</li>
+<li>LockSupport.parkUntil</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>TERMINATED</p>
+<ul>
+<li>Thread state for a terminated thread. The thread has <strong>completed execution</strong></li>
+<li>线程因如下两个原因之一而被终止<ul>
+<li>因为 run 方法正常退出而自然死亡。</li>
+<li>因为一个没有捕获的异常终止了 nm 方法而意外死亡</li>
+<li>可以调用线程的 stop 方法杀死一个线程。 该方法抛出 <code>ThreadDeath</code> 错误对象,由此杀死线程。但是，stop 方法已过时</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="ThreadPoolExecutor"><a href="#ThreadPoolExecutor" class="headerlink" title="ThreadPoolExecutor"></a>ThreadPoolExecutor</h3><h4 id="MISC-1"><a href="#MISC-1" class="headerlink" title="MISC"></a>MISC</h4><ul>
+<li>JVM只有在所有（非守护）线程全部终止后才会退出，因为如果无法正确的关闭Executor，JVM无法关闭</li>
+</ul>
+<h4 id="SingleThreadExecutor"><a href="#SingleThreadExecutor" class="headerlink" title="SingleThreadExecutor"></a>SingleThreadExecutor</h4><ul>
+<li>确保不会并发执行任务。为了避免用户代码修改返回的ThreadPoolExecutor对象，从而改变不并发执行的语义，所以对其进行包装使得无法类型转换为ThreadPoolExecutor来修改那些特性</li>
+<li><code>Executors.unconfigurableExecutorService()</code>包装的Executor就具有冻结配置的特性</li>
+</ul>
+<h4 id="afterExecute和beforeExecute方法"><a href="#afterExecute和beforeExecute方法" class="headerlink" title="afterExecute和beforeExecute方法"></a>afterExecute和beforeExecute方法</h4><ul>
+<li><p>以下是<code>runWorker</code>方法内的片段</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    beforeExecute(wt, task);</span><br><span class="line">    Throwable thrown = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        task.run();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (RuntimeException x) &#123;</span><br><span class="line">        thrown = x; <span class="keyword">throw</span> x;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Error x) &#123;</span><br><span class="line">        thrown = x; <span class="keyword">throw</span> x;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable x) &#123;</span><br><span class="line">        thrown = x; <span class="keyword">throw</span> <span class="keyword">new</span> Error(x);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        afterExecute(task, thrown);</span><br><span class="line">    &#125;</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    task = <span class="keyword">null</span>;</span><br><span class="line">    w.completedTasks++;</span><br><span class="line">    w.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看出</p>
+<ul>
+<li>如果beforeExecute抛出异常，则不会执行task和afterExecute</li>
+<li>无论task抛出什么异常，都会执行afterExecute</li>
+</ul>
+</li>
+</ul>
+<h4 id="submit的策略"><a href="#submit的策略" class="headerlink" title="submit的策略"></a>submit的策略</h4><ul>
+<li><p>源码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> c = ctl.get();</span><br><span class="line"><span class="keyword">if</span> (workerCountOf(c) &lt; corePoolSize) &#123;</span><br><span class="line">    <span class="keyword">if</span> (addWorker(command, <span class="keyword">true</span>))</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    c = ctl.get();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (isRunning(c) &amp;&amp; workQueue.offer(command)) &#123;</span><br><span class="line">    <span class="keyword">int</span> recheck = ctl.get();</span><br><span class="line">    <span class="keyword">if</span> (! isRunning(recheck) &amp;&amp; remove(command))</span><br><span class="line">        reject(command);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (workerCountOf(recheck) == <span class="number">0</span>)</span><br><span class="line">        addWorker(<span class="keyword">null</span>, <span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (!addWorker(command, <span class="keyword">false</span>))</span><br><span class="line">    reject(command);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果运行的corePoolSize线程少于corePoolSize，则会创建一个新线程来处理请求，即使其他工作线程处于空闲状态也是如此。否则，如果正在运行少于maximumPoolSize的线程，则只有在队列已满时才会创建一个新线程来处理请求</p>
+</li>
+<li><p>如果core线程还有剩（就是当前启动的线程数少于核心线程数），那么新加<br>worker（等价于新加线程，加入线程后，会run firstTask——<code>prestartAllCoreThreads</code>方法加入的核心worker的firstTask都是null，从而run firstTask不会去运行task）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** Delegates main run loop to outer runWorker  */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    runWorker(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 这是内部的Worker（实现了Runnable接口）的run方法，在addWorker后会调用该worker的thread的start方法，从而调用该run方法</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>否则就尝试push到工作队列里（即使核心线程不忙，也是直接push到队列中，然后核心线程从队列中获得task）（worker运行的线程会阻塞的等待工作队列有东西返回）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (task != <span class="keyword">null</span> || (task = getTask()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">    w.lock();</span><br><span class="line">    <span class="comment">// If pool is stopping, ensure thread is interrupted;</span></span><br><span class="line">    <span class="comment">// 这来自ThreadPoolExecutor的runWorker方法，worker将run方法委托给这个方法</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果工作队列已经满了就会尝试去添加非核心线程</p>
+</li>
+<li><p>因为在添加到工作队列时，使用的是<code>offer</code>，所以即使是<code>SynchronousQueue</code>，也不会阻塞，而是没有线程正在等待接受就立刻返回</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SynchronousQueue&lt;E&gt; <span class="keyword">public</span> <span class="keyword">boolean</span> offer</span><br><span class="line">Inserts the specified element into <span class="keyword">this</span> queue, <span class="keyword">if</span> another thread is waiting to receive it.</span><br><span class="line">Returns: <span class="keyword">true</span> <span class="keyword">if</span> the element was added to <span class="keyword">this</span> queue, <span class="keyword">else</span> <span class="keyword">false</span></span><br><span class="line"><span class="comment">// 截取自SynchronousQueue的doc</span></span><br></pre></td></tr></table></figure>
+<p>因为，如果核心线程已满，但是这个queue无法被offer，那么说明核心线程都忙（会不会出现<code>executor.prestartAllCoreThreads</code>跑完但是有的线程还没到等待点的情况，从而虽然有的线程不忙但是还是无法offer？），所以尝试启动新的非核心线程</p>
+</li>
+<li><p>这意味着，queue不能太小：否则，如果无法添加新线程，而有的线程虽然不忙，但是可能没能及时得到cpu时间去把task从队列中拿出来，就会导致执行<code>RejectedExecutionHandler</code></p>
+</li>
+<li><p>要特别注意<code>execute</code>的这一个片段</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (isRunning(c) &amp;&amp; workQueue.offer(command)) &#123;</span><br><span class="line">    <span class="keyword">int</span> recheck = ctl.get();</span><br><span class="line">    <span class="keyword">if</span> (! isRunning(recheck) &amp;&amp; remove(command))</span><br><span class="line">        reject(command);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (workerCountOf(recheck) == <span class="number">0</span>)</span><br><span class="line">        addWorker(<span class="keyword">null</span>, <span class="keyword">false</span>);</span><br></pre></td></tr></table></figure>
+<p>即使coreSize==0（maxSize为0是非法的）， 并且这是无界队列，线程池还是会保证至少有一个线程在跑</p>
+</li>
+<li><p>如果使用了无界队列，其实maxSize也没什么用，因为总是会添加队列成功——除非超过了<code>Integer.MAX_VALUE</code>。</p>
+</li>
+<li><p>队列的作用在于</p>
+<ul>
+<li>防止core线程不忙但是没能及时从队列中pop出task导致添加多余的线程</li>
+<li>使得系统平缓应对小波峰——避免一有风吹草动系统就跟着波动（怎么感觉有点像惊群效应）。小波峰的含义是，对用户的响应的延迟在接受范围内</li>
+<li>削峰填谷</li>
+</ul>
+</li>
+</ul>
+<h3 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h3><h4 id="锁顺序死锁"><a href="#锁顺序死锁" class="headerlink" title="锁顺序死锁"></a>锁顺序死锁</h4><ul>
+<li><p>在持有锁时调用某个外部方法，那么将可能出现死锁，或阻塞时间过长</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Warning: deadlock-prone!</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Taxi</span> </span>&#123;</span><br><span class="line">    <span class="meta">@GuardedBy</span>(<span class="string">"this"</span>) <span class="keyword">private</span> Point location, destination;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Dispatcher dispatcher;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Taxi</span><span class="params">(Dispatcher dispatcher)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.dispatcher = dispatcher;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> Point <span class="title">getLocation</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> location;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">setLocation</span><span class="params">(Point location)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.location = location;</span><br><span class="line">        <span class="keyword">if</span> (location.equals(destination))</span><br><span class="line">            dispatcher.notifyAvailable(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dispatcher</span> </span>&#123;</span><br><span class="line">    <span class="meta">@GuardedBy</span>(<span class="string">"this"</span>) <span class="keyword">private</span> <span class="keyword">final</span> Set&lt;Taxi&gt; taxis;</span><br><span class="line">    <span class="meta">@GuardedBy</span>(<span class="string">"this"</span>) <span class="keyword">private</span> <span class="keyword">final</span> Set&lt;Taxi&gt; availableTaxis;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Dispatcher</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        taxis = <span class="keyword">new</span> HashSet&lt;Taxi&gt;();</span><br><span class="line">        availableTaxis = <span class="keyword">new</span> HashSet&lt;Taxi&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">notifyAvailable</span><span class="params">(Taxi taxi)</span> </span>&#123;</span><br><span class="line">        availableTaxis.add(taxi);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> Image <span class="title">getImage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Image image = <span class="keyword">new</span> Image();</span><br><span class="line">        <span class="keyword">for</span> (Taxi t : taxis)</span><br><span class="line">            image.drawMarker(t.getLocation());</span><br><span class="line">        <span class="keyword">return</span> image;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>某个线程调用<code>setLocation</code>，然后在持有该Taxis的锁时调用Dispatcher的<code>notifyAvaiable</code>。同时，另一个线程调用getImage，持有dispatcher的锁然后请求taxis的锁。从而死锁</p>
+</li>
+<li><p>开放调用：调用某个方法时不需要持有锁。即可能使用开放调用，可以更容易找到需要获得多个锁的代码路径。如果因为开放调用而导致某些操作不是原子的，那么可以通过一些协议来避免该路径被并发执行——比如搞一个标志，然后其他线程看到该标志为xx时就不执行</p>
+<blockquote>
+<p>The need to rely on open calls and careful lock ordering reflects the fundamental messiness of composing synchronized objects rather than synchronizing composed objects. </p>
+</blockquote>
+</li>
+<li>避免锁顺序死锁<ul>
+<li>以固定的顺序加锁</li>
+<li>如果加锁顺序取决于调用的参数顺序呢（比如获得parm的<code>obj1</code>、<code>obj2</code>内部锁，那么就取决于<code>obj1</code>、<code>obj2</code>的顺序），那么利用<code>System.identityHashCode(obj)</code>来决定是那个obj先加锁，如果两个的hashCode相同，那么加一个“加时赛锁”（就是先加锁这个“加时赛锁”，然后再加锁两个对象），确保同一时间只有一个线程在对<code>obj1</code>、<code>obj2</code>加锁</li>
+</ul>
+</li>
+</ul>
+<h4 id="资源死锁"><a href="#资源死锁" class="headerlink" title="资源死锁"></a>资源死锁</h4><ul>
+<li>比如某个线程持有某个链接池的链接等待另一个链接池的链接，另一个线程顺序颠倒地持有和请求</li>
+<li>线程依赖死锁<ul>
+<li>当线程池不够大，而线程池里的任务依赖于同一线程池的任务，那么会导致，某个任务正在跑，然后其依赖于处于队列中的任务，从而死锁</li>
+<li>这种就要求线程池要经过一定的配置——比如不能太小等。所以要将配置策略文档化</li>
+<li>只有当任务相互独立时，为线程池或工作队列设置界限才是合理的。任务之间存在依赖性，有界的线程池或队列就可能导致线程饥饿死锁</li>
+<li>解决方法<ul>
+<li>使用无界的线程池，比如<code>newCachedThreadPool</code></li>
+<li>使用有界的线程池，并使用<code>SynchronousQueue</code>作为工作队列（这样当线程池满的时候调用者就会被阻塞从而知道子任务无法运行），以及<code>Caller-Runs</code>饱和策略</li>
+<li>为什么不使用0长度的其他blockingQueue而使用SynchronousQueue（以下均为个人观点）<ul>
+<li>一方面，其他blockingQueue不支持0长度。所以有可能有一个被等待的子任务就死锁了</li>
+<li>另一方面，如果无法增加核心worker（新建线程），那么task都跑到队列中，这时候，如果没有线程在等待从队列中获得task，队列就会立刻返回（因为使用的是<code>offer</code>而不是会阻塞的<code>put</code>），从而在可能死锁时（就是子任务没线程能运行时），可以执行拒绝策略。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="消除锁的方法"><a href="#消除锁的方法" class="headerlink" title="消除锁的方法"></a>消除锁的方法</h4><ul>
+<li>比如要求在遍历一个集合时，集合保持一致性，那么可以通过加锁复制该集合，然后遍历副本</li>
+</ul>
+<h4 id="避免死锁的其他方法"><a href="#避免死锁的其他方法" class="headerlink" title="避免死锁的其他方法"></a>避免死锁的其他方法</h4><ul>
+<li>使用有定时功能的锁，并在失败时记录日志、适当rollback</li>
+<li>threadDump可以提供<code>synchronized</code>、<code>ReentrantLock</code>等的死锁信息。通过定时触发threadDump可以有效的获知加锁信息</li>
+</ul>
+<h3 id="饥饿和优先级"><a href="#饥饿和优先级" class="headerlink" title="饥饿和优先级"></a>饥饿和优先级</h3><ul>
+<li>在 Java 程序设计语言中，每一个线程有一个优先级。</li>
+<li>默认情况下，一个线程继承它的父线程的优先级。</li>
+<li>可以用<code>setPriority</code> 方法提高或降低任何一个线程的优先级</li>
+<li>可以将优先级设置为在 MIN_PRIORITY (在 Thread 类中定义为 1 ) 与 MAX_PRIORITY (定义为 10 ) 之间的任何值。NORM_PRIORITY 被定义为 5</li>
+<li>每当线程调度器有机会选择新线程时， 它首先选择具有较高优先级的线程。但是，线程优先级是高度依赖于系统的</li>
+<li><p>如果有几个高优先级的线程没有进入非活动状态， 低优先级的线程<strong>可能</strong>永远也不能执行</p>
+</li>
+<li><p>尽量不要改变线程优先级，如果改变了，那么程序的行为就与平台相关了。并且可能导致饥饿</p>
+</li>
+<li>在大多数java应用程序中，所有线程都具有相同的<code>Thread.NORM_PRIORITY</code>，我测试了Daemon线程和非Daemon线程，都是<code>5</code>（linux 4.18.0-13）</li>
+<li><code>Thread.yield</code>和<code>Thread.sleep(0)</code>的语义都是未定义的，JVM可以将他们实现为空操作，也可以把他们视为线程调度的参考。在unix系统中并不要求他们拥有<code>sleep（0）</code>的语义——将当前线程放在该优先级对应的运行队列末尾，并将执行全交给相同优先级的其他线程，尽管有些JVM是按照这种方法来实现yield的</li>
+</ul>
+<h3 id="活锁"><a href="#活锁" class="headerlink" title="活锁"></a>活锁</h3><ul>
+<li>不会阻塞线程但是也无法继续执行，因为线程总是不断重复执行相同的操作，而且总是失败<ul>
+<li>比如：某个消息被处理时一定会失败，然而开发者错误的将这种错误当做可以修复的错误，从而把该消息又加入了消息队列头部，从而消息处理器会反复调用，并返回相同的结果，从而程序无法继续执行下去</li>
+</ul>
+</li>
+<li>Livelock can also occur when multiple cooperating threads change their state in response to the others in such a way that no thread can ever make progress<ul>
+<li>This is similar to what happens when two overly polite people are walking in opposite directions in a hallway: each steps out of the other’s way, and now they are again in each other’s way.so they both step aside again, and again, and again</li>
+<li>解决方法：重试时引入随机性，比如信道上冲突时，随机退避一段时间</li>
+</ul>
+</li>
+</ul>
+<h3 id="可伸缩性"><a href="#可伸缩性" class="headerlink" title="可伸缩性"></a>可伸缩性</h3><h4 id="加速比的计算"><a href="#加速比的计算" class="headerlink" title="加速比的计算"></a>加速比的计算</h4><ul>
+<li>$\text{speedup}\leq \frac{1}{F+\frac{(1-F)}{N}}$</li>
+<li>其中$F$是串行化的比例，$N$是CPU数目，比如$F=10%$，$N=10$，则在加速比为5.3</li>
+</ul>
+<h4 id="锁竞争"><a href="#锁竞争" class="headerlink" title="锁竞争"></a>锁竞争</h4><ul>
+<li>随着线程数目的增加，性能下降，原因是上下文切换开销和调度开销（比如CFS，两个nice值相同的非实时进程，100ms可以各自分得50ms，如果是100个进程，则只有1ms）</li>
+<li>如果某个线程需要获取多个锁，那么可能获取了一个锁后又需要block，从而导致无效的调度</li>
+</ul>
+<h4 id="上下文切换"><a href="#上下文切换" class="headerlink" title="上下文切换"></a>上下文切换</h4><ul>
+<li><code>vmstat</code>可以看到上下文切换次数、内核执行的时间占比</li>
+<li>如果内核占用率比较高（超过10%），那么说明调度发生得很频繁，可能是由于IO或锁竞争导致的阻塞引起的</li>
+</ul>
+<h4 id="非竞争同步和竞争同步"><a href="#非竞争同步和竞争同步" class="headerlink" title="非竞争同步和竞争同步"></a>非竞争同步和竞争同步</h4><ul>
+<li>非竞争同步可以完全在JVM中处理，竞争同步可能需要操作系统的介入</li>
+<li><blockquote>
+<p>When locking is contended, the losing thread(s) must block. The JVM can implement blocking either via spin-waiting (repeatedly trying to acquire the lock until it succeeds) or by suspending the blocked thread through the operating system.</p>
+</blockquote>
+</li>
+<li>volatile通常是非竞争同步</li>
+<li>synchronized针对无竞争同步进行了优化</li>
+<li>在java5时（作者编写JCIP时）一个Fast-Path的非竞争同步将消耗20~250个时钟周期</li>
+<li>其对程序整体性能的影响很低</li>
+</ul>
+<h4 id="同步的开销"><a href="#同步的开销" class="headerlink" title="同步的开销"></a>同步的开销</h4><ul>
+<li>会增加总线的通信量，从而对其他线程造成影响<blockquote>
+<p>This aspect is sometimes used to argue against the use of nonblocking algorithms without some sort of backoff, because under heavy contention,nonblocking algorithms generate more synchronization traffic than lock-based ones. See Chapter 15.</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="排队理论"><a href="#排队理论" class="headerlink" title="排队理论"></a>排队理论</h4><ul>
+<li>Little定律：在一个稳定的系统中，顾客的平均数量等于他们的平均达到率乘以他们在系统中的平均停留时间</li>
+<li>所以考察锁的性能时要考考察锁的请求频率乘以每次持有锁的时间</li>
+</ul>
+<h4 id="降低锁的竞争程度"><a href="#降低锁的竞争程度" class="headerlink" title="降低锁的竞争程度"></a>降低锁的竞争程度</h4><ul>
+<li>减少持有锁的时间<ul>
+<li>将线程安全性委托给线程安全对象而不是直接对该对象加锁也可以缩小需要同步的块大小。比如<code>synchronized(a HashMap)</code>就比<code>Hashtable</code>的同步块大，因为<code>hashtable</code>内部只有到必要时才加锁，而不是整个操作都加锁。</li>
+</ul>
+</li>
+<li>降低锁的请求频率<ul>
+<li>锁分解：一个锁保护一个变量，不要多个变量共用一个锁</li>
+<li>锁分段：比如<code>ConcurrentHashMap</code>使用16个锁，保护1/16散列桶。劣势是有时候需要持有所有的锁来执行操作（比如resize）</li>
+</ul>
+</li>
+<li>使用有允许更高的并发性的协调的机制代替独占锁<blockquote>
+<p>Replace exclusive locks with coordination mechanisms that permit greater concurrency.</p>
+</blockquote>
+</li>
+<li>合并过小的锁（锁粗化，因为加锁需要代价，尤其是基于OS资源的锁）</li>
+<li>避免热点域，比如多线程下的Map如果每次写入操作都需要更新<code>size</code>这个变量，那么<code>size</code>就成了热点域。可以通过使用多个<code>size</code>变量记录局部size，还可以维护一个全局的<code>volatile size</code>，每次写入操作导致<code>size</code>被更新时，将这个全局size设置为<code>-1</code>，每次调用<code>size()</code>时，把结果缓存在全局<code>size</code></li>
+</ul>
+<h4 id="对象池"><a href="#对象池" class="headerlink" title="对象池"></a>对象池</h4><ul>
+<li>缺点<ul>
+<li>如果太大，则可用内存会变小</li>
+<li>有可能有旧对象到新对象的引用，从而对GC不利</li>
+<li>需要同步，这个代价可能比new新对象更大，即使是非竞争同步，开销也比new新对象大</li>
+</ul>
+</li>
+</ul>
+<h4 id="直接在业务线程写日志-vs-分离日志到后台线程"><a href="#直接在业务线程写日志-vs-分离日志到后台线程" class="headerlink" title="直接在业务线程写日志 vs 分离日志到后台线程"></a>直接在业务线程写日志 vs 分离日志到后台线程</h4><ul>
+<li>前者的缺点<ul>
+<li>IO会阻塞，阻塞需要上下文切换，而可能阻塞的时间其实小于上下文切换的时间</li>
+<li>阻塞结束后换入前，可能需要等待其他线程，从而延迟服务时间</li>
+<li>在输出流上发生竞争（因为有多个业务线程直接往流上写日志，并且像c的printf其实是有锁的）</li>
+<li>锁竞争会导致上下文切换、调度开销，从而进一步增加服务时间和内核工作的时间（即减少了跑业务的时间）</li>
+</ul>
+</li>
+<li>后者的优点<ul>
+<li>写入日志其实是写内存——写到日志队列，这是很快的</li>
+<li>因为会发生竞争的动作（写日志）很快，从而减少了锁竞争，也就减少了发生上下文切换的次数</li>
+<li>在日志队列未满之前，几乎不阻塞，因此也几乎不需要被调度出去</li>
+<li>把一条包含锁竞争、IO的复杂路径变成一条简单的路径</li>
+<li>只有一个日志线程，所以在流上没有锁和锁竞争，也就没有加锁的用户态内核态切换代价和锁竞争导致的上下文切换</li>
+<li>削峰填谷</li>
+</ul>
+</li>
+</ul>
+<h3 id="性能指标"><a href="#性能指标" class="headerlink" title="性能指标"></a>性能指标</h3><h4 id="指标"><a href="#指标" class="headerlink" title="指标"></a>指标</h4><ul>
+<li>资源利用率</li>
+<li>响应时间</li>
+<li>服务时间</li>
+</ul>
+<h4 id="测量方法"><a href="#测量方法" class="headerlink" title="测量方法"></a>测量方法</h4><ul>
+<li>测量等待外部服务的时间</li>
+<li>测量IO时间</li>
+<li>测量网络流量</li>
+<li>使用ThreadDump获得锁竞争的信息，竞争激烈的锁，会频繁出现在ThreadDump中 </li>
+</ul>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><ul>
+<li><p>有安全性测试和活跃性测试</p>
+<ul>
+<li>安全性测试：不发生任何错误的行为</li>
+<li>活跃性测试：某个良好的行为终究发生</li>
+</ul>
+</li>
+<li><p>测试时可以使用以下随机数发生器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">xorShift</span><span class="params">(<span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">    y ^= (y &lt;&lt; <span class="number">6</span>);</span><br><span class="line">    y ^= (y &gt;&gt;&gt; <span class="number">21</span>);</span><br><span class="line">    y ^= (y &lt;&lt; <span class="number">7</span>);</span><br><span class="line">    <span class="keyword">return</span> y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>可以使用<code>/home/hzx/MyStudy/notes/java/JSR166TestCase.java</code>作为测试基类（来自于<a href="http://gee.cs.oswego.edu/cgi-bin/viewcvs.cgi/jsr166/src/test/tck/JSR166TestCase.java）" target="_blank" rel="noopener">http://gee.cs.oswego.edu/cgi-bin/viewcvs.cgi/jsr166/src/test/tck/JSR166TestCase.java）</a></p>
+</li>
+<li>使用那些容易检查、容易出错的属性来测试</li>
+<li>测试代码应该避免引入过多的同步、避免限制并发性，理想的情况是，测试属性中不需要任何同步（比如，如果代码中内存可见性有一些问题，但是测试代码中有一个<code>printf</code>（C的<code>printf</code>似乎可以充当内存屏障，毕竟<code>printf</code>需要lock），那么就会掩盖内存可见性问题）</li>
+<li><p><code>Random</code>是线程安全的</p>
+<blockquote>
+<p>Instances of java.util.Random are threadsafe.(ref from Random’s javadoc)<br> 应该使用纯函数来计算随机数</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 计算出本线程私有的seed，然后使用下面这个xorShift不断迭代计算下一个seed</span></span><br><span class="line"><span class="keyword">int</span> seed = (<span class="keyword">this</span>.hashCode() ^ (<span class="keyword">int</span>) System.nanoTime());</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">xorShift</span><span class="params">(<span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">    y ^= (y &lt;&lt; <span class="number">6</span>);</span><br><span class="line">    y ^= (y &gt;&gt;&gt; <span class="number">21</span>);</span><br><span class="line">    y ^= (y &lt;&lt; <span class="number">7</span>);</span><br><span class="line">    <span class="keyword">return</span> y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+<li><p>如果创建线程开销比较大，而每个线程运行的时间比较短，那么就可能导致循环里创建的线程其实变成了串行执行。可以通过引入<code>CyclicBarrier</code>来解决</p>
+</li>
+<li>为了避免在判断测试何时结束时需要与其他线程协调，可以使用确定性的结束条件</li>
+<li>测量噪声<ul>
+<li>可能来源（以map为例）<ul>
+<li>hashCode的交错</li>
+<li>线程的调度</li>
+<li>rehash</li>
+<li>GC、malloc的开销</li>
+<li>OS的辅助任务</li>
+</ul>
+</li>
+<li>不应该尝试在测试时去掉噪声，因为实际使用过程中也是有各种噪声的</li>
+</ul>
+</li>
+<li><p>提高错误发生的概率</p>
+<ul>
+<li>在多处理器系统上，开大于处理器数目的线程数目，可以使得线程的交错更加不可预测</li>
+<li>在不同的处理器数量、操作系统、处理器架构的系统上测试</li>
+<li>访问共享状态的操作中，使用<code>Thread.yield</code>将产生更多的上下文切换（与平台相关，JVM可能将其实现为空操作），短时间的sleep</li>
+</ul>
+</li>
+<li><p>实例分析：测试阻塞队列 </p>
+<ul>
+<li>如果使用一个类库提供的阻塞队列作为对照，那么就会引入过多的同步</li>
+<li>更好的方法是，使用一个对顺序敏感（只有一个生产者、消费者的情况下）（比如不支持交换率的运算）的校验和计算函数来计算所有入列元素和出列元素的校验和，并进行比较，这样还可以测试出取出的元素的顺序</li>
+<li>因为在每个消费者那里，不可能说每取出一个元素就要对应的操作全局的checksum，而是说边取出边操作一个局部的checksum，等全部取出后才去用局部checksum操作全局checksum，这意味着，只有一个生产者、消费者是才可以使用顺序敏感的函数，否则不应该使用这种函数</li>
+<li>代码 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">PutTakeTest</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ExecutorService pool = Executors.newCachedThreadPool();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> AtomicInteger putSum = <span class="keyword">new</span> AtomicInteger(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> AtomicInteger takeSum = <span class="keyword">new</span> AtomicInteger(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> CyclicBarrier barrier;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> MyBlockingQueue&lt;Integer&gt; bb;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> nTrials, nPairs;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PutTakeTest</span><span class="params">(<span class="keyword">int</span> capacity, <span class="keyword">int</span> nPairs, <span class="keyword">int</span> nTrials)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.bb = <span class="keyword">new</span> MyBlockingQueue&lt;&gt;(capacity);</span><br><span class="line">        <span class="keyword">this</span>.nTrials = nTrials;</span><br><span class="line">        <span class="keyword">this</span>.nPairs = nPairs;</span><br><span class="line">        <span class="keyword">this</span>.barrier = <span class="keyword">new</span> CyclicBarrier(nPairs * <span class="number">2</span> + <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nPairs; i++) &#123;</span><br><span class="line">                pool.execute(<span class="keyword">new</span> Producer());</span><br><span class="line">                pool.execute(<span class="keyword">new</span> Consumer());</span><br><span class="line">            &#125;</span><br><span class="line">            barrier.await();</span><br><span class="line">            barrier.await();</span><br><span class="line">            assertEquals(putSum.get(), takeSum.get());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            pool.shutdown();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Producer</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">int</span> seed = (<span class="keyword">this</span>.hashCode() ^ (<span class="keyword">int</span>) System.nanoTime());</span><br><span class="line">                <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">                barrier.await();</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = nTrials; i &gt; <span class="number">0</span>; --i) &#123;</span><br><span class="line">                    bb.put(seed);</span><br><span class="line">                    sum += seed;</span><br><span class="line">                    seed = xorShift(seed);</span><br><span class="line">                &#125;</span><br><span class="line">                putSum.getAndAdd(sum);</span><br><span class="line">                barrier.await();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Consumer</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                barrier.await();</span><br><span class="line">                <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = nTrials; i &gt; <span class="number">0</span>; --i) &#123;</span><br><span class="line">                    sum += bb.get();</span><br><span class="line">                &#125;</span><br><span class="line">                takeSum.getAndAdd(sum);</span><br><span class="line">                barrier.await();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">xorShift</span><span class="params">(<span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">        y ^= (y &lt;&lt; <span class="number">6</span>);</span><br><span class="line">        y ^= (y &gt;&gt;&gt; <span class="number">21</span>);</span><br><span class="line">        y ^= (y &lt;&lt; <span class="number">7</span>);</span><br><span class="line">        <span class="keyword">return</span> y;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Lock类"><a href="#Lock类" class="headerlink" title="Lock类"></a>Lock类</h3><ul>
+<li>Lock实现中必须提供与内部锁相同的内存可见性语义<blockquote>
+<p>All Lock implementations must enforce the same memory synchronization semantics as provided by the built-in monitor lock, as described in The Java Language Specification (<a href="https://docs.oracle.com/javase/specs/jls/se12/html/jls-17.html#jls-17.4" target="_blank" rel="noopener">17.4 Memory Model</a>) :</p>
+<ul>
+<li>A successful lock operation has the same memory synchronization effects as a successful Lock action.</li>
+<li>A successful unlock operation has the same memory synchronization effects as a successful Unlock action.<br>(ref from Lock’s javadoc)</li>
+</ul>
+</blockquote>
+</li>
+<li>加锁语义、调度算法、顺序保证、性能特性方面可以与内置所有所不同</li>
+</ul>
+<h4 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h4><ul>
+<li>获取ReentrantLock时，有着与进入同步代码块相同的内存语义</li>
+<li>释放时，有着与退出同步代码块相同的内存语义</li>
+<li><p>非公平的版本，在某个线程请求时，如果该锁变为可用，那么其可以直接获得锁，无需考虑正在排队的线程。其并不提倡插队，但是无法避免插队</p>
+<ul>
+<li><p>非公平版本的代码</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">NonfairSync</span> <span class="keyword">extends</span> <span class="title">Sync</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">7316153563782823691L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Performs lock.  Try immediate barge, backing up to normal</span></span><br><span class="line"><span class="comment">     * acquire on failure.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, <span class="number">1</span>))</span><br><span class="line">            setExclusiveOwnerThread(Thread.currentThread());</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            acquire(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> nonfairTryAcquire(acquires);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">nonfairTryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Thread current = Thread.currentThread();</span><br><span class="line">    <span class="keyword">int</span> c = getState();</span><br><span class="line">    <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, acquires)) &#123;</span><br><span class="line">            setExclusiveOwnerThread(current);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123;</span><br><span class="line">        <span class="keyword">int</span> nextc = c + acquires;</span><br><span class="line">        <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>) <span class="comment">// overflow</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Maximum lock count exceeded"</span>);</span><br><span class="line">        setState(nextc);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>公平版本</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    acquire(<span class="number">1</span>); <span class="comment">// 其会调用tryAcquire</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Thread current = Thread.currentThread();</span><br><span class="line">    <span class="keyword">int</span> c = getState();</span><br><span class="line">    <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!hasQueuedPredecessors() &amp;&amp;</span><br><span class="line">            compareAndSetState(<span class="number">0</span>, acquires)) &#123;</span><br><span class="line">            setExclusiveOwnerThread(current);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123;</span><br><span class="line">        <span class="keyword">int</span> nextc = c + acquires;</span><br><span class="line">        <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Maximum lock count exceeded"</span>);</span><br><span class="line">        setState(nextc);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>即使是公平版本的锁，tryLock也是不公平的</p>
+<blockquote>
+<p>Even when this lock has been set to use a fair ordering policy, a call to tryLock() will immediately acquire the lock if it is available, whether or not other threads are currently waiting for the lock. This “barging” behavior can be useful in certain circumstances, even though it breaks fairness. If you want to honor the fairness setting for this lock, then use tryLock(0, TimeUnit.SECONDS) which is almost equivalent (it also detects interruption).</p>
+</blockquote>
+</li>
+<li>公平的版本，在JCIP的性能测试中性能比非公平的低两个数量级</li>
+<li>如果请求锁的时间时间间隔比较长，或者持有锁的时间间隔比较长，那么使用公锁是ok的</li>
+<li>内置锁是非公平的<h4 id="读写锁"><a href="#读写锁" class="headerlink" title="读写锁"></a>读写锁</h4></li>
+</ul>
+</li>
+<li><p>如果读并不是非常多，那么其实会降低性能，因为该锁算法复杂。所以使用前要对程序的瓶颈有明确的分析、测试</p>
+</li>
+</ul>
+<h3 id="Fork-Join"><a href="#Fork-Join" class="headerlink" title="Fork-Join"></a>Fork-Join</h3><ul>
+<li>fork-join 框架使用了一种有效的智能方法来平衡可用线程的工作负载，这种方法称为工作密取（work stealing)。每个工作线程都有一个双端队列 ( deque ) 来完成任务。一个工作线程将子任务压人其双端队列的队头。（只有一个线程可以访问队头，所以不需要加锁。）一个工作线程空闲时，它会从另一个双端队列的队尾“ 密取” 一个任务</li>
+</ul>
+<h3 id="构建自定义的同步工具"><a href="#构建自定义的同步工具" class="headerlink" title="构建自定义的同步工具"></a>构建自定义的同步工具</h3><h4 id="前置条件不满足的处理方案"><a href="#前置条件不满足的处理方案" class="headerlink" title="前置条件不满足的处理方案"></a>前置条件不满足的处理方案</h4><ul>
+<li>可以<code>Thread.sleep()</code></li>
+<li>可以<code>park</code></li>
+<li>可以自旋</li>
+<li>可以<code>yield</code>，对于很快（但是使用自旋又太浪费的地方）就可以满足前置条件的情况，这一个比较好的选择（JCIP说比较<code>park</code>好（14.1.1最后），但是我觉得似乎不尽然，毕竟让出了时间片不就等于<code>park</code>）</li>
+</ul>
+<h4 id="条件变量"><a href="#条件变量" class="headerlink" title="条件变量"></a>条件变量</h4><ul>
+<li>构成前提条件的变量必须由对象的锁来保护，从而使得它们在测试前提条件的同时保持不变。如果前提条件尚未满足，就必须释放锁</li>
+<li>条件队列：每个对象都可以作为一个条件队列。其使得一组线程（等待线程集合）能够通过某种方式来等待特定的条件变为真</li>
+<li>如果某个功能无法通过“轮询+休眠”实现，那么其也无法通过条件队列实现（公平的条件队列除外，条件队列可以实现公平，但是“轮询+休眠”没法实现，除非搞个队列，但是这样子不就成了条件队列）</li>
+<li>条件谓词：使得某个操作成为状态依赖操作的前提条件（比如阻塞队列的take操作的条件谓词就是“队列不为空”），其是类中各个状态变量构成的表达式</li>
+<li><p>应该将条件队列相关联的条件谓词以及在这些谓词上等待的操作都写入文档</p>
+</li>
+<li><p>Monitor Condition</p>
+<ul>
+<li>如果调用同步方法的线程必须被阻塞或是其他原因不能立刻进行，它能够在一个监视条件上等待，这将导致该客户线程暂时<strong>释放监视锁</strong>，并<strong>挂起（WAITING / TIMED_WAITING）</strong>在监视条件上</li>
+<li>同步方法线程恢复。一旦早先挂起在某监视条件上的同步方法线程获取通知，它将继续在最初的等待监视条件的点上执行，执行的条件是唤醒后抢占到监视锁。当线程从wait方法中被唤醒时，他在重新请求锁时不具有任何特殊的优先级，而要与任何其他尝试进入同步代码块的线程一起正常的在锁上竞争</li>
+<li>当调用wait时，需要持有锁，否则会抛出<code>IllegalMonitorStateException</code></li>
+<li>不提供公平的队列</li>
+<li>只有一个条件变量</li>
+</ul>
+</li>
+<li><p>调用wait之前要测试条件谓词，并且从wait中返回时再次进行测试。要在循环中调用wait</p>
+<ul>
+<li>信号丢失：如果线程A通知了一个条件队列，但是线程B随后调用wait，那么wait并不会立刻醒来，而是要等待另一个通知来唤醒它。所以在wait之前要检查条件谓词</li>
+<li>Spurious wakeup：（来自<a href="https://en.wikipedia.org/wiki/Spurious_wakeup" target="_blank" rel="noopener">wiki</a>。内容可能有争议）。比如，当只有一个资源变得可用时，本来我们调用notify，那么可以相信醒来的那个一定可以拿到资源。但是，并不是如此，实际操作系统中，有时会出现即使是上面那种情况，醒来后还是发现资源不可用</li>
+<li>有个问题：wait唤醒后需要抢占锁，那么，是否有可能某线程虽然被notify唤醒，也就是只有一个等待该条件的线程醒来获得资源，但是同时外界来了一个线程，并且竞争锁先成功，那么这个被唤醒的不就没资源了吗，从而类似假醒</li>
+</ul>
+</li>
+<li><p>确保使用与条件队列相关联的锁来保护条件谓词的各个状态变量</p>
+</li>
+<li><p>调用wait、notify、notifyAll时，要持有与条件队列相关的锁，否则有lost-wake-up问题，比如说代码如下</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cnt+=<span class="number">1</span>;</span><br><span class="line">notify();</span><br></pre></td></tr></table></figure>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(cnt&lt;=<span class="number">0</span>) &#123;</span><br><span class="line">    wait();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 然后，在检查了<code>cnt&lt;=0</code>这个条件后、调用<code>wait</code>之前，有个线程完成了<code>cnt++;notify()</code>的操作，那么消费者就丢失了wake-up，陷入了无限等待（如果其在等待时没有被唤醒的话）</p>
+</li>
+<li><p>检查条件谓词之后以及开始执行相关操作之前，不要释放锁</p>
+</li>
+<li><p>调用notify时，JVM会从条件队列上等待的多个线程中选择一个来唤醒，而调用notifyAll时则会唤醒所有在这个条件队列上等待的线程。调用notify或notifyAll时必须持有条件队列对象的锁，而如果这些等待的线程此时不能重新获得锁，那么无法从wait返回，因此发出通知的线程要尽快释放锁</p>
+</li>
+<li><p>在一个条件队列上等待同一个条件谓词</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseBoundedBuffer</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> V[] buf;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> tail;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> head;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> count;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">BaseBoundedBuffer</span><span class="params">(<span class="keyword">int</span> capacity)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.buf = (V[]) <span class="keyword">new</span> Object[capacity];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">doPut</span><span class="params">(V v)</span> </span>&#123;</span><br><span class="line">        buf[tail] = v;</span><br><span class="line">        <span class="keyword">if</span> (++tail == buf.length)</span><br><span class="line">            tail = <span class="number">0</span>;</span><br><span class="line">        ++count;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">final</span> V <span class="title">doTake</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        V v = buf[head];</span><br><span class="line">        buf[head] = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (++head == buf.length)</span><br><span class="line">            head = <span class="number">0</span>;</span><br><span class="line">        --count;</span><br><span class="line">        <span class="keyword">return</span> v;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">isFull</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> count == buf.length;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> count == <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BoundedBuffer</span>&lt;<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">BaseBoundedBuffer</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// CONDITION PREDICATE: not-full (!isFull())</span></span><br><span class="line">    <span class="comment">// CONDITION PREDICATE: not-empty (!isEmpty())</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">BoundedBuffer</span><span class="params">(<span class="keyword">int</span> size)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(size);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// BLOCKS-UNTIL: not-full</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(V v)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (isFull())</span><br><span class="line">            wait();</span><br><span class="line">        doPut(v);</span><br><span class="line">        notifyAll();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// BLOCKS-UNTIL: not-empty</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> V <span class="title">take</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (isEmpty())</span><br><span class="line">            wait();</span><br><span class="line">        V v = doTake();</span><br><span class="line">        notifyAll();</span><br><span class="line">        <span class="keyword">return</span> v;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种情况下有个问题：调用notify后，take被叫醒，然而还是empty——此时isFull不满足，所以本应该put方法被得到通知被执行，所以这个信号就好像丢失了</p>
+</li>
+<li><p>只有在同时满足以下两个条件时，才能用单一的notify而不是notifyAll</p>
+<ul>
+<li>所有等待的线程类型相同。只有一个条件谓词与条件队列相关，并且每个线程从wait返回后将执行相同的操作</li>
+<li>在条件变量上每次通知最多只能唤醒一个线程来执行</li>
+</ul>
+</li>
+<li><p>使用notifyAll比notify更容易正确，所以除非notifyAll对性能影响过大，否则应该优先使用notifyAll</p>
+</li>
+</ul>
+<h3 id="原子变量与非阻塞同步机制"><a href="#原子变量与非阻塞同步机制" class="headerlink" title="原子变量与非阻塞同步机制"></a>原子变量与非阻塞同步机制</h3><h4 id="非阻塞算法"><a href="#非阻塞算法" class="headerlink" title="非阻塞算法"></a>非阻塞算法</h4><ul>
+<li>基于底层原子机器指令来代替锁</li>
+<li>多个线程竞争时不会发生阻塞</li>
+<li>极大地减少调度开销（因为使用自旋而不是挂起？）</li>
+<li>不存在死锁和其他活跃性问题（饥饿呢？活锁呢？）<ul>
+<li>“在不常见的情况下，存在活锁风险”</li>
+<li>如果其他线程每次在CAS竞争中都成功，那么本线程就会饥饿，但是实际中很少发生</li>
+</ul>
+</li>
+<li>不会受到单个线程失败的影响</li>
+</ul>
+<h4 id="锁的劣势"><a href="#锁的劣势" class="headerlink" title="锁的劣势"></a>锁的劣势</h4><ul>
+<li>调度开销</li>
+<li>线程恢复执行时，需要等待其他线程执行完他们的时间片，才能被调度执行</li>
+<li>如果一个线程在持有锁时发生了page fault、调度延迟之类的情况，那么其他线程都会被延迟</li>
+<li>优先级反转：被阻塞的高优先级线程因为需要等待低优先级线程持有的锁，所以导致它的优先级降低到低优先级线程的那个级别（不知道是OS真的降低了优先级还是说虽然有高优先级但是表现上跟低优先级差不多）</li>
+</ul>
+<h4 id="原子变量"><a href="#原子变量" class="headerlink" title="原子变量"></a>原子变量</h4><ul>
+<li>内存可见性(Ref from atomic javadoc)<blockquote>
+<ul>
+<li><strong>The memory effects for accesses and updates of atomics generally follow the rules for volatiles</strong>, as stated in The Java Language Specification (17.4 Memory Model) :</li>
+<li><strong>get has the memory effects of reading a volatile variable</strong>.</li>
+<li><strong>set has the memory effects of writing (assigning) a volatile variable</strong>.</li>
+<li>lazySet has the memory effects of writing (assigning) a volatile variable except that it permits reorderings with subsequent (but not previous) memory actions that do not themselves impose reordering constraints with ordinary non-volatile writes. Among other usage contexts, lazySet may apply when nulling out, for the sake of garbage collection, a reference that is never accessed again.</li>
+<li>weakCompareAndSet atomically reads and conditionally writes a variable but does not create any happens-before orderings, so provides no guarantees with respect to previous or subsequent reads and writes of any variables other than the target of the weakCompareAndSet.</li>
+<li>compareAndSet and all other read-and-update operations such as getAndIncrement have the memory effects of both reading and writing volatile variables.</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h3 id="内存模型"><a href="#内存模型" class="headerlink" title="内存模型"></a>内存模型</h3><h3 id="具体问题"><a href="#具体问题" class="headerlink" title="具体问题"></a>具体问题</h3><ul>
+<li>哲学家进餐（5人）<ul>
+<li>原子的获取两个（<code>Semaphore.tryAcquire(2)</code>），获取失败则回避随机长度的时间，避免活锁</li>
+<li>获取一个后，获取第二个失败，则释放第一个，随机退避，避免活锁</li>
+<li>奇数编号的哲学家先拿起左边的筷子，接着拿起右边的，偶数编号的颠倒过来</li>
+<li>只允许四个人同时就餐</li>
+</ul>
+</li>
+</ul>
+<h3 id="MISC-2"><a href="#MISC-2" class="headerlink" title="MISC"></a>MISC</h3><ul>
+<li>伪共享（false sharing）（<a href="https://www.cnblogs.com/cyfonly/p/5800758.html" target="_blank" rel="noopener">Ref</a>）<ul>
+<li>RFO：Request for owner，如果某cache line是shared的状态，然后需要写该cache line，那么就会导致发送RFO，使得其他的该cache line的副本失效</li>
+<li>如果两个无关的变量在同一cache line，那么就会导致写其中一个变量，另一个变量的本地缓存也失效了，从而要读取时得去L3、内存取新数据</li>
+</ul>
+</li>
+<li>如果保证资源只有一个线程去访问？通过限制只有一个线程（比如单线程的日志服务，然后所有日志工作都交给该服务）、使用锁（粒度可以是<code>call</code>或是<code>thread</code>，后者可重入，前者不可以）</li>
+<li>UncaughtExceptionHandler：可以用 <code>setUncaughtExceptionHandler</code> 方法为任何线程安装一个处理器。也可以用 Thread类的静态方法 <code>setDefaultUncaughtExceptionHandler</code> 为所有线程安装一个默认的处理器</li>
+</ul>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ul>
+<li><p>对象的正确发布的责任是否是在使用者而不是在线程安全类，即线程安全类也要求被正确发布</p>
+</li>
+<li><p>代码3-13那里，有个<code>cache.getFactors(i)</code>，这个操作应该不是原子的吧，那么如果<code>.</code>操作符完成之前，<code>cache</code>值被更新（即引用被更新），含义是什么</p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/01/My-Linux-Note/" rel="next" title="My Linux Note">
+                <i class="fa fa-chevron-left"></i> My Linux Note
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/31/consistency/" rel="prev" title="分布式系统中的各种一致性">
+                分布式系统中的各种一致性 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">H-ZeX</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">36</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">categories</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">66</span>
+                    <span class="site-state-item-name">tags</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/H-ZeX" title="GitHub &rarr; https://github.com/H-ZeX" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:hzx20112012@gmail.com" title="E-Mail &rarr; mailto:hzx20112012@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#串行线程的封闭"><span class="nav-text">串行线程的封闭</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Interrupt"><span class="nav-text">Interrupt</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#InterruptedException"><span class="nav-text">InterruptedException</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不可中断的操作"><span class="nav-text">不可中断的操作</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Thread"><span class="nav-text">Thread</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MISC"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#安全策略"><span class="nav-text">安全策略</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Daemon"><span class="nav-text">Daemon</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Thread-suspend"><span class="nav-text">Thread.suspend</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Thread状态"><span class="nav-text">Thread状态</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ThreadPoolExecutor"><span class="nav-text">ThreadPoolExecutor</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MISC-1"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SingleThreadExecutor"><span class="nav-text">SingleThreadExecutor</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#afterExecute和beforeExecute方法"><span class="nav-text">afterExecute和beforeExecute方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#submit的策略"><span class="nav-text">submit的策略</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#死锁"><span class="nav-text">死锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#锁顺序死锁"><span class="nav-text">锁顺序死锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#资源死锁"><span class="nav-text">资源死锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#消除锁的方法"><span class="nav-text">消除锁的方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#避免死锁的其他方法"><span class="nav-text">避免死锁的其他方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#饥饿和优先级"><span class="nav-text">饥饿和优先级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#活锁"><span class="nav-text">活锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可伸缩性"><span class="nav-text">可伸缩性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#加速比的计算"><span class="nav-text">加速比的计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#锁竞争"><span class="nav-text">锁竞争</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#上下文切换"><span class="nav-text">上下文切换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#非竞争同步和竞争同步"><span class="nav-text">非竞争同步和竞争同步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#同步的开销"><span class="nav-text">同步的开销</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#排队理论"><span class="nav-text">排队理论</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#降低锁的竞争程度"><span class="nav-text">降低锁的竞争程度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对象池"><span class="nav-text">对象池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#直接在业务线程写日志-vs-分离日志到后台线程"><span class="nav-text">直接在业务线程写日志 vs 分离日志到后台线程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#性能指标"><span class="nav-text">性能指标</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#指标"><span class="nav-text">指标</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测量方法"><span class="nav-text">测量方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试"><span class="nav-text">测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lock类"><span class="nav-text">Lock类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ReentrantLock"><span class="nav-text">ReentrantLock</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#读写锁"><span class="nav-text">读写锁</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fork-Join"><span class="nav-text">Fork-Join</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建自定义的同步工具"><span class="nav-text">构建自定义的同步工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#前置条件不满足的处理方案"><span class="nav-text">前置条件不满足的处理方案</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#条件变量"><span class="nav-text">条件变量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原子变量与非阻塞同步机制"><span class="nav-text">原子变量与非阻塞同步机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#非阻塞算法"><span class="nav-text">非阻塞算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#锁的劣势"><span class="nav-text">锁的劣势</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#原子变量"><span class="nav-text">原子变量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存模型"><span class="nav-text">内存模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#具体问题"><span class="nav-text">具体问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC-2"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-text">问题</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">H-ZeX</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.0.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=7.0.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=7.0.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: true,
+    appId: '2zewWM7OPwRwvylk6pRcPGm7-gzGzoHsz',
+    appKey: 'qPGJQQgN9YMXkOQLEC97Ufhf',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+</script>
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+</body>
+</html>
