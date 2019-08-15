@@ -117,19 +117,21 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
 
 
-  <meta name="description" content="场景 比如某个大型游戏举办大赛，要做一个实时的TopN列表，比如前一百名  解决方案积分会发生巨大突变的情况 如果说积分突变很大，并且所有积分都会巨幅涨落，那么事实上每次都需要全量排序  积分比较稳定并且最大涨/落幅度有限的情况 如果说积分比较稳定，并且积分的增长和降落是有上限的（比如每天最多可以打k局游戏，并且每次最多涨/落maxp分），那么还是很好解决的 首先在比赛开始前，我们对全量数据（假设">
+  <meta name="description" content="场景 比如某个大型游戏举办大赛，要做一个实时的TopN列表，比如前一百名  解决方案积分会发生巨大突变的情况 如果说积分突变很大，并且所有积分都会巨幅涨落，那么事实上每次都需要全量排序  积分比较稳定并且最大涨/落幅度有限的情况 如果说积分比较稳定，并且积分的增长和降落是有上限的（比如每天最多可以打m局游戏，并且每次最多涨/落maxp分），那么还是很好解决的 首先在比赛开始前，我们对全量数据（假设">
 <meta name="keywords" content="TopN,高并发">
 <meta property="og:type" content="article">
 <meta property="og:title" content="在高并发情况下，如何实时构建TopN list">
 <meta property="og:url" content="https://h-zex.github.io/2019/08/14/how-to-make-real-time-top-n-list/index.html">
 <meta property="og:site_name" content="H-ZeX">
-<meta property="og:description" content="场景 比如某个大型游戏举办大赛，要做一个实时的TopN列表，比如前一百名  解决方案积分会发生巨大突变的情况 如果说积分突变很大，并且所有积分都会巨幅涨落，那么事实上每次都需要全量排序  积分比较稳定并且最大涨/落幅度有限的情况 如果说积分比较稳定，并且积分的增长和降落是有上限的（比如每天最多可以打k局游戏，并且每次最多涨/落maxp分），那么还是很好解决的 首先在比赛开始前，我们对全量数据（假设">
+<meta property="og:description" content="场景 比如某个大型游戏举办大赛，要做一个实时的TopN列表，比如前一百名  解决方案积分会发生巨大突变的情况 如果说积分突变很大，并且所有积分都会巨幅涨落，那么事实上每次都需要全量排序  积分比较稳定并且最大涨/落幅度有限的情况 如果说积分比较稳定，并且积分的增长和降落是有上限的（比如每天最多可以打m局游戏，并且每次最多涨/落maxp分），那么还是很好解决的 首先在比赛开始前，我们对全量数据（假设">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-08-15T10:08:57.249Z">
+<meta property="og:updated_time" content="2019-08-15T12:08:23.793Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="在高并发情况下，如何实时构建TopN list">
-<meta name="twitter:description" content="场景 比如某个大型游戏举办大赛，要做一个实时的TopN列表，比如前一百名  解决方案积分会发生巨大突变的情况 如果说积分突变很大，并且所有积分都会巨幅涨落，那么事实上每次都需要全量排序  积分比较稳定并且最大涨/落幅度有限的情况 如果说积分比较稳定，并且积分的增长和降落是有上限的（比如每天最多可以打k局游戏，并且每次最多涨/落maxp分），那么还是很好解决的 首先在比赛开始前，我们对全量数据（假设">
+<meta name="twitter:description" content="场景 比如某个大型游戏举办大赛，要做一个实时的TopN列表，比如前一百名  解决方案积分会发生巨大突变的情况 如果说积分突变很大，并且所有积分都会巨幅涨落，那么事实上每次都需要全量排序  积分比较稳定并且最大涨/落幅度有限的情况 如果说积分比较稳定，并且积分的增长和降落是有上限的（比如每天最多可以打m局游戏，并且每次最多涨/落maxp分），那么还是很好解决的 首先在比赛开始前，我们对全量数据（假设">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="H-ZeX" type="application/atom+xml"/>
@@ -435,7 +437,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-08-15 18:08:57" itemprop="dateModified" datetime="2019-08-15T18:08:57+08:00">2019-08-15</time>
+                <time title="Modified: 2019-08-15 20:08:23" itemprop="dateModified" datetime="2019-08-15T20:08:23+08:00">2019-08-15</time>
               
             
           </span>
@@ -506,20 +508,25 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li>如果说积分突变很大，并且所有积分都会巨幅涨落，那么事实上每次都需要全量排序</li>
 </ul>
 <h4 id="积分比较稳定并且最大涨-落幅度有限的情况"><a href="#积分比较稳定并且最大涨-落幅度有限的情况" class="headerlink" title="积分比较稳定并且最大涨/落幅度有限的情况"></a>积分比较稳定并且最大涨/落幅度有限的情况</h4><ul>
-<li>如果说积分比较稳定，并且积分的增长和降落是有上限的（比如每天最多可以打k局游戏，并且每次最多涨/落<code>maxp</code>分），那么还是很好解决的</li>
-<li>首先在比赛开始前，我们对全量数据（假设数据库表中，积分这个字段是无序的）跑一次类似MapReduce等全量分析型事务，获得积分前n的所有人的列表，假设第n个人的积分是k，那么再获取到积分为<code>k-maxp</code>的所有人的列表。那么我们可以预期比赛过程中的TopN一定在这些人中产生（如果没有禁赛等的话）</li>
-<li>假设最后一个人是<code>p</code>分，那么对于比赛过程中出现的大于等于<code>p</code>分的人，也加入到list中，以保证这个list确实涵盖了前M名（M就是前n+积分最少为<code>k-maxp</code>的人的数目）</li>
-<li>因为会出现“禁赛”等各种情况，所以可以以1.x倍去获取这个名单</li>
+<li>如果说积分比较稳定，并且积分的增长和降落是有上限的（比如每天最多可以打<code>m</code>局游戏，并且每次最多涨/落<code>maxp</code>分），那么还是很好解决的</li>
+<li>首先在比赛开始前，我们对全量数据（假设数据库表中，积分这个字段是无序的）跑一次全量分析型事务，获得积分前n的所有人的列表，假设第n个人的积分是<code>k</code>，那么再获取到积分大于等于<code>k-maxp*m</code>的人的列表。那么我们可以预期比赛过程中的TopN一定在这些人中产生</li>
+<li>假设最后一个人是<code>p</code>分，那么对于比赛过程中出现的大于等于<code>p</code>分的人，也加入到list中，以保证这个list确实涵盖了前M名（M就是积分最少为<code>k-maxp*m</code>的人的数目）</li>
+<li>因为会出现“禁赛”等各种情况，所以可以以1.x倍去获取这个名单，更好的处理方案是按照下文的“积分比较稳定但是最大涨/落幅度无限的情况”去处理</li>
 <li>还有另一个措施，如果比赛过程中，我们这个list的人数低于一定值，那么就再跑一次全量分析型事务，去补充这个list</li>
+<li>全量分析任务如何跑？<ul>
+<li>首先对于该全量数据某一时刻的快照，跑一次全量分析事务，拿到前百分之<code>x</code>的list</li>
+<li>假设拿到的list中，最后一名的分数<code>p</code>，再跑一次全量分析任务，把上一个分析任务过程中新加进来的大于<code>p</code>分的人加进list中</li>
+<li>注意，在跑这个新的分析任务时，新出现的，大于<code>p</code>分人的也要实时加入list中</li>
+</ul>
+</li>
 </ul>
 <h4 id="积分比较稳定但是最大涨-落幅度无限的情况"><a href="#积分比较稳定但是最大涨-落幅度无限的情况" class="headerlink" title="积分比较稳定但是最大涨/落幅度无限的情况"></a>积分比较稳定但是最大涨/落幅度无限的情况</h4><ul>
 <li>先获取前<code>n*k</code>(比如k是100)的人的list，可以期望TopN都出现在这个list中</li>
 <li>假设第<code>n*k</code>人是<code>p</code>分，那么对于比赛过程中出现的大于等于<code>p</code>分的人，也加入到list中，以保证这个list确实涵盖了前<code>n*k</code>名。当然，对于小于<code>p</code>分的我们也要清除掉</li>
 <li>然后如果比赛过程这个list中的人数低于一定值，跑一次全量分析任务，补充这个list</li>
-<li>全量分析任务如何跑？对于任务开始时刻的数据，拿到前百分之k的list，然后拿到最后一名的分数<code>p</code>之后，在跑一次全量分析任务，把上一个任务过程中新加进来的大于<code>p</code>分的人加进list中，注意，在跑这个任务时，新出现的，大于<code>p</code>分的也要加入list中</li>
 </ul>
 <h4 id="全量计算"><a href="#全量计算" class="headerlink" title="全量计算"></a>全量计算</h4><ul>
-<li>数据都放在红黑树中，然后每次用户进来，就去更改该用户对应的node，然后对该树进行iter，拿到前n个用户，组成list，普通PC机，QPS可以很高</li>
+<li>数据都放在红黑树中，然后每次用户改变自己的积分，就去更改该用户对应的node，然后对该树进行iter，拿到前n个用户，组成list</li>
 </ul>
 
       
