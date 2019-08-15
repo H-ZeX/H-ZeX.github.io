@@ -125,11 +125,13 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="Linux调度 linux内核设计与实现第4章 不同进程有不同的调度算法（这种模块化结构称为调度器类）。每个调度器都有一个优先级，不同调度器之间如何协调？拥有一个可执行进程的最高优先级的调度器会胜出，去选择接下来要执行那个进程（The highest priority scheduler class that has a runnable process wins, selecting who r">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-07-29T05:37:21.350Z">
+<meta property="og:updated_time" content="2019-08-10T12:10:44.806Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My Linux Note">
 <meta name="twitter:description" content="Linux调度 linux内核设计与实现第4章 不同进程有不同的调度算法（这种模块化结构称为调度器类）。每个调度器都有一个优先级，不同调度器之间如何协调？拥有一个可执行进程的最高优先级的调度器会胜出，去选择接下来要执行那个进程（The highest priority scheduler class that has a runnable process wins, selecting who r">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="H-ZeX" type="application/atom+xml"/>
@@ -435,7 +437,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-07-29 13:37:21" itemprop="dateModified" datetime="2019-07-29T13:37:21+08:00">2019-07-29</time>
+                <time title="Modified: 2019-08-10 20:10:44" itemprop="dateModified" datetime="2019-08-10T20:10:44+08:00">2019-08-10</time>
               
             
           </span>
@@ -797,7 +799,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <ul>
 <li>Buffers vs Cached(<a href="https://access.redhat.com/solutions/406773#diag" target="_blank" rel="noopener">Ref</a>, <a href="https://www.kernel.org/doc/Documentation/filesystems/proc.txt" target="_blank" rel="noopener">Ref</a>)<ul>
 <li>Buffers: Memory in buffer cache, so relatively temporary storage for raw disk blocks. This shouldn’t get very large.</li>
-<li>Cached: Memory in the pagecache (Diskcache and Shared Memory)<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">    Buffers: Relatively temporary storage for raw disk blocks</span><br><span class="line">            shouldn&apos;t get tremendously large (20MB or so)</span><br><span class="line">    Cached: in-memory cache for files read from the disk (the</span><br><span class="line">            pagecache).  Doesn&apos;t include SwapCached</span><br><span class="line">SwapCached: Memory that once was swapped out, is swapped back in but</span><br><span class="line">            still also is in the swapfile (if memory is needed it</span><br><span class="line">            doesn&apos;t need to be swapped out AGAIN because it is already</span><br><span class="line">            in the swapfile. This saves I/O)</span><br></pre></td></tr></table></figure>
+<li>Cached: Memory in the pagecache (Diskcache and Shared Memory)<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">  Buffers: Relatively temporary storage for raw disk blocks</span><br><span class="line">          shouldn&apos;t get tremendously large (20MB or so)</span><br><span class="line">  Cached: in-memory cache for files read from the disk (the</span><br><span class="line">          pagecache).  Doesn&apos;t include SwapCached</span><br><span class="line">SwapCached: Memory that once was swapped out, is swapped back in but</span><br><span class="line">          still also is in the swapfile (if memory is needed it</span><br><span class="line">          doesn&apos;t need to be swapped out AGAIN because it is already</span><br><span class="line">          in the swapfile. This saves I/O)</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 </li>
@@ -826,24 +828,137 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li>页表提供的内存保护是以页为单位的</li>
 <li>缺页时需要调入的东西增加</li>
 <li>共享内存时需要共享整数个页那么大的块（我认为如此，因为是通过在页表中填入相同的物理页地址来共享内存的）</li>
+<li>brk上调brk指针时，需要上调到页的边界，所以如果使用HugePage，会导致每次都分配很多虚拟内存（当然只要这些内存没有被读写，就不会分配物理内存）</li>
 <li><p>Cache的命中率可能会降低，比如如果有的东西需要放在相邻的两个页上，那么4K页时，其实两个东西都可以缓存在L1，但是对于4M的页则不行</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Model name:          Intel(R) Core(TM) i7-8550U CPU @ 1.80GHz</span><br><span class="line">L1d cache:           32K</span><br><span class="line">L1i cache:           32K</span><br><span class="line">L2 cache:            256K</span><br><span class="line">L3 cache:            8192K</span><br></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"> </span><br></pre></td></tr></table></figure>
+<p> Model name:          Intel(R) Core(TM) i7-8550U CPU @ 1.80GHz<br> L1d cache:           32K<br> L1i cache:           32K<br> L2 cache:            256K<br> L3 cache:            8192K</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">   - 因为程序所占用的物理内存都需要在页表有记录，那么hugePage意味着小应用会占用更多内存</span><br><span class="line">   - mmap</span><br><span class="line">      &gt; on Linux, the mapping will be created at a nearby page boundary.</span><br><span class="line">      &gt; offset must be a multiple of the page size as returned by sysconf(_SC_PAGE_SIZE).</span><br><span class="line">- 其他影响</span><br><span class="line"></span><br><span class="line">  - 块（文件系统的一种抽象，文件系统的最小寻址单元，只能基于块来访问文件系统）不能比page大（This is an artificial constraint that could go away in the future），所以hugepage会使得块可以很大</span><br><span class="line"></span><br><span class="line">### malloc</span><br><span class="line"></span><br><span class="line">- 调用并分配1GB的内存，是否物理内存就会少1G？一方面，CopyOnWrite，所以如果没有写，是不会的。另一方面，空闲链表</span><br><span class="line"></span><br><span class="line">- malloc的内存对齐</span><br><span class="line">   - &gt; The malloc() and calloc() functions return a pointer to the allocated memory that is **suitably aligned for any kind of variable**.  (Ref from malloc&apos;s man)</span><br><span class="line">   - 在我的x86-64的机器上试了几次，返回的是16B对齐的内存</span><br><span class="line">      ```c</span><br><span class="line">      int main ()</span><br><span class="line">      &#123;</span><br><span class="line">          printf(&quot;%p\n%p\n%p\n&quot;, malloc(sizeof(int)), malloc(sizeof(char)), malloc(sizeof(short)));</span><br><span class="line">      &#125;</span><br><span class="line">      // 0x14bd260</span><br><span class="line">      // 0x14bd280</span><br><span class="line">      // 0x14bd2a0</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>因为程序所占用的物理内存都需要在页表有记录，那么hugePage意味着小应用会占用更多内存</p>
+</ul>
+<ul>
+<li>nginx在<code>core/ngx_palloc.c</code>的<code>ngx_create_pool</code>使用16中调用了<code>ngx_memalign</code>，<code>ngx_memalign</code>的一个实现是直接使用<code>malloc</code></li>
+</ul>
 </li>
-<li>mmap<blockquote>
-<p>on Linux, the mapping will be created at a nearby page boundary.<br>offset must be a multiple of the page size as returned by sysconf(_SC_PAGE_SIZE).</p>
+<li><p>堆内存边界被称为<code>program break</code>，使用<code>brk</code>和<code>sbrk</code>可以调整。一开始<code>program break</code>位于未初始化的数据段末尾之后。使用<code>brk</code>等抬高<code>program break</code>后，物理内存页尚未分配，内核会在进程首次此试图访问这些虚拟内存地址时自动分配新的物理内存页</p>
+</li>
+<li><p>虚拟内存以页为单位进行分配，所以调用brk指定的end addr实际上会round up到下一个page boundary</p>
+<blockquote>
+<p>The brk() system call sets the program break to the location specified by <code>end_data_segment</code>. Since virtual memory is allocated in units of pages, end_data_segment is effectively rounded up to the next page boundary.</p>
+</blockquote>
+</li>
+<li><p>program break可以设定的精确上限取决于</p>
+<ul>
+<li>进程中对数据段大小的资源限制<code>RLIMIT_DATA</code></li>
+<li>内存映射</li>
+<li>共享内存段</li>
+<li>共享库的位置（因为堆向上增长就会遇到共享库的位置）</li>
+</ul>
+</li>
+</ul>
+<h3 id="page-cache和buffer-cache"><a href="#page-cache和buffer-cache" class="headerlink" title="page cache和buffer cache"></a>page cache和buffer cache</h3><ul>
+<li><p>页缓存（page cache）针对以页为单位的所有操作，并考虑了特定体系结构上的页长度。内存映射技术、其他类型的文件访问也是基于内核中的这一技术实现的，所以页缓存实际上负责了块设备的大部分缓存工作</p>
+</li>
+<li><p>buffer cache</p>
+<ul>
+<li>a buffer is the in-memory representation of a single physical disk block. Buffers act as descriptors that map pages in memory to disk blocks;</li>
+<li>the page cache（这个page cache应该是指buffer cache这种page cache）also reduces disk access during block I/O operations by both <strong>caching disk blocks</strong> and <strong>buffering block I/O operations</strong> until later</li>
+<li>this caching is often referred to as the <strong>buffer cache</strong>, although as implemented it is not a separate cache but <strong>is part of the page cache</strong></li>
+<li>In earlier kernels, there were two separate disk caches: the page cache and the buffer cache. <strong>The former cached pages; the latter cached buffers</strong>.The two caches were not unified: A disk block could exist in both caches simultaneously.</li>
+<li>Today, we have one disk cache: the page cache. <strong>The kernel still needs to use buffers, however, to represent disk blocks in memory</strong>. Conveniently, <strong>the buffers describe the mapping of a block onto a page, which is in the page cache.</strong></li>
+</ul>
+</li>
+</ul>
+<h3 id="GCC内联汇编"><a href="#GCC内联汇编" class="headerlink" title="GCC内联汇编"></a>GCC内联汇编</h3><ul>
+<li>以下来自<a href="http://csapp.cs.cmu.edu/3e/waside/waside-embedded-asm.pdf" target="_blank" rel="noopener">CSAPP Assembly Webaside</a></li>
+<li>扩展形式的汇编的目的<ul>
+<li>帮助编译器correctly set up the required source values, execute the assembly instructions, and make use of the computed results</li>
+<li>important program values are not overwritten by the assembly code instructions</li>
+</ul>
+</li>
+<li>形式：以<code>:</code>分割，依次为code-string、output-list(results generated by the assembly code)、input-list(results generated by the assembly code)、overwrite-list(registers that are overwritten by the assembly code)</li>
+<li>code-string<ul>
+<li>GCC3.1之前，在code-string中用<code>%0, %1, ..., %9</code>来引用output-list和input-list中的操作数（<code>%n</code>的<code>n</code>, based on the order of the operands in the two lists）</li>
+<li>GCC3.1开始，可以使用<code>%[name]</code>来引用</li>
+<li>寄存器名字用<code>%%reg_name</code>来引用</li>
+<li>If multiple instructions are given, it is critical that <strong>return characters</strong> be inserted between them. 一种方法是（finish all but the final string with the sequence \n\t）</li>
+</ul>
+</li>
+<li><p>output-string</p>
+<ul>
+<li>a comma-separated list</li>
+<li><p>each list element containing three components in the form <code>[name] tag (expr)</code>(giving the name of the operand, the output constraint(specifies constraints on the use and location of the output operand), and the C expression indicating the destination for the instruction result)</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&quot;=r&quot; Update value stored in a register</span><br><span class="line">&quot;+r&quot; Read and update value stored in a register</span><br><span class="line">&quot;=m&quot; Update value stored in memory</span><br><span class="line">&quot;+m&quot; Read and update value stored in memory</span><br><span class="line">&quot;=rm&quot; Update value stored in a register or in memory</span><br><span class="line">&quot;+rm&quot; Read and update value stored in a register or in memory</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>The expression expr can be any assignable value (known in C as an lvalue). The compiler will generate the necessary code sequence to perform the assignment</p>
+</li>
+</ul>
+</li>
+<li>input-string<ul>
+<li>The input list entries have the same format as output-string</li>
+<li>the tags are of the form tag “r”, “m”, or “rm”, indicating that the operand will be read from a register, memory, or either, respectively</li>
+<li>Each input operand can be any C expression. The compiler will generate the necessary code to evaluate the expression</li>
+</ul>
+</li>
+<li>overwrite-list<ul>
+<li>Each input operand can be any C expression. The compiler will generate the necessary code to evaluate the expression</li>
+</ul>
+</li>
+<li><p>we can simplify the code even more and make use of GCC’s ability to work with different data types. GCC uses the type information for an operand when determining which register to substitute for an operand name in the code string<br> 原先的版本，手动指定寄存器</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">tmult_ok2</span><span class="params">(<span class="keyword">long</span> x, <span class="keyword">long</span> y, <span class="keyword">long</span>* dest)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> result;</span><br><span class="line">    dest = x * y;</span><br><span class="line">    <span class="keyword">asm</span>(<span class="string">"setae %%bl # Set low-order byte\n\t"</span></span><br><span class="line">        <span class="string">"movzbl %%bl,%[val] # Zero extend to be result"</span></span><br><span class="line">        : [ val ] <span class="string">"=r"</span>(result) <span class="comment">/* Output */</span></span><br><span class="line">        :                      <span class="comment">/* No inputs */</span></span><br><span class="line">        : <span class="string">"%bl"</span>                <span class="comment">/* Overwrites */</span></span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 新版本，让GCC指定寄存器</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Uses extended asm to get reliable code */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">tmult_ok3</span><span class="params">(<span class="keyword">long</span> x, <span class="keyword">long</span> y, <span class="keyword">long</span>* dest)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> bresult;</span><br><span class="line">    *dest = x * y;</span><br><span class="line">    <span class="keyword">asm</span>(<span class="string">"setae %[b] # Set result"</span></span><br><span class="line">        : [b] <span class="string">"=r"</span>(bresult) <span class="comment">/* Output */</span></span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">int</span>)bresult;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>例子</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">umult_ok</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> x, <span class="keyword">unsigned</span> <span class="keyword">long</span> y, <span class="keyword">unsigned</span> <span class="keyword">long</span>* dest)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> bresult;</span><br><span class="line">    <span class="keyword">asm</span>(<span class="string">"movq %[x],%%rax # Get x\n\t"</span></span><br><span class="line">        <span class="string">"mulq %[y] # Unsigned long multiply by y\n\t"</span></span><br><span class="line">        <span class="string">"movq %%rax,%[p] # Store low-order 8 bytes at dest\n\t"</span></span><br><span class="line">        <span class="string">"setae %[b] # Set result"</span></span><br><span class="line">        : [p] <span class="string">"=m"</span>(*dest), [b] <span class="string">"=r"</span>(bresult) <span class="comment">/* Outputs */</span></span><br><span class="line">        : [x] <span class="string">"r"</span>(x), [y] <span class="string">"r"</span>(y)             <span class="comment">/* Inputs */</span></span><br><span class="line">        : <span class="string">"%rax"</span>, <span class="string">"%rdx"</span>                     <span class="comment">/* Overwrites */</span></span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">int</span>)bresult;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><blockquote>
+<p>如果我们的汇编语句必须在我们放置它的地方执行，(即，必须不被作为一个优化而移出循环)，则将volatile放在asm之后。所以防止它被移动、删除和任何改变，我们如此声明<code>asm volatile(... : ... : ... : ...);</code> 当我们必须非常小心时，使用<code>__volatile__</code>。如果我们的汇编只是做一些计算而没有任何副作用，最好不要使用volatile关键字。忽略它将帮助GCC优化代码使其更优美。(Ref from<a href="https://www.jianshu.com/p/10e8a7b4f980" target="_blank" rel="noopener">译：GCC内联汇编入门</a>)</p>
+</blockquote>
+</li>
+<li>受影响列表中的<code>memory</code>字样(<a href="https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html" target="_blank" rel="noopener">Ref from</a>)<blockquote>
+<ul>
+<li>The “memory” clobber tells the compiler that the assembly code <strong>performs memory reads or writes to items other than those listed in the input and output operands (for example, accessing the memory pointed to by one of the input parameters)</strong>. </li>
+<li><strong>To ensure memory contains correct values, GCC may need to flush specific register values to memory before executing the asm</strong>. </li>
+<li>Further, the compiler does not assume that any values read from memory before an asm remain unchanged after that asm; it reloads them as needed.</li>
+<li><strong>Using the “memory” clobber effectively forms a read/write memory barrier for the compiler.</strong></li>
+<li>Note that this clobber does not prevent the processor from doing speculative reads past the asm statement. To prevent that, <strong>you need processor-specific fence instructions.</strong></li>
+</ul>
+</blockquote>
+</li>
+<li>受影响列表中的<code>cc</code>字样(<a href="https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html" target="_blank" rel="noopener">Ref from</a>)<blockquote>
+<ul>
+<li>The “cc” clobber indicates that the assembler code modifies <strong>the flags register</strong> </li>
+<li>On some machines, GCC represents the condition codes as a specific hardware register; “cc” serves to name this register. </li>
+<li>On other machines, condition code handling is different, and specifying “cc” has no effect. But it is valid no matter what the target.</li>
+</ul>
 </blockquote>
 </li>
 </ul>
-</li>
-<li>其他影响<ul>
-<li>块（文件系统的一种抽象，文件系统的最小寻址单元，只能基于块来访问文件系统）不能比page大（This is an artificial constraint that could go away in the future），所以hugepage会使得块可以很大</li>
+<h3 id="mutex"><a href="#mutex" class="headerlink" title="mutex"></a>mutex</h3><ul>
+<li>文件锁（使用fcntl加锁、解锁一片文件区域）和信号量的锁定和解锁都需要syscall。mutex使用机器语言的原子操作（在内存中执行、对所有线程可见）来实现，只有发生锁争用时才需要syscall，所以mutex比前两者性能高</li>
+<li>linux上的mutex使用futex（快速用户空间互斥量）实现，发生锁争用时调用futex syscall</li>
+<li><strong>SUSv3规定，初始化一个已经初始化过的的互斥量将导致未定义行为</strong></li>
+<li><strong>依照SUSv3的规定，对某一互斥量的副本（copy）执行各种操作将导致未定义的结果。此类操作只能施之于如下两类互斥量的“真身”</strong></li>
+<li>静态分配的mutex可以使用<code>PTHREAD_MUTEX_INITIALIZER</code>初始化</li>
+<li>死锁解决方案<ul>
+<li>定义互斥锁的层级关系，按照层级去获取锁</li>
+<li>对于第一个锁使用<code>pthread_mutex_lock</code>，其他锁使用<code>try_lock</code>。如果有一个<code>try_lock</code>失败，则释放所有已获得的锁，一段时间后再试。这是通过解决“占有并等待”这个条件来解决问题的</li>
 </ul>
 </li>
 </ul>
-<h3 id="malloc"><a href="#malloc" class="headerlink" title="malloc"></a>malloc</h3><ul>
-<li>调用并分配1GB的内存，是否物理内存就会少1G？一方面，CopyOnWrite，所以如果没有写，是不会的。另一方面，空闲链表</li>
+<h3 id="pthread"><a href="#pthread" class="headerlink" title="pthread"></a>pthread</h3><ul>
+<li>joinable vs detached <ul>
+<li>A thread may either be joinable or detached</li>
+<li>If a thread is  joinable, then  another thread can call pthread_join(3) to wait for the thread to terminate and fetch its exit status</li>
+<li><strong>Only when a  terminated  joinable thread  has  been joined are the last of its resources released back to the system</strong>(看起来就像进程的wait一样).</li>
+<li><strong>When a detached thread terminates, its resources are automatically  released back to the system</strong>: it is not possible to join with the thread in order to obtain its exit status. <strong>Making  a  thread  detached is useful for some types of daemon threads whose exit status the application does not need to care about</strong>.</li>
+<li><strong>By default, a new  thread  is created  in  a joinable state</strong>, unless attr was set to create the thread in a detached state (using pthread_attr_setdetachstate(3)).</li>
+</ul>
+</li>
+</ul>
+<h3 id="条件变量"><a href="#条件变量" class="headerlink" title="条件变量"></a>条件变量</h3><ul>
+<li>静态分配的条件变量可以使用<code>PTHREAD_COND_INITALIZER</code>来完成初始化</li>
+<li></li>
 </ul>
 <h3 id="MISC-1"><a href="#MISC-1" class="headerlink" title="MISC"></a>MISC</h3><ul>
 <li>需要对目录有<code>x</code>权限才能cd进目录</li>
@@ -975,7 +1090,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">36</span>
+                    <span class="site-state-item-count">37</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -1028,7 +1143,9 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                     
                       
                     
-                    <span class="site-state-item-count">18</span>
+                      
+                    
+                    <span class="site-state-item-count">19</span>
                     <span class="site-state-item-name">categories</span>
                   
                 </div>
@@ -1183,7 +1300,9 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                     
                       
                     
-                    <span class="site-state-item-count">66</span>
+                      
+                    
+                    <span class="site-state-item-count">67</span>
                     <span class="site-state-item-name">tags</span>
                   
                 </div>
@@ -1252,7 +1371,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux调度"><span class="nav-text">Linux调度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CFS"><span class="nav-text">CFS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Real-time-scheduling"><span class="nav-text">Real-time scheduling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Multiprocessor-scheduling"><span class="nav-text">Multiprocessor scheduling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Adjusting-priority"><span class="nav-text">Adjusting priority</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#misc"><span class="nav-text">misc</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程状态"><span class="nav-text">进程状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#僵尸进程、孤儿进程"><span class="nav-text">僵尸进程、孤儿进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SO-REUSEPORT"><span class="nav-text">SO_REUSEPORT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PTHREAD-STACK-MIN"><span class="nav-text">PTHREAD_STACK_MIN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IO"><span class="nav-text">IO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络编程"><span class="nav-text">网络编程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#epoll"><span class="nav-text">epoll</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#惊群"><span class="nav-text">惊群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命令"><span class="nav-text">命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#top"><span class="nav-text">top</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#free"><span class="nav-text">free</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vmstat"><span class="nav-text">vmstat</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HugePage"><span class="nav-text">HugePage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#malloc"><span class="nav-text">malloc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC-1"><span class="nav-text">MISC</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux调度"><span class="nav-text">Linux调度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CFS"><span class="nav-text">CFS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Real-time-scheduling"><span class="nav-text">Real-time scheduling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Multiprocessor-scheduling"><span class="nav-text">Multiprocessor scheduling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Adjusting-priority"><span class="nav-text">Adjusting priority</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#misc"><span class="nav-text">misc</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程状态"><span class="nav-text">进程状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#僵尸进程、孤儿进程"><span class="nav-text">僵尸进程、孤儿进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SO-REUSEPORT"><span class="nav-text">SO_REUSEPORT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PTHREAD-STACK-MIN"><span class="nav-text">PTHREAD_STACK_MIN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IO"><span class="nav-text">IO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络编程"><span class="nav-text">网络编程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#epoll"><span class="nav-text">epoll</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#惊群"><span class="nav-text">惊群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命令"><span class="nav-text">命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#top"><span class="nav-text">top</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#free"><span class="nav-text">free</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vmstat"><span class="nav-text">vmstat</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HugePage"><span class="nav-text">HugePage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#page-cache和buffer-cache"><span class="nav-text">page cache和buffer cache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GCC内联汇编"><span class="nav-text">GCC内联汇编</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mutex"><span class="nav-text">mutex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pthread"><span class="nav-text">pthread</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#条件变量"><span class="nav-text">条件变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC-1"><span class="nav-text">MISC</span></a></li></ol></div>
             
 
           </div>
