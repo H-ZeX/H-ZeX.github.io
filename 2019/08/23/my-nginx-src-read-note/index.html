@@ -125,11 +125,13 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="thread_poolngx_thread_pool_init 创建的是detached类型的线程 有一段类似于注释掉的代码，把thread的栈大小设置为PTHREAD_STACK_MIN 线程中运行的函数是ngx_thread_pool_cycle 要注意的是pthread中，main函数退出，那么即使还有线程没有结束，依然是程序退出。而这里并没有去等待这些线程。另外，这里不能使用join去等待">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-08-18T15:56:10.240Z">
+<meta property="og:updated_time" content="2019-08-18T17:33:55.519Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My Nginx Src Read Note">
 <meta name="twitter:description" content="thread_poolngx_thread_pool_init 创建的是detached类型的线程 有一段类似于注释掉的代码，把thread的栈大小设置为PTHREAD_STACK_MIN 线程中运行的函数是ngx_thread_pool_cycle 要注意的是pthread中，main函数退出，那么即使还有线程没有结束，依然是程序退出。而这里并没有去等待这些线程。另外，这里不能使用join去等待">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="H-ZeX" type="application/atom+xml"/>
@@ -435,7 +437,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-08-18 23:56:10" itemprop="dateModified" datetime="2019-08-18T23:56:10+08:00">2019-08-18</time>
+                <time title="Modified: 2019-08-19 01:33:55" itemprop="dateModified" datetime="2019-08-19T01:33:55+08:00">2019-08-19</time>
               
             
           </span>
@@ -564,7 +566,12 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </ul>
 <h3 id="ngx-thread-task-post"><a href="#ngx-thread-task-post" class="headerlink" title="ngx_thread_task_post"></a><code>ngx_thread_task_post</code></h3><ul>
 <li>用于往任务队列里push task对象</li>
-<li>加锁</li>
+<li>这个push是线程安全的，但是要求所有的请求排队——因为是使用thread pool的mutex来加锁几乎整个函数体的</li>
+<li>这里用的是加锁、push对象，cond signal的策略。<code>ngx_thread_pool_cycle</code>的函数也是用加锁、cond wait的策略来获取任务的。这里并没有使用spin-lock加上重型锁（就是mutex）来优化。可能的原因我认为有<ul>
+<li>内存屏障，<code>ngx_spinlock</code>就我目前查到的intel manual，是没有memory barrier的</li>
+<li>可能push任务这个需求并不是非常频繁，反而任务执行才是重点——目前nginx的线程池好像只是用于异步磁盘IO。另一方面，如果执行任务的时间比push任务的时间比起来更小，或者是相差不大，那其实并没有使用线程池的必要——直接在当前线程运行就好，因为push进线程池本身就有非常大的开销，并且线程一多，上下文切换的开销也大，从nginx的设计理念来讲，只要不是阻塞操作（比如磁盘IO，网络IO可以不阻塞，但是读写文件似乎不能Nonblocking？），都没有必要使用线程池</li>
+</ul>
+</li>
 </ul>
 <h3 id="与我自己的线程池的对比"><a href="#与我自己的线程池的对比" class="headerlink" title="与我自己的线程池的对比"></a>与我自己的线程池的对比</h3><ul>
 <li><a href="https://github.com/H-ZeX/FTP-Implement/blob/master/src/main/tools/ThreadPool.hpp" target="_blank" rel="noopener">我的线程池</a></li>

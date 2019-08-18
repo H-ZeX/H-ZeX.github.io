@@ -124,7 +124,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="串行线程的封闭 线程封闭对象的要求： 只能由单个线程拥有 通过安全的发布来转移所有权（安全的发布确保对象状态对于新的所有者来说是可见的（不止这个作用？）） 所有权转以后，只有接受所有权的线程才可以访问（独占的所有权）   可以使用阻塞队列、ConcurrentHashMap的remove方法、AtomicReference的compareAndSet来完成  Interrupt 每个线程都有一个b">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-08-18T15:48:22.297Z">
+<meta property="og:updated_time" content="2019-08-18T17:20:56.955Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My Java Concurrent Note(2)">
 <meta name="twitter:description" content="串行线程的封闭 线程封闭对象的要求： 只能由单个线程拥有 通过安全的发布来转移所有权（安全的发布确保对象状态对于新的所有者来说是可见的（不止这个作用？）） 所有权转以后，只有接受所有权的线程才可以访问（独占的所有权）   可以使用阻塞队列、ConcurrentHashMap的remove方法、AtomicReference的compareAndSet来完成  Interrupt 每个线程都有一个b">
@@ -434,7 +434,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-08-18 23:48:22" itemprop="dateModified" datetime="2019-08-18T23:48:22+08:00">2019-08-18</time>
+                <time title="Modified: 2019-08-19 01:20:56" itemprop="dateModified" datetime="2019-08-19T01:20:56+08:00">2019-08-19</time>
               
             
           </span>
@@ -978,7 +978,27 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </blockquote>
 </li>
 </ul>
-<h3 id="内存模型"><a href="#内存模型" class="headerlink" title="内存模型"></a>内存模型</h3><h3 id="具体问题"><a href="#具体问题" class="headerlink" title="具体问题"></a>具体问题</h3><ul>
+<h3 id="内存模型"><a href="#内存模型" class="headerlink" title="内存模型"></a>内存模型</h3><ul>
+<li>JMM为程序中所有的操作（包括变量读写、monitor的加锁/释放、线程的启动和join）定义了一个偏序关系，称之为Happen-before，如果要保证<strong>执行操作B的线程</strong>看到<strong>操作A的结果</strong>，那么A和B之间就必须满足Happen-Before的关系。如果两个操作之间没有Happen-Before的关系，那么JVM就可以对它们任意地重排序</li>
+<li>以下引用自<em>Java Concurrency in Practice</em><blockquote>
+<ul>
+<li><strong>A data race occurs when a variable is read by more than one thread, and written by at least one thread, but the reads and writes are not ordered by happens-before</strong>. A correctly synchronized program is one with no data races; correctly synchronized programs exhibit sequential consistency, meaning that all actions within the program appear to happen in a fixed, global order.</li>
+<li>The rules for happens-before are:<ul>
+<li>Program order rule. Each action in a thread happens-before every action in that thread that comes later in the program order.</li>
+<li>Monitor lock rule. An unlock on a monitor lock happens-before every subsequent lock on that same monitor lock. [3]</li>
+<li>Volatile variable rule.A write to a volatile field happens-before every subsequent read of that same field. [4]</li>
+<li>Thread start rule. A call to Thread start on a thread happens-before every action in the started thread.</li>
+<li>Thread termination rule. Any action in a thread happens-before any other thread detects that thread has terminated, either by successfully return from Thread.join or by Thread.isAlive returning false.</li>
+<li>Interruption rule. A thread calling interrupt on another thread happens-before the interrupted thread detects the interrupt (either by having InterruptedException thrown, or invoking isInterrupted or interrupted).</li>
+<li>Finalizer rule. The end of a constructor for an object happens-before the start of the finalizer for that object.</li>
+<li>Transitivity. If A happens-before B, and B happens-before C, then A happens-before C.</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h3 id="具体问题"><a href="#具体问题" class="headerlink" title="具体问题"></a>具体问题</h3><ul>
 <li>哲学家进餐（5人）<ul>
 <li>原子的获取两个（<code>Semaphore.tryAcquire(2)</code>），获取失败则回避随机长度的时间，避免活锁</li>
 <li>获取一个后，获取第二个失败，则释放第一个，随机退避，避免活锁</li>
