@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    showProcessingMessages: false,
+    messageStyle: "none",
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+        inlineMath:  [ ["$", "$"] ],
+        displayMath: [ ["$$","$$"] ],
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre','code','a'],
+        ignoreClass:"comment-content"
+    },
+    "HTML-CSS": {
+        availableFonts: ["STIX","TeX"],
+        showMathMenu: false
+    }
+});
+MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+</script>
+<script src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+  
+
+
+
+
+  <meta name="description" content="thread_poolngx_thread_pool_init 创建的是detached类型的线程 有一段类似于注释掉的代码，把thread的栈大小设置为PTHREAD_STACK_MIN 线程中运行的函数是ngx_thread_pool_cycle 要注意的是pthread中，main函数退出，那么即使还有线程没有结束，依然是程序退出。而这里并没有去等待这些线程。另外，这里不能使用join去等待">
+<meta name="keywords" content="nginx">
+<meta property="og:type" content="article">
+<meta property="og:title" content="My Nginx Src Read Note">
+<meta property="og:url" content="https://h-zex.github.io/2019/08/23/my-nginx-src-read-note/index.html">
+<meta property="og:site_name" content="H-ZeX">
+<meta property="og:description" content="thread_poolngx_thread_pool_init 创建的是detached类型的线程 有一段类似于注释掉的代码，把thread的栈大小设置为PTHREAD_STACK_MIN 线程中运行的函数是ngx_thread_pool_cycle 要注意的是pthread中，main函数退出，那么即使还有线程没有结束，依然是程序退出。而这里并没有去等待这些线程。另外，这里不能使用join去等待">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-08-18T15:56:10.240Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="My Nginx Src Read Note">
+<meta name="twitter:description" content="thread_poolngx_thread_pool_init 创建的是detached类型的线程 有一段类似于注释掉的代码，把thread的栈大小设置为PTHREAD_STACK_MIN 线程中运行的函数是ngx_thread_pool_cycle 要注意的是pthread中，main函数退出，那么即使还有线程没有结束，依然是程序退出。而这里并没有去等待这些线程。另外，这里不能使用join去等待">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="H-ZeX" type="application/atom+xml"/>
+
+
+
+
+  <link rel="canonical" href="https://h-zex.github.io/2019/08/23/my-nginx-src-read-note/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>My Nginx Src Read Note | H-ZeX</title>
+  
+
+
+
+
+  <script async src="//www.googletagmanager.com/gtag/js?id=UA-137821328-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-137821328-1');
+  </script>
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">H-ZeX</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">H-ZeX's Coding Life</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br/>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br/>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-友情链接">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/link" rel="section"><i class="menu-item-icon fa fa-fw fa-link"></i> <br/>友情链接</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://h-zex.github.io/2019/08/23/my-nginx-src-read-note/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="H-ZeX"/>
+      <meta itemprop="description" content=""/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="H-ZeX"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">My Nginx Src Read Note
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-08-23 21:58:41" itemprop="dateCreated datePublished" datetime="2019-08-23T21:58:41+08:00">2019-08-23</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-08-18 23:56:10" itemprop="dateModified" datetime="2019-08-18T23:56:10+08:00">2019-08-18</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <a href="/2019/08/23/my-nginx-src-read-note/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2019/08/23/my-nginx-src-read-note/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="thread-pool"><a href="#thread-pool" class="headerlink" title="thread_pool"></a><code>thread_pool</code></h2><h3 id="ngx-thread-pool-init"><a href="#ngx-thread-pool-init" class="headerlink" title="ngx_thread_pool_init"></a><code>ngx_thread_pool_init</code></h3><ul>
+<li>创建的是detached类型的线程</li>
+<li>有一段类似于注释掉的代码，把thread的栈大小设置为<code>PTHREAD_STACK_MIN</code></li>
+<li>线程中运行的函数是<code>ngx_thread_pool_cycle</code></li>
+<li>要注意的是pthread中，main函数退出，那么即使还有线程没有结束，依然是程序退出。而这里并没有去等待这些线程。另外，这里不能使用join去等待，因为这是detached的线程</li>
+<li>这是一个确定大小的线程池，并且没有线程复活的机制——似乎也并不会出现线程失败而进程还活着的情况？所以并不需要线程复活的机制</li>
+</ul>
+<h3 id="ngx-thread-pool-destroy"><a href="#ngx-thread-pool-destroy" class="headerlink" title="ngx_thread_pool_destroy"></a><code>ngx_thread_pool_destroy</code></h3><ul>
+<li><p>代码</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">void</span></span><br><span class="line">ngx_thread_pool_destroy(<span class="keyword">ngx_thread_pool_t</span> *tp)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">ngx_uint_t</span>           n;</span><br><span class="line">    <span class="keyword">ngx_thread_task_t</span>    task;</span><br><span class="line">    <span class="keyword">volatile</span> <span class="keyword">ngx_uint_t</span>  lock;</span><br><span class="line"></span><br><span class="line">    ngx_memzero(&amp;task, <span class="keyword">sizeof</span>(<span class="keyword">ngx_thread_task_t</span>));</span><br><span class="line"></span><br><span class="line">    task.handler = ngx_thread_pool_exit_handler;</span><br><span class="line">    task.ctx = (<span class="keyword">void</span> *) &amp;lock;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (n = <span class="number">0</span>; n &lt; tp-&gt;threads; n++) &#123;</span><br><span class="line">        lock = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (ngx_thread_task_post(tp, &amp;task) != NGX_OK) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// 在exit的函数里会设置lock为0，</span></span><br><span class="line">        <span class="keyword">while</span> (lock) &#123;</span><br><span class="line">            ngx_sched_yield();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        task.event.active = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    (<span class="keyword">void</span>) ngx_thread_cond_destroy(&amp;tp-&gt;cond, tp-&gt;<span class="built_in">log</span>);</span><br><span class="line"></span><br><span class="line">    (<span class="keyword">void</span>) ngx_thread_mutex_destroy(&amp;tp-&gt;mtx, tp-&gt;<span class="built_in">log</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>这里是通过往任务队列push进exit任务来实现destroy的（该任务的handler是<code>ngx_thread_pool_exit_handler</code>）。然后不断等待<code>lock</code>变量（已用volatile修饰）变为<code>0</code>，才开始destroy下一个线程</p>
+</li>
+<li>我觉得这里之所以不用一个<code>lock</code>数组，从而无需同步的等待线程退出，或许有如下原因<ul>
+<li>用数组的实现方式大约是：不断push shutdown任务，直到所有线程都被push了shutdown任务。然后再跑一个轮询，等待lock数组里的元素都变为0，期间如果遇到非0的元素，要么停下来等待，要么收集起来，用于下一次轮询。无论是那种，逻辑都很复杂</li>
+<li>关闭线程池不需要很快。线程池是非常重量的，所以不宜频繁关闭打开，那么关闭其实是一个占比很小的需求，所以简单实现下就好</li>
+</ul>
+</li>
+<li>我以前自己实现的线程池是设置一个state变量，这个变量的存活期与整个线程池的存活期一样行。这个state变量是一个atomic变量，并且被worker（在nginx中对应的就是<code>ngx_thread_pool_cycle</code>函数）不断读取——每次循环都要读取两次。从而有非常高的同步开销。这里，这个volatile变量只有在shutdown期间才存在，所以开销低非常多</li>
+</ul>
+<h3 id="ngx-thread-pool-queue-t"><a href="#ngx-thread-pool-queue-t" class="headerlink" title="ngx_thread_pool_queue_t"></a><code>ngx_thread_pool_queue_t</code></h3><ul>
+<li>表示一个单链表，节点是<code>ngx_thread_task_t</code>类型</li>
+<li><p>定义</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="keyword">ngx_thread_task_t</span> *first;</span><br><span class="line">    <span class="keyword">ngx_thread_task_t</span> **last; </span><br><span class="line">&#125; <span class="keyword">ngx_thread_pool_queue_t</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>last</code>字段存最后一个<code>ngx_thread_task_t</code>类型的元素的next字段的地址，从而需要append一个元素到末尾时，只需要解引用该字段写入<code>ngx_thread_task_t*</code>类型的数据即可</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">*ngx_thread_pool_done.last = task;</span><br><span class="line">ngx_thread_pool_done.last = &amp;task-&gt;next;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>这里是单链表，所以获取头部元素是O(1)的复杂度，获取尾部元素是O(n)的复杂。因为我们没有最末尾元素的指针，并且即使我们有最末尾元素的指针，依然需要获得次末尾元素的地址才行。并且这无法通过维护次末尾元素的地址来实现，因为一旦维护次末尾元素的地址，那么我们delete掉最后一个元素后，就需要更新“次末尾元素的地址”这个字段，但这需要O(n)的复杂度</p>
+</li>
+<li>append到单链表末尾也是O(1)的复杂度（因为我们有最末尾元素的next字段的地址）。当然，添加到头部也是O(1)的复杂度</li>
+</ul>
+<h3 id="ngx-thread-pool-cycle"><a href="#ngx-thread-pool-cycle" class="headerlink" title="ngx_thread_pool_cycle"></a><code>ngx_thread_pool_cycle</code></h3><ul>
+<li>流程是<ul>
+<li>先block掉大部分信号（除了SIGILL、SIGFPE、SIGSEGV、SIGBUS以及其他不能被忽略和捕获的信号——比如SIGKILL、SIGSTOP）</li>
+<li>跑一个无限循环<ul>
+<li>在循环中加锁获取queue头部的task对象，如果无法获取，使用条件变量等待。中间如果出现错误则<code>return</code></li>
+<li>获取task对象后run这个task对象的handler</li>
+<li>使用spin lock加锁，加锁成功后把这个task对象放到done队列尾部</li>
+<li>加入到队列后，会有个GCC的编译器内存屏障，使得<blockquote>
+<p>Added appropriate ngx_memory_barrier() calls to make sure all modifications will happen before the lock is released(来自这句statement的commit msg)</p>
+</blockquote>
+</li>
+<li>之后调用notify函数，传入<code>ngx_thread_pool_handler</code>函数的地址</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>里面有这么一段</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ngx_spinlock(&amp;ngx_thread_pool_done_lock, <span class="number">1</span>, <span class="number">2048</span>);</span><br><span class="line"></span><br><span class="line">*ngx_thread_pool_done.last = task;</span><br><span class="line">ngx_thread_pool_done.last = &amp;task-&gt;next;</span><br><span class="line"></span><br><span class="line">ngx_memory_barrier();</span><br><span class="line"></span><br><span class="line">ngx_unlock(&amp;ngx_thread_pool_done_lock);</span><br></pre></td></tr></table></figure>
+<p> commit msg的解释是</p>
+<blockquote>
+<p>Thread pools: memory barriers in task completion notifications. The <code>ngx_thread_pool_done</code> object isn’t volatile, and at least some compilers assume that it is permitted to reorder modifications of volatile and non-volatile objects. Added appropriate <code>ngx_memory_barrier()</code> calls to make sure all modifications will happen before the lock is released. Reported by Mindaugas Rasiukevicius, <a href="http://mailman.nginx.org/pipermail/nginx-devel/2016-April/008160.html" target="_blank" rel="noopener">http://mailman.nginx.org/pipermail/nginx-devel/2016-April/008160.html</a></p>
+</blockquote>
+</li>
+</ul>
+<h3 id="ngx-thread-task-alloc"><a href="#ngx-thread-task-alloc" class="headerlink" title="ngx_thread_task_alloc"></a><code>ngx_thread_task_alloc</code></h3><ul>
+<li><p>代码</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ngx_thread_task_t</span> *</span><br><span class="line">ngx_thread_task_alloc(<span class="keyword">ngx_pool_t</span> *pool, <span class="keyword">size_t</span> size)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">ngx_thread_task_t</span>  *task;</span><br><span class="line"></span><br><span class="line">    task = ngx_pcalloc(pool, <span class="keyword">sizeof</span>(<span class="keyword">ngx_thread_task_t</span>) + size);</span><br><span class="line">    <span class="keyword">if</span> (task == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    task-&gt;ctx = task + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> task;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>这个函数非常有意思，这是一个被外部调用的函数，用来获得task结构的。其把ctx（也就是具体的work函数的参数）分配在紧邻结构体的地方，从而使得结构体本身与结构体内ctx指针的内存位置连在一起，对cache非常友好</p>
+</li>
+</ul>
+<h3 id="ngx-thread-task-post"><a href="#ngx-thread-task-post" class="headerlink" title="ngx_thread_task_post"></a><code>ngx_thread_task_post</code></h3><ul>
+<li>用于往任务队列里push task对象</li>
+<li>加锁</li>
+</ul>
+<h3 id="与我自己的线程池的对比"><a href="#与我自己的线程池的对比" class="headerlink" title="与我自己的线程池的对比"></a>与我自己的线程池的对比</h3><ul>
+<li><a href="https://github.com/H-ZeX/FTP-Implement/blob/master/src/main/tools/ThreadPool.hpp" target="_blank" rel="noopener">我的线程池</a></li>
+<li>nginx的优点<ul>
+<li>ngxin不需要维护线程池的state变量（该变量是atomic的，并且被频繁读取，读取这种变量开销很大），从而同步开销小</li>
+<li>线程池中需要同步的变量很少很少，并且对这些变量的操作也非常少，从而同步开销小</li>
+</ul>
+</li>
+<li></li>
+</ul>
+<h2 id="spin-lock"><a href="#spin-lock" class="headerlink" title="spin_lock"></a><code>spin_lock</code></h2><ul>
+<li><p>主要代码如下</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span></span><br><span class="line">ngx_spinlock(<span class="keyword">ngx_atomic_t</span> *lock, <span class="keyword">ngx_atomic_int_t</span> value, <span class="keyword">ngx_uint_t</span> spin)</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">ngx_uint_t</span>  i, n;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> ( ;; ) &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (*lock == <span class="number">0</span> &amp;&amp; ngx_atomic_cmp_set(lock, <span class="number">0</span>, value)) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (ngx_ncpu &gt; <span class="number">1</span>) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> (n = <span class="number">1</span>; n &lt; spin; n &lt;&lt;= <span class="number">1</span>) &#123;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">                    ngx_cpu_pause();</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (*lock == <span class="number">0</span> &amp;&amp; ngx_atomic_cmp_set(lock, <span class="number">0</span>, value)) &#123;</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 一次spin过去了还没有拿到锁，则让出cpu</span></span><br><span class="line">        ngx_sched_yield();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>ngx_atomic_cmp_set</code>会插入编译器的memory barrier，不是cpu的memory barrier（以下<a href="https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html" target="_blank" rel="noopener">Ref from GCC doc</a>）</p>
+<blockquote>
+<p>“memory”</p>
+<ul>
+<li>The “memory” clobber tells the compiler that <strong>the assembly code performs memory reads or writes to items other than those listed in the input and output operands</strong> (for example, accessing the memory pointed to by one of the input parameters). </li>
+<li>To ensure memory contains correct values, GCC <strong>may need to flush specific register values to memory before executing the asm</strong>. </li>
+<li>Further, <strong>the compiler does not assume that any values read from memory before an asm remain unchanged after that asm; it reloads them as needed.</strong> </li>
+<li><strong>Using the “memory” clobber effectively forms a read/write memory barrier for the compiler.</strong></li>
+<li><strong>Note that this clobber does not prevent the processor from doing speculative reads past the asm statement. To prevent that, you need processor-specific fence instructions</strong>.</li>
+<li>flush to memory代价很高，gcc还允许一些细致的优化，见原文</li>
+</ul>
+</blockquote>
+ <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">__<span class="function">asm__ <span class="title">volatile</span> <span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">     NGX_SMP_LOCK</span></span></span><br><span class="line"><span class="function"><span class="params"><span class="string">"    cmpxchgq  %3, %1;   "</span></span></span></span><br><span class="line"><span class="function"><span class="params"><span class="string">"    sete      %0;       "</span></span></span></span><br><span class="line"><span class="function"><span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params"><span class="comment">// 按照GCC内联汇编的文档，受影响列表中的`memory`会导致`Using the "memory" clobber effectively forms a read/write memory barrier for the compiler.`</span></span></span></span><br><span class="line">: "=a" (res) : "m" (*lock), "a" (old), "r" (set) : "cc", "memory");</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>spin lock除非拿到锁，否则不会返回</p>
+</li>
+<li>传入一个参数<code>spin</code>，<code>uintptr_t</code>类型，用于指示每次指数退避地等待的过程的长度。增大该参数可以在拿不到锁的情况下有效的降低CPU空转的时间，但也降低了竞争到锁的概率。不过在不繁忙时，该参数过大将导致等待锁的时间过长</li>
+<li>pause直接使用cpu的<code>pause</code>指令实现（以下Ref from intel manual）<blockquote>
+<ul>
+<li>Improves the performance of spin-wait loops</li>
+<li>When executing a “spin-wait loop,” processors will suffer a severe performance penalty when exiting the loop <strong>because it detects a possible memory order violation.</strong> （意思应该是说，频繁的读取一个volatile位置，使得需要反复的同步等，从而很昂贵（比如java 的volatile具有acquire-release语义，读取也是非常昂贵的））The PAUSE instruction provides a hint to the processor that the code sequence is a spin-wait loop. The processor uses this hint to avoid the memory order violation in most situations, which greatly improves processor performance. For this reason, <strong>it is recommended that a PAUSE instruction be placed in all spin-wait loops.</strong></li>
+<li>An additional function of the PAUSE instruction is to reduce the power consumed by a processor while executing a spin loop</li>
+<li>In earlier IA-32 processors, the PAUSE instruction operates like a NOP instruction. The Pentium 4 and Intel Xeon processors implement the PAUSE instruction as a delay. The delay is finite and can be zero for some processors. This instruction does not change the architectural state of the processor (that is, it performs essentially a delaying no-op operation). This instruction’s operation is the same in non-64-bit modes and 64-bit mode.</li>
+</ul>
+</blockquote>
+</li>
+<li><code>cmpxchgq</code><ul>
+<li>从intel的手册来看，这个指令并没有memory barrier</li>
+<li><blockquote>
+<p><strong>This instruction can be used with a LOCK prefix to allow the instruction to be executed atomically</strong></p>
+</blockquote>
+</li>
+<li><blockquote>
+<p>To simplify the interface to the processor’s bus, the destination operand receives a write cycle without regard to the result of the comparison. The destination operand is written back if the comparison fails; otherwise, the source operand is written into the destination. (The processor never produces a locked read without also producing a locked write.)</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p><code>ngx_sched_yield</code></p>
+<ul>
+<li><p>代码</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">if</span> (NGX_HAVE_SCHED_YIELD)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ngx_sched_yield()  sched_yield()</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ngx_sched_yield()  usleep(1)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>按照<code>sched_yield</code>的 manual</p>
+<blockquote>
+<p><code>sched_yield()</code>  is  intended  for  use with read-time scheduling policies (i.e., <code>SCHED_FIFO</code> or <code>SCHED_RR</code>).  <strong>Use of <code>sched_yield()</code> with nondeterministic scheduling policies such as <code>SCHED_OTHER</code> is unspecified and very likely means your application design is broken.</strong></p>
+</blockquote>
+</li>
+<li>那么这里nginx应该是实时进程？（TODO）</li>
+</ul>
+</li>
+</ul>
+<h2 id="内存池"><a href="#内存池" class="headerlink" title="内存池"></a>内存池</h2><h3 id="ngx-memalign"><a href="#ngx-memalign" class="headerlink" title="ngx_memalign"></a><code>ngx_memalign</code></h3><ul>
+<li><p>代码</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Linux has memalign() or posix_memalign()</span></span><br><span class="line"><span class="comment"> * Solaris has memalign()</span></span><br><span class="line"><span class="comment"> * FreeBSD 7.0 has posix_memalign(), besides, early version's malloc()</span></span><br><span class="line"><span class="comment"> * aligns allocations bigger than page size at the page boundary</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> (NGX_HAVE_POSIX_MEMALIGN || NGX_HAVE_MEMALIGN)</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">ngx_memalign</span><span class="params">(<span class="keyword">size_t</span> alignment, <span class="keyword">size_t</span> size, <span class="keyword">ngx_log_t</span> *<span class="built_in">log</span>)</span></span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ngx_memalign(alignment, size, log)  ngx_alloc(size, log)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果有<code>posix_memalign</code>或<code>memalign</code>那么是直接使用这两个函数实现，否则是使用<code>malloc</code>实现，malloc的man中有这么一句</p>
+<blockquote>
+<p>The  malloc()  and  calloc()  functions  return a pointer to the allocated memory, which is <strong>suitably aligned for any built-in type</strong><br> 我使用<code>x86_64</code>的<code>linux 5.0.0-25-generic</code>做实验，每次返回的指针最后4bit都是0，也就是16B对齐</p>
+</blockquote>
+</li>
+<li><blockquote>
+<p>在一些UNIX实现中， 无法通过调用free()来释放由memalign()分配的内存，因为此类memalign()在实现时使用malloc()来分配内存块，然后返回一个指针，指向该内存块内已对齐的适当地址（也就是指针不是指向这个块的边界，而是指向块内的某处）</p>
+</blockquote>
+</li>
+<li><blockquote>
+</blockquote>
+</li>
+<li>以下引用自<a href="https://zhuanlan.zhihu.com/p/77246009" target="_blank" rel="noopener">OceanBase内存管理原理解析</a><blockquote>
+<p>全局内存池的意义如下：</p>
+<ul>
+<li>全局内存池可以统计每个模块的内存使用情况，如果出现内存泄露，可以很快定位到发生问题的模块。</li>
+<li>全局内存池可用于辅助调试。例如，可以将全局内存池中申请到的内存块按字节填充为某个非法的值（比如0xFE），当出现内存越界等问题时，服务器程序会很快在出现问题的位置Core Dump，而不是带着错误运行一段时间后才Core Dump，从而方便问题定位。</li>
+<li>总而言之，OceanBase的内存管理没有采用高深的技术，也没有做到通用或者最优，但是很好地满足了系统初期的两个最主要的需求：可控性以及没有内存碎片。</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/nginx/" rel="tag"># nginx</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/14/how-to-make-real-time-top-n-list/" rel="next" title="在高并发情况下，如何实时构建TopN list">
+                <i class="fa fa-chevron-left"></i> 在高并发情况下，如何实时构建TopN list
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">H-ZeX</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">38</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">categories</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">68</span>
+                    <span class="site-state-item-name">tags</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/H-ZeX" title="GitHub &rarr; https://github.com/H-ZeX" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:hzx20112012@gmail.com" title="E-Mail &rarr; mailto:hzx20112012@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#thread-pool"><span class="nav-text">thread_pool</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-pool-init"><span class="nav-text">ngx_thread_pool_init</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-pool-destroy"><span class="nav-text">ngx_thread_pool_destroy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-pool-queue-t"><span class="nav-text">ngx_thread_pool_queue_t</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-pool-cycle"><span class="nav-text">ngx_thread_pool_cycle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-task-alloc"><span class="nav-text">ngx_thread_task_alloc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-task-post"><span class="nav-text">ngx_thread_task_post</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与我自己的线程池的对比"><span class="nav-text">与我自己的线程池的对比</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#spin-lock"><span class="nav-text">spin_lock</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存池"><span class="nav-text">内存池</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-memalign"><span class="nav-text">ngx_memalign</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">H-ZeX</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.0.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=7.0.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=7.0.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: true,
+    appId: '2zewWM7OPwRwvylk6pRcPGm7-gzGzoHsz',
+    appKey: 'qPGJQQgN9YMXkOQLEC97Ufhf',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+</script>
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+</body>
+</html>

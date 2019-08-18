@@ -125,7 +125,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="Linux调度 linux内核设计与实现第4章 不同进程有不同的调度算法（这种模块化结构称为调度器类）。每个调度器都有一个优先级，不同调度器之间如何协调？拥有一个可执行进程的最高优先级的调度器会胜出，去选择接下来要执行那个进程（The highest priority scheduler class that has a runnable process wins, selecting who r">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-08-10T12:10:44.806Z">
+<meta property="og:updated_time" content="2019-08-18T04:47:49.417Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My Linux Note">
 <meta name="twitter:description" content="Linux调度 linux内核设计与实现第4章 不同进程有不同的调度算法（这种模块化结构称为调度器类）。每个调度器都有一个优先级，不同调度器之间如何协调？拥有一个可执行进程的最高优先级的调度器会胜出，去选择接下来要执行那个进程（The highest priority scheduler class that has a runnable process wins, selecting who r">
@@ -435,7 +435,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-08-10 20:10:44" itemprop="dateModified" datetime="2019-08-10T20:10:44+08:00">2019-08-10</time>
+                <time title="Modified: 2019-08-18 12:47:49" itemprop="dateModified" datetime="2019-08-18T12:47:49+08:00">2019-08-18</time>
               
             
           </span>
@@ -944,6 +944,23 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </ul>
 </li>
 </ul>
+<h3 id="sched-yield"><a href="#sched-yield" class="headerlink" title="sched_yield"></a><code>sched_yield</code></h3><blockquote>
+<p>sched_yield()的操作是比较简单的。如果存在与调用进程的优先级相同的其他排队的可运行进程，那么调用进程会被放在队列的队尾，队列中队头的进程将会被调度使用CPU。如果在该优先级队列中不存在可运行的进程，那么sched_yield()不会做任何事情，调用进程会继续使用CPU。<strong>非实时进程使用sched_yield()的结果是未定义的</strong>。</p>
+</blockquote>
+<h3 id="mlock"><a href="#mlock" class="headerlink" title="mlock"></a><code>mlock</code></h3><ul>
+<li><blockquote>
+<p>Under  Linux,  mlock(),  mlock2(),  and munlock() automatically <strong>round addr down to the nearest page boundary</strong>.  However, the POSIX.1 specification of mlock() and munlock() allows an implementation to require that addr is page aligned, so portable applications should ensure this.(Ref from man page)</p>
+</blockquote>
+</li>
+<li>可以避免被交换到swap分区，一般用于real-time进程。跟信息安全有关的进程也会这样做，避免内存page被交换到swap分区，从而hack可以从磁盘上读取这些信息，甚至是在进程结束后<blockquote>
+<p>cryptographic security software often handles critical bytes like passwords or secret keys as data structures.  As a result of paging, these secrets could be transferred onto a persistent swap store medium, where they might be  accessible to the enemy  long <strong>after the security software has erased the secrets in RAM and terminated</strong>.</p>
+</blockquote>
+</li>
+<li><blockquote>
+<p>But be aware that the suspend mode on laptops and some desktop computers will save a copy of the system’s RAM to disk, regardless of memory locks.</p>
+</blockquote>
+</li>
+</ul>
 <h3 id="pthread"><a href="#pthread" class="headerlink" title="pthread"></a>pthread</h3><ul>
 <li>joinable vs detached <ul>
 <li>A thread may either be joinable or detached</li>
@@ -1088,7 +1105,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">37</span>
+                    <span class="site-state-item-count">38</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -1300,7 +1317,9 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                     
                       
                     
-                    <span class="site-state-item-count">67</span>
+                      
+                    
+                    <span class="site-state-item-count">68</span>
                     <span class="site-state-item-name">tags</span>
                   
                 </div>
@@ -1369,7 +1388,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux调度"><span class="nav-text">Linux调度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CFS"><span class="nav-text">CFS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Real-time-scheduling"><span class="nav-text">Real-time scheduling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Multiprocessor-scheduling"><span class="nav-text">Multiprocessor scheduling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Adjusting-priority"><span class="nav-text">Adjusting priority</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#misc"><span class="nav-text">misc</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程状态"><span class="nav-text">进程状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#僵尸进程、孤儿进程"><span class="nav-text">僵尸进程、孤儿进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SO-REUSEPORT"><span class="nav-text">SO_REUSEPORT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PTHREAD-STACK-MIN"><span class="nav-text">PTHREAD_STACK_MIN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IO"><span class="nav-text">IO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络编程"><span class="nav-text">网络编程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#epoll"><span class="nav-text">epoll</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#惊群"><span class="nav-text">惊群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命令"><span class="nav-text">命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#top"><span class="nav-text">top</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#free"><span class="nav-text">free</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vmstat"><span class="nav-text">vmstat</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HugePage"><span class="nav-text">HugePage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#page-cache和buffer-cache"><span class="nav-text">page cache和buffer cache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GCC内联汇编"><span class="nav-text">GCC内联汇编</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mutex"><span class="nav-text">mutex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pthread"><span class="nav-text">pthread</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#条件变量"><span class="nav-text">条件变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC-1"><span class="nav-text">MISC</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux调度"><span class="nav-text">Linux调度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CFS"><span class="nav-text">CFS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Real-time-scheduling"><span class="nav-text">Real-time scheduling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Multiprocessor-scheduling"><span class="nav-text">Multiprocessor scheduling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Adjusting-priority"><span class="nav-text">Adjusting priority</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#misc"><span class="nav-text">misc</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程状态"><span class="nav-text">进程状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#僵尸进程、孤儿进程"><span class="nav-text">僵尸进程、孤儿进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SO-REUSEPORT"><span class="nav-text">SO_REUSEPORT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PTHREAD-STACK-MIN"><span class="nav-text">PTHREAD_STACK_MIN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IO"><span class="nav-text">IO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络编程"><span class="nav-text">网络编程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#epoll"><span class="nav-text">epoll</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#惊群"><span class="nav-text">惊群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命令"><span class="nav-text">命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#top"><span class="nav-text">top</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#free"><span class="nav-text">free</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vmstat"><span class="nav-text">vmstat</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HugePage"><span class="nav-text">HugePage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#page-cache和buffer-cache"><span class="nav-text">page cache和buffer cache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GCC内联汇编"><span class="nav-text">GCC内联汇编</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mutex"><span class="nav-text">mutex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sched-yield"><span class="nav-text">sched_yield</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mlock"><span class="nav-text">mlock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pthread"><span class="nav-text">pthread</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#条件变量"><span class="nav-text">条件变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC-1"><span class="nav-text">MISC</span></a></li></ol></div>
             
 
           </div>
