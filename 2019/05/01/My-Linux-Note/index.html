@@ -125,7 +125,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="Linux调度 linux内核设计与实现第4章 不同进程有不同的调度算法（这种模块化结构称为调度器类）。每个调度器都有一个优先级，不同调度器之间如何协调？拥有一个可执行进程的最高优先级的调度器会胜出，去选择接下来要执行那个进程（The highest priority scheduler class that has a runnable process wins, selecting who r">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-08-18T04:47:49.417Z">
+<meta property="og:updated_time" content="2019-09-01T11:12:35.245Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My Linux Note">
 <meta name="twitter:description" content="Linux调度 linux内核设计与实现第4章 不同进程有不同的调度算法（这种模块化结构称为调度器类）。每个调度器都有一个优先级，不同调度器之间如何协调？拥有一个可执行进程的最高优先级的调度器会胜出，去选择接下来要执行那个进程（The highest priority scheduler class that has a runnable process wins, selecting who r">
@@ -435,7 +435,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-08-18 12:47:49" itemprop="dateModified" datetime="2019-08-18T12:47:49+08:00">2019-08-18</time>
+                <time title="Modified: 2019-09-01 19:12:35" itemprop="dateModified" datetime="2019-09-01T19:12:35+08:00">2019-09-01</time>
               
             
           </span>
@@ -634,6 +634,13 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </ul>
 </li>
 </ul>
+<h3 id="进程内存布局"><a href="#进程内存布局" class="headerlink" title="进程内存布局"></a>进程内存布局</h3><ul>
+<li>共享库的虚拟地址是随着运行确定的，使用<code>pmap</code>拿地址布局可以看到，两次运行，共享库的地址布局不一样</li>
+<li><code>ldd</code>显示的lib地址也是随着ldd的不同调用而改变的<blockquote>
+<p>Be  aware that in some circumstances (e.g., where the program specifies an ELF interpreter other than ld-linux.so), some versions of ldd may attempt to obtain the dependency information by attempting to directly execute the program, which may lead to the execution of whatever code is  defined  in the  program’s ELF interpreter, and perhaps to execution of the program itself</p>
+</blockquote>
+</li>
+</ul>
 <h3 id="MISC"><a href="#MISC" class="headerlink" title="MISC"></a>MISC</h3><ul>
 <li>识别僵尸进程<code>ps -ef | grep &quot;defunct&quot;</code></li>
 </ul>
@@ -666,6 +673,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <h3 id="IO"><a href="#IO" class="headerlink" title="IO"></a>IO</h3><ul>
 <li>慢速syscall被信号中断时，已经read、write部分数据的syscall的处理：POSIX2001版是规定为成功返回，返回已read、write的字节数</li>
 <li>POSIX.1要求只有中断信号的<code>SA_RESTART</code>标志有效时，才重启。不同厂商的处理方式不同</li>
+<li>所有的IO设备都被模型化为文件，所有的输入输出都可以被当做相应文件的读和写来处理，这种将设备映射成文件的方式，允许Linux内核引用一个简单、低级的应用接口（Unix IO），这使得所有的输入输出都能以一种统一且一致的方式进行</li>
 </ul>
 <h3 id="网络编程"><a href="#网络编程" class="headerlink" title="网络编程"></a>网络编程</h3><ul>
 <li>因特网的socket地址存放在<code>sockaddr_in</code>的struct中</li>
@@ -679,15 +687,28 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </ul>
 </li>
 <li><code>listen()</code>：把<code>socket()</code>创建的主动套接字转为监听套接字</li>
+<li>在大多数Linux架构上（除了Alpha和IA-64），所有这些socket系统调用实际上被实现成了通过单个系统调用socketcall()进行多路复用的库函数</li>
+<li>socket中的一方调用close之后，当对等应用程序试图从连接的另一端读取数据时将会收到文件结束（<strong>当所有缓冲数据都被读取之后</strong>）</li>
+<li>如果connect()失败并且希望重新进行连接，那么SUSv3规定完成这个任务的可移植的方法是关闭这个socket，创建一个新socket，在该新socket上重新进行连接</li>
+<li>如果多个文件描述符引用了同一个socket，那么当所有描述符被关闭之后（使用<code>close()</code>）连接就会终止</li>
+<li></li>
 </ul>
 <h4 id="epoll"><a href="#epoll" class="headerlink" title="epoll"></a>epoll</h4><ul>
 <li><p>epoll支持水平触发和边缘触发</p>
 <ul>
 <li>水平触发：能在FD上以非阻塞的方式执行I/O操作（poll、select提供的也是这个）</li>
-<li>边缘触发<ul>
-<li>自从上一次调用<code>epoll_wait</code>后FD上是否已经有I/O活动（或者是FD被打开，如果之前没有调用的话），语义上类似信号驱动I/O，如果有多个I/O事件发生，epoll会把他们合并成一次单独的通知（信号驱动上可能会产生多个信号）</li>
-<li>可以减少syscall的次数（我猜？）</li>
-<li>程序基本框架如下<ul>
+<li><p>边缘触发</p>
+<ul>
+<li><p>自从上一次调用<code>epoll_wait</code>后FD上是否已经有I/O活动（或者是FD被打开，如果之前没有调用的话），语义上类似信号驱动I/O，如果有多个I/O事件发生，epoll会把他们合并成一次单独的通知（信号驱动上可能会产生多个信号）</p>
+</li>
+<li><p>可以减少syscall的次数</p>
+<blockquote>
+<p>在eventloop类型(包括各类fiber/coroutine)的程序中, 处理逻辑和epoll_wait都在一个线程, ET相比LT没有太大的差别. 反而由于LT醒的更频繁, 可能时效性更好些. 在老式的多线程RPC实现中, 消息的读取分割和epoll_wait在同一个线程中运行, 类似上面的原因, ET和LT的区别不大.<br>但在更高并发的RPC实现中, 为了对大消息的反序列化也可以并行, 消息的读取和分割可能运行和epoll_wait不同的线程中, 这时ET是必须的, 否则在读完数据前, epoll_wait会不停地无谓醒来.</p>
+<p><a href="https://www.zhihu.com/question/20502870/answer/142303523" target="_blank" rel="noopener">引用自</a></p>
+</blockquote>
+</li>
+<li><p>程序基本框架如下</p>
+<ul>
 <li>所有待监视的FD都设置为非阻塞</li>
 <li>通过<code>epoll_ctl</code>建立epoll interest list</li>
 <li>使用如下循环处理IO事件<ul>
@@ -830,7 +851,32 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li><p>Cache的命中率可能会降低，比如如果有的东西需要放在相邻的两个页上，那么4K页时，其实两个东西都可以缓存在L1，但是对于4M的页则不行</p>
  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"> </span><br></pre></td></tr></table></figure>
 <p> Model name:          Intel(R) Core(TM) i7-8550U CPU @ 1.80GHz<br> L1d cache:           32K<br> L1i cache:           32K<br> L2 cache:            256K<br> L3 cache:            8192K</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">   - 因为程序所占用的物理内存都需要在页表有记录，那么hugePage意味着小应用会占用更多内存</span><br><span class="line">   - mmap</span><br><span class="line">      &gt; on Linux, the mapping will be created at a nearby page boundary.</span><br><span class="line">      &gt; offset must be a multiple of the page size as returned by sysconf(_SC_PAGE_SIZE).</span><br><span class="line">- 其他影响</span><br><span class="line"></span><br><span class="line">  - 块（文件系统的一种抽象，文件系统的最小寻址单元，只能基于块来访问文件系统）不能比page大（This is an artificial constraint that could go away in the future），所以hugepage会使得块可以很大</span><br><span class="line"></span><br><span class="line">### malloc</span><br><span class="line"></span><br><span class="line">- 调用并分配1GB的内存，是否物理内存就会少1G？一方面，CopyOnWrite，所以如果没有写，是不会的。另一方面，空闲链表</span><br><span class="line"></span><br><span class="line">- malloc的内存对齐</span><br><span class="line">   - &gt; The malloc() and calloc() functions return a pointer to the allocated memory that is **suitably aligned for any kind of variable**.  (Ref from malloc&apos;s man)</span><br><span class="line">   - 在我的x86-64的机器上试了几次，返回的是16B对齐的内存</span><br><span class="line">      ```c</span><br><span class="line">      int main ()</span><br><span class="line">      &#123;</span><br><span class="line">          printf(&quot;%p\n%p\n%p\n&quot;, malloc(sizeof(int)), malloc(sizeof(char)), malloc(sizeof(short)));</span><br><span class="line">      &#125;</span><br><span class="line">      // 0x14bd260</span><br><span class="line">      // 0x14bd280</span><br><span class="line">      // 0x14bd2a0</span><br></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"> </span><br></pre></td></tr></table></figure>
+</li>
+<li><p>因为程序所占用的物理内存都需要在页表有记录，那么hugePage意味着小应用会占用更多内存</p>
+</li>
+<li>mmap<blockquote>
+<p>on Linux, the mapping will be created at a nearby page boundary.<br>offset must be a multiple of the page size as returned by sysconf(_SC_PAGE_SIZE).</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>其他影响</p>
+<ul>
+<li>块（文件系统的一种抽象，文件系统的最小寻址单元，只能基于块来访问文件系统）不能比page大（This is an artificial constraint that could go away in the future），所以hugepage会使得块可以很大</li>
+</ul>
+</li>
+</ul>
+<h3 id="malloc"><a href="#malloc" class="headerlink" title="malloc"></a>malloc</h3><ul>
+<li><p>调用并分配1GB的内存，是否物理内存就会少1G？一方面，CopyOnWrite，所以如果没有写，是不会的。另一方面，空闲链表</p>
+</li>
+<li><p>malloc的内存对齐</p>
+<ul>
+<li><blockquote>
+<p>The malloc() and calloc() functions return a pointer to the allocated memory that is <strong>suitably aligned for any kind of variable</strong>.  (Ref from malloc’s man)</p>
+</blockquote>
+</li>
+<li>在我的x86-64的机器上试了几次，返回的是16B对齐的内存 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%p\n%p\n%p\n"</span>, <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">int</span>)), <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">char</span>)), <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">short</span>)));</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 0x14bd260</span></span><br><span class="line"><span class="comment">// 0x14bd280</span></span><br><span class="line"><span class="comment">// 0x14bd2a0</span></span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <ul>
@@ -897,7 +943,8 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li>Each input operand can be any C expression. The compiler will generate the necessary code to evaluate the expression</li>
 </ul>
 </li>
-<li>overwrite-list<ul>
+<li><p>overwrite-list</p>
+<ul>
 <li>Each input operand can be any C expression. The compiler will generate the necessary code to evaluate the expression</li>
 </ul>
 </li>
@@ -938,6 +985,20 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li><strong>SUSv3规定，初始化一个已经初始化过的的互斥量将导致未定义行为</strong></li>
 <li><strong>依照SUSv3的规定，对某一互斥量的副本（copy）执行各种操作将导致未定义的结果。此类操作只能施之于如下两类互斥量的“真身”</strong></li>
 <li>静态分配的mutex可以使用<code>PTHREAD_MUTEX_INITIALIZER</code>初始化</li>
+<li>在如下情况下，必须使用函数<code>pthread_mutex_init()</code>，而非静态初始化互斥量<ul>
+<li>动态分配于堆中的互斥量</li>
+<li>互斥量是在栈中分配的自动变量</li>
+<li>初始化经由静态分配，且不使用默认属性的互斥量</li>
+</ul>
+</li>
+<li>destroy mutex<ul>
+<li>当不再需要经由自动或动态分配的互斥量时，应使用<code>pthread_mutex_destroy()</code>将其销毁</li>
+<li>对于使用<code>PTHREAD_MUTEX_INITIALIZER</code>静态初始化的互斥量，无需调用<code>pthread_mutex_destroy()</code></li>
+<li><strong>只有当互斥量处于未锁定状态，且后续也无任何线程企图锁定它时，将其销毁才是安全的</strong></li>
+<li><strong>若互斥量驻留于动态分配的一片内存区域中，应在释放（free）此内存区域前将其销毁。对于自动分配的互斥量，也应在宿主函数返回前将其销毁</strong></li>
+<li>经由<code>pthread_mutex_destroy()</code>销毁的互斥量，可调用<code>pthread_mutex_init()</code>对其重新初始化</li>
+</ul>
+</li>
 <li>死锁解决方案<ul>
 <li>定义互斥锁的层级关系，按照层级去获取锁</li>
 <li>对于第一个锁使用<code>pthread_mutex_lock</code>，其他锁使用<code>try_lock</code>。如果有一个<code>try_lock</code>失败，则释放所有已获得的锁，一段时间后再试。这是通过解决“占有并等待”这个条件来解决问题的</li>
@@ -952,7 +1013,8 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <p>Under  Linux,  mlock(),  mlock2(),  and munlock() automatically <strong>round addr down to the nearest page boundary</strong>.  However, the POSIX.1 specification of mlock() and munlock() allows an implementation to require that addr is page aligned, so portable applications should ensure this.(Ref from man page)</p>
 </blockquote>
 </li>
-<li>可以避免被交换到swap分区，一般用于real-time进程。跟信息安全有关的进程也会这样做，避免内存page被交换到swap分区，从而hack可以从磁盘上读取这些信息，甚至是在进程结束后<blockquote>
+<li><p>可以避免被交换到swap分区，一般用于real-time进程。跟信息安全有关的进程也会这样做，避免内存page被交换到swap分区，从而hack可以从磁盘上读取这些信息，甚至是在进程结束后</p>
+<blockquote>
 <p>cryptographic security software often handles critical bytes like passwords or secret keys as data structures.  As a result of paging, these secrets could be transferred onto a persistent swap store medium, where they might be  accessible to the enemy  long <strong>after the security software has erased the secrets in RAM and terminated</strong>.</p>
 </blockquote>
 </li>
@@ -962,18 +1024,73 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </li>
 </ul>
 <h3 id="pthread"><a href="#pthread" class="headerlink" title="pthread"></a>pthread</h3><ul>
-<li>joinable vs detached <ul>
+<li><p>joinable vs detached </p>
+<ul>
 <li>A thread may either be joinable or detached</li>
 <li>If a thread is  joinable, then  another thread can call pthread_join(3) to wait for the thread to terminate and fetch its exit status</li>
 <li><strong>Only when a  terminated  joinable thread  has  been joined are the last of its resources released back to the system</strong>(看起来就像进程的wait一样).</li>
 <li><strong>When a detached thread terminates, its resources are automatically  released back to the system</strong>: it is not possible to join with the thread in order to obtain its exit status. <strong>Making  a  thread  detached is useful for some types of daemon threads whose exit status the application does not need to care about</strong>.</li>
-<li><strong>By default, a new  thread  is created  in  a joinable state</strong>, unless attr was set to create the thread in a detached state (using pthread_attr_setdetachstate(3)).</li>
+<li><strong>By default, a new  thread  is created  in  a joinable state</strong>, unless attr was set to create the thread in a detached state (using pthread_attr_setdetachstate(3))</li>
+<li><p>以下代码输出<code>Resource deadlock avoided</code></p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> t = pthread_join(pthread_self(), <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">if</span>(t!=<span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%s\n"</span>, strerror(t));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>以下代码不退出</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span>* <span class="title">func</span><span class="params">(<span class="keyword">void</span>* arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">pthread_t</span> tid;</span><br><span class="line">    <span class="keyword">int</span> t = pthread_create(&amp;tid, <span class="literal">NULL</span>, func, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">if</span>(t!=<span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%s\n"</span>, strerror(t));</span><br><span class="line">    &#125;</span><br><span class="line">    pthread_exit(<span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>以下代码的问题是，主线程退出后，另一个线程对主线程栈上的内容进行操作，结果难以预料<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> *<span class="title">threadFunc</span><span class="params">(<span class="keyword">void</span> *arg)</span> </span>&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">someStruct</span> *<span class="title">pbuf</span> = (<span class="title">struct</span> <span class="title">someStruct</span> *)<span class="title">arg</span>;</span></span><br><span class="line">  <span class="comment">/* Do some work with structure pointed to by 'pbuf' */</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span> </span>&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">someStruct</span> <span class="title">buf</span>;</span></span><br><span class="line">  pthread_create(&amp;thr, <span class="literal">NULL</span>, threadFunc, (<span class="keyword">void</span> *)&amp;buf);</span><br><span class="line">  pthread_exit(<span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 <h3 id="条件变量"><a href="#条件变量" class="headerlink" title="条件变量"></a>条件变量</h3><ul>
 <li>静态分配的条件变量可以使用<code>PTHREAD_COND_INITALIZER</code>来完成初始化</li>
+</ul>
+<h3 id="PIPE-and-FIFO"><a href="#PIPE-and-FIFO" class="headerlink" title="PIPE and FIFO"></a>PIPE and FIFO</h3><ul>
+<li>可以确保写入不超过<code>PIPE_BUF</code>字节的操作是原子的。如果多个进程写入同一个管道,那么如果它们在一个时刻写入的数据量不超过PIPE_BUF字节,那么就可以确保写入的数据不会发生相互混合的情况</li>
+<li>当写入管道的数据块的大小超过了PIPE_BUF字节,那么内核可能会将数据分割成几个较小的片段来传输,<strong>在读者从管道中消耗数据时再附加上后续的数据(write()调用会阻塞直到所有数据被写入到管道为止)。</strong></li>
+<li>只有在数据被传输到管道的时候PIPE_BUF限制才会起作用<ul>
+<li>当写入的数据达到<code>PIPE_BUF</code>字节时,write()会在必要的时候阻塞直到管道中的可用空间足以原子地完成操作</li>
+<li>如果写入的数据大于<code>PIPE_BUF</code>字节,那么write()会尽可能地多传输数据以充满整个管道,然后阻塞直到一些读取进程从管道中移除了数据。如果此类阻塞的write()被一个信号处理器中断了,那么这个调用会被解除阻塞并返回成功传输到管道中的字节数,这个字节数会少于请求写入的字节数</li>
+</ul>
+</li>
+<li>PIPE_BUF(Ref from <code>man 7 pipe</code>)<blockquote>
+<ul>
+<li>POSIX.1 says that write(2)s of less than PIPE_BUF bytes must be <strong>atomic: the output data is written to the pipe as a contiguous sequence</strong>.  </li>
+<li>Writes  of more than PIPE_BUF bytes may be nonatomic: the kernel may interleave the data with data written by other processes.  </li>
+<li>POSIX.1 requires PIPE_BUF to be at least 512 bytes.  (On Linux, PIPE_BUF is 4096 bytes.)  </li>
+<li><p>The precise semantics depend on whether the file descriptor is  nonblocking  (O_NONBLOCK), whether there are multiple writers to the pipe, and on n, the number of bytes to be written:</p>
+<ul>
+<li><p>O_NONBLOCK disabled, n &lt;= PIPE_BUF<br>  <strong>All n bytes are written atomically</strong>; write(2) may block if there is not room for n bytes to be written immediately</p>
+</li>
+<li><p>O_NONBLOCK enabled, n &lt;= PIPE_BUF<br>  If  there is room to write n bytes to the pipe, then write(2) <strong>succeeds immediately, writing all n bytes</strong>; <strong>otherwise write(2) fails, with errno set to EAGAIN.</strong></p>
+</li>
+<li><p>O_NONBLOCK disabled, n &gt; PIPE_BUF<br>  The write is nonatomic: the data given to write(2) may be interleaved with write(2)s by other process; <strong>the write(2) blocks until n bytes have been written</strong>.</p>
+</li>
+<li><p>O_NONBLOCK enabled, n &gt; PIPE_BUF</p>
+<pre><code>**If the pipe is full**, then write(2) fails, with errno set to EAGAIN.  **Otherwise, from 1 to n bytes may be written** (i.e., a &quot;partial write&quot; may occur; the caller should check the return value from write(2) to see how many bytes were actually written), and these  bytes  may  be  interleaved with writes by other processes.
+</code></pre></li>
+</ul>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h3 id="用户凭证"><a href="#用户凭证" class="headerlink" title="用户凭证"></a>用户凭证</h3><h4 id="passwd-5"><a href="#passwd-5" class="headerlink" title="passwd(5)"></a><code>passwd(5)</code></h4><ul>
+<li>The encrypted password field may be blank, in which case no password is required to authenticate as the specified login name. However, <strong>some applications which read the /etc/passwd file may decide not to permit any access at all if the password field is blank</strong>.(我去掉<code>x</code>后，ubuntu图形界面可以登录，无需密码，zsh的sudo不行，输了原来的密码也不行) </li>
+<li>If the password field is a lower-case “x”, then the encrypted password is actually stored in the shadow(5) file instead; there must be a corresponding line in the /etc/shadow file, or else the user account is invalid. </li>
+<li>If the password field is any other string, then it will be treated as an encrypted password, as specified by crypt(3).</li>
+</ul>
+<h3 id="文件操作"><a href="#文件操作" class="headerlink" title="文件操作"></a>文件操作</h3><h4 id="open"><a href="#open" class="headerlink" title="open"></a><code>open</code></h4><ul>
+<li>如果在<code>open()</code>调用中指定<code>O_CREAT</code>标志，那么还需要提供mode参数，否则，会将新文件的权限设置为栈中的某个随机值。</li>
 <li></li>
+</ul>
+<h3 id="同一个bin，第一次启动慢的原因"><a href="#同一个bin，第一次启动慢的原因" class="headerlink" title="同一个bin，第一次启动慢的原因"></a>同一个bin，第一次启动慢的原因</h3><ul>
+<li>需要加载共享库</li>
+</ul>
+<h3 id="Linux-dev"><a href="#Linux-dev" class="headerlink" title="Linux dev"></a>Linux dev</h3><ul>
+<li>NPTL dev: Ulrich Drepper和Ingo Molnar</li>
 </ul>
 <h3 id="MISC-1"><a href="#MISC-1" class="headerlink" title="MISC"></a>MISC</h3><ul>
 <li>需要对目录有<code>x</code>权限才能cd进目录</li>
@@ -1388,7 +1505,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux调度"><span class="nav-text">Linux调度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CFS"><span class="nav-text">CFS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Real-time-scheduling"><span class="nav-text">Real-time scheduling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Multiprocessor-scheduling"><span class="nav-text">Multiprocessor scheduling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Adjusting-priority"><span class="nav-text">Adjusting priority</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#misc"><span class="nav-text">misc</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程状态"><span class="nav-text">进程状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#僵尸进程、孤儿进程"><span class="nav-text">僵尸进程、孤儿进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SO-REUSEPORT"><span class="nav-text">SO_REUSEPORT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PTHREAD-STACK-MIN"><span class="nav-text">PTHREAD_STACK_MIN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IO"><span class="nav-text">IO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络编程"><span class="nav-text">网络编程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#epoll"><span class="nav-text">epoll</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#惊群"><span class="nav-text">惊群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命令"><span class="nav-text">命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#top"><span class="nav-text">top</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#free"><span class="nav-text">free</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vmstat"><span class="nav-text">vmstat</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HugePage"><span class="nav-text">HugePage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#page-cache和buffer-cache"><span class="nav-text">page cache和buffer cache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GCC内联汇编"><span class="nav-text">GCC内联汇编</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mutex"><span class="nav-text">mutex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sched-yield"><span class="nav-text">sched_yield</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mlock"><span class="nav-text">mlock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pthread"><span class="nav-text">pthread</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#条件变量"><span class="nav-text">条件变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC-1"><span class="nav-text">MISC</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux调度"><span class="nav-text">Linux调度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CFS"><span class="nav-text">CFS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Real-time-scheduling"><span class="nav-text">Real-time scheduling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Multiprocessor-scheduling"><span class="nav-text">Multiprocessor scheduling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Adjusting-priority"><span class="nav-text">Adjusting priority</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#misc"><span class="nav-text">misc</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程状态"><span class="nav-text">进程状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#僵尸进程、孤儿进程"><span class="nav-text">僵尸进程、孤儿进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程内存布局"><span class="nav-text">进程内存布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC"><span class="nav-text">MISC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SO-REUSEPORT"><span class="nav-text">SO_REUSEPORT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PTHREAD-STACK-MIN"><span class="nav-text">PTHREAD_STACK_MIN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IO"><span class="nav-text">IO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络编程"><span class="nav-text">网络编程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#epoll"><span class="nav-text">epoll</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#惊群"><span class="nav-text">惊群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命令"><span class="nav-text">命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#top"><span class="nav-text">top</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#free"><span class="nav-text">free</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vmstat"><span class="nav-text">vmstat</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HugePage"><span class="nav-text">HugePage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#malloc"><span class="nav-text">malloc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#page-cache和buffer-cache"><span class="nav-text">page cache和buffer cache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GCC内联汇编"><span class="nav-text">GCC内联汇编</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mutex"><span class="nav-text">mutex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sched-yield"><span class="nav-text">sched_yield</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mlock"><span class="nav-text">mlock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pthread"><span class="nav-text">pthread</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#条件变量"><span class="nav-text">条件变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PIPE-and-FIFO"><span class="nav-text">PIPE and FIFO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用户凭证"><span class="nav-text">用户凭证</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#passwd-5"><span class="nav-text">passwd(5)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件操作"><span class="nav-text">文件操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#open"><span class="nav-text">open</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#同一个bin，第一次启动慢的原因"><span class="nav-text">同一个bin，第一次启动慢的原因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux-dev"><span class="nav-text">Linux dev</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISC-1"><span class="nav-text">MISC</span></a></li></ol></div>
             
 
           </div>
