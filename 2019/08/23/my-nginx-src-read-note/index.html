@@ -117,21 +117,19 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
 
 
-  <meta name="description" content="thread_poolngx_thread_pool_init 创建的是detached类型的线程 有一段类似于注释掉的代码，把thread的栈大小设置为PTHREAD_STACK_MIN 线程中运行的函数是ngx_thread_pool_cycle 要注意的是pthread中，main函数退出，那么即使还有线程没有结束，依然是程序退出。而这里并没有去等待这些线程。另外，这里不能使用join去等待">
+  <meta name="description" content="Overview多进程 nginx采用多进程的方式，既可以避免因某个线程故障导致整个服务不可用的问题，也可以实现配置热加载，不停服升级版本 nginx中除了master需要跟worker通过管道进行通信，worker之间不需要通信，而且每个worker的功能都一样，属于常驻进程。在这种场景下多线程的优势体现不出来 nginx、redis每个单独的进程都可以独占资源，通常情况下每个服务器会开几十个n">
 <meta name="keywords" content="nginx">
 <meta property="og:type" content="article">
-<meta property="og:title" content="My Nginx Src Read Note">
+<meta property="og:title" content="My Nginx Src Reading Note">
 <meta property="og:url" content="https://h-zex.github.io/2019/08/23/my-nginx-src-read-note/index.html">
 <meta property="og:site_name" content="H-ZeX">
-<meta property="og:description" content="thread_poolngx_thread_pool_init 创建的是detached类型的线程 有一段类似于注释掉的代码，把thread的栈大小设置为PTHREAD_STACK_MIN 线程中运行的函数是ngx_thread_pool_cycle 要注意的是pthread中，main函数退出，那么即使还有线程没有结束，依然是程序退出。而这里并没有去等待这些线程。另外，这里不能使用join去等待">
+<meta property="og:description" content="Overview多进程 nginx采用多进程的方式，既可以避免因某个线程故障导致整个服务不可用的问题，也可以实现配置热加载，不停服升级版本 nginx中除了master需要跟worker通过管道进行通信，worker之间不需要通信，而且每个worker的功能都一样，属于常驻进程。在这种场景下多线程的优势体现不出来 nginx、redis每个单独的进程都可以独占资源，通常情况下每个服务器会开几十个n">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-09-21T07:46:36.013Z">
+<meta property="og:updated_time" content="2019-09-28T07:40:44.986Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="My Nginx Src Read Note">
-<meta name="twitter:description" content="thread_poolngx_thread_pool_init 创建的是detached类型的线程 有一段类似于注释掉的代码，把thread的栈大小设置为PTHREAD_STACK_MIN 线程中运行的函数是ngx_thread_pool_cycle 要注意的是pthread中，main函数退出，那么即使还有线程没有结束，依然是程序退出。而这里并没有去等待这些线程。另外，这里不能使用join去等待">
+<meta name="twitter:title" content="My Nginx Src Reading Note">
+<meta name="twitter:description" content="Overview多进程 nginx采用多进程的方式，既可以避免因某个线程故障导致整个服务不可用的问题，也可以实现配置热加载，不停服升级版本 nginx中除了master需要跟worker通过管道进行通信，worker之间不需要通信，而且每个worker的功能都一样，属于常驻进程。在这种场景下多线程的优势体现不出来 nginx、redis每个单独的进程都可以独占资源，通常情况下每个服务器会开几十个n">
 
-
-  
 
 
   <link rel="alternate" href="/atom.xml" title="H-ZeX" type="application/atom+xml"/>
@@ -149,7 +147,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
   };
 </script>
 
-  <title>My Nginx Src Read Note | H-ZeX</title>
+  <title>My Nginx Src Reading Note | H-ZeX</title>
   
 
 
@@ -394,7 +392,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
         
         
-          <h1 class="post-title" itemprop="name headline">My Nginx Src Read Note
+          <h1 class="post-title" itemprop="name headline">My Nginx Src Reading Note
 
               
             
@@ -437,7 +435,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-09-21 15:46:36" itemprop="dateModified" datetime="2019-09-21T15:46:36+08:00">2019-09-21</time>
+                <time title="Modified: 2019-09-28 15:40:44" itemprop="dateModified" datetime="2019-09-28T15:40:44+08:00">2019-09-28</time>
               
             
           </span>
@@ -501,7 +499,27 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
       
 
       
-        <h2 id="thread-pool"><a href="#thread-pool" class="headerlink" title="thread_pool"></a><code>thread_pool</code></h2><h3 id="ngx-thread-pool-init"><a href="#ngx-thread-pool-init" class="headerlink" title="ngx_thread_pool_init"></a><code>ngx_thread_pool_init</code></h3><ul>
+        <h2 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h2><h4 id="多进程"><a href="#多进程" class="headerlink" title="多进程"></a>多进程</h4><ul>
+<li>nginx采用多进程的方式，既可以避免因某个线程故障导致整个服务不可用的问题，也可以实现配置热加载，不停服升级版本</li>
+<li>nginx中除了master需要跟worker通过管道进行通信，worker之间不需要通信，而且每个worker的功能都一样，属于常驻进程。在这种场景下多线程的优势体现不出来</li>
+<li>nginx、redis每个单独的进程都可以独占资源，通常情况下每个服务器会开几十个nginx、redis进程，这样如果采用多线程的模式，各个线程能够利用的资源就会受到一些限制。诸如：ulimit -n 命令展示的每个进程最多可以打开的文件数（这个可以改的；另外nginx文件读写操作不多，这里不是问题）这样的限制</li>
+<li>多进程需要刷新TLB，多线程不用、调度代价高</li>
+<li>信号处理在多线程程序开发时，也是需要考虑的一点；建议在多线程程序中，创建单独的线程利用sigwait等函数同步处理信号，其余线程直接屏蔽信号，这样避免了注册信号处理函数这种异步处理方式导致的问题</li>
+<li>进程间通信<ul>
+<li>具体代码在<code>src/os/unix/ngx_process.c</code>的<code>ngx_spawn_process</code></li>
+<li><code>socketpair(AF_UNIX, SOCK_STREAM, 0, ngx_processes[s].channel) == -1)</code>创建Unix domain socket（因为<code>/* Solaris 9 still has no AF_LOCAL */</code>，所以用<code>AF_UNIX</code><blockquote>
+<p> AF_UNIX (also known as AF_LOCAL)</p>
+</blockquote>
+</li>
+<li>都是Nonblocking，并用ioctl设置<code>FIOASYNC</code>，也就是信号IO</li>
+<li>还设置了FD_CLOEXEC</li>
+</ul>
+</li>
+</ul>
+<h4 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h4><ul>
+<li>高并发就是利用nonblocking使得充分利用cpu，一旦会block就可以调度出去</li>
+</ul>
+<h2 id="thread-pool"><a href="#thread-pool" class="headerlink" title="thread_pool"></a><code>thread_pool</code></h2><h3 id="ngx-thread-pool-init"><a href="#ngx-thread-pool-init" class="headerlink" title="ngx_thread_pool_init"></a><code>ngx_thread_pool_init</code></h3><ul>
 <li>创建的是detached类型的线程</li>
 <li>有一段类似于注释掉的代码，把thread的栈大小设置为<code>PTHREAD_STACK_MIN</code></li>
 <li>线程中运行的函数是<code>ngx_thread_pool_cycle</code></li>
@@ -1068,7 +1086,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#thread-pool"><span class="nav-text">thread_pool</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-pool-init"><span class="nav-text">ngx_thread_pool_init</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-pool-destroy"><span class="nav-text">ngx_thread_pool_destroy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-pool-queue-t"><span class="nav-text">ngx_thread_pool_queue_t</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-pool-cycle"><span class="nav-text">ngx_thread_pool_cycle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-task-alloc"><span class="nav-text">ngx_thread_task_alloc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-task-post"><span class="nav-text">ngx_thread_task_post</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与我自己的线程池的对比"><span class="nav-text">与我自己的线程池的对比</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#spin-lock"><span class="nav-text">spin_lock</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存池"><span class="nav-text">内存池</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-memalign"><span class="nav-text">ngx_memalign</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Overview"><span class="nav-text">Overview</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#多进程"><span class="nav-text">多进程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#架构"><span class="nav-text">架构</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#thread-pool"><span class="nav-text">thread_pool</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-pool-init"><span class="nav-text">ngx_thread_pool_init</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-pool-destroy"><span class="nav-text">ngx_thread_pool_destroy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-pool-queue-t"><span class="nav-text">ngx_thread_pool_queue_t</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-pool-cycle"><span class="nav-text">ngx_thread_pool_cycle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-task-alloc"><span class="nav-text">ngx_thread_task_alloc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-task-post"><span class="nav-text">ngx_thread_task_post</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与我自己的线程池的对比"><span class="nav-text">与我自己的线程池的对比</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#spin-lock"><span class="nav-text">spin_lock</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存池"><span class="nav-text">内存池</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-memalign"><span class="nav-text">ngx_memalign</span></a></li></ol></li></ol></div>
             
 
           </div>

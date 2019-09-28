@@ -124,7 +124,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="以下大部分是java Concurrency in Practice的笔记，以JCIP简称之  对象的状态 （非正式意义上），对象的状态是指存储在状态变量中的数据，可能包括其他依赖对象的域（例如HashMap的Map.Entry对象） 对象的状态中包含了任何可能影响其外部可见行为的数据  线程安全性的定义 正确性的含义  某个类的行为与其规范完全一致。在良好的规范中通常会定义各种不变性条件（In">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-08-05T17:17:02.099Z">
+<meta property="og:updated_time" content="2019-09-21T08:25:18.496Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My Java Concurrent Note(1)">
 <meta name="twitter:description" content="以下大部分是java Concurrency in Practice的笔记，以JCIP简称之  对象的状态 （非正式意义上），对象的状态是指存储在状态变量中的数据，可能包括其他依赖对象的域（例如HashMap的Map.Entry对象） 对象的状态中包含了任何可能影响其外部可见行为的数据  线程安全性的定义 正确性的含义  某个类的行为与其规范完全一致。在良好的规范中通常会定义各种不变性条件（In">
@@ -434,7 +434,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-08-06 01:17:02" itemprop="dateModified" datetime="2019-08-06T01:17:02+08:00">2019-08-06</time>
+                <time title="Modified: 2019-09-21 16:25:18" itemprop="dateModified" datetime="2019-09-21T16:25:18+08:00">2019-09-21</time>
               
             
           </span>
@@ -618,16 +618,16 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </ul>
 </li>
 </ul>
-<h3 id="文档"><a href="#文档" class="headerlink" title="文档"></a>文档</h3><p>－应该详细记载的内容</p>
-<ul>
+<h3 id="文档"><a href="#文档" class="headerlink" title="文档"></a>文档</h3><ul>
+<li>应该详细记载的内容<ul>
 <li>同步策略（什么状态由什么锁保护、可见性如何维护）</li>
 <li>加锁顺序</li>
 <li>没有加锁情况下的同步策略（比如使用一个flag阻止其他线程在flag为true之前使用某资源）</li>
 <li>资源池的配置（避免资源依赖死锁）</li>
-<li>如果不能通过open call来避免死锁，那么应该详细记载如何避免在调用时出现死锁<ul>
-<li>应该将条件队列相关联的条件谓词以及在这些谓词上等待的操作都写入文档</li>
+<li>如果不能通过open call来避免死锁，那么应该详细记载如何避免在调用时出现死锁</li>
 </ul>
 </li>
+<li>应该将条件队列相关联的条件谓词以及在这些谓词上等待的操作都写入文档</li>
 </ul>
 <h3 id="对象的初始化"><a href="#对象的初始化" class="headerlink" title="对象的初始化"></a>对象的初始化</h3><ul>
 <li>即使某个对象的引用对于其他线程是可见的，也并不意味着对象状态对于使用该对象的线程一定是可见的</li>
