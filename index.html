@@ -371,7 +371,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://h-zex.github.io/2019/08/23/my-nginx-src-read-note/"/>
+    <link itemprop="mainEntityOfPage" href="https://h-zex.github.io/2019/12/15/write-rpc-framework/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="H-ZeX"/>
@@ -391,7 +391,194 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2019/08/23/my-nginx-src-read-note/" class="post-title-link" itemprop="url">My Nginx Src Reading Note</a>
+                <a href="/2019/12/15/write-rpc-framework/" class="post-title-link" itemprop="url">写一个RPC框架</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-12-15 16:20:38 / Modified: 17:16:58" itemprop="dateCreated datePublished" datetime="2019-12-15T16:20:38+08:00">2019-12-15</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/工程/" itemprop="url" rel="index"><span itemprop="name">工程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <a href="/2019/12/15/write-rpc-framework/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2019/12/15/write-rpc-framework/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>
+              序列化
+TCP是字节流，所以我们需要把对象序列化成字节流。
+为了成功extract出该段数据，所以需要在TCP连接中写入这段数据之前，写入size。
+有多种方法
+在CanEncodeDecode中添加一个getEncodedDataSize的方法、且encode方法的参数是OutputStream，
+              ...
+            </p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/12/15/write-rpc-framework/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://h-zex.github.io/2019/08/23/my-nginx-src-reading-notes/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="H-ZeX"/>
+      <meta itemprop="description" content=""/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="H-ZeX"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/08/23/my-nginx-src-reading-notes/" class="post-title-link" itemprop="url">My Nginx Src Reading Notes</a>
               
             
           </h1>
@@ -433,7 +620,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-09-28 15:40:44" itemprop="dateModified" datetime="2019-09-28T15:40:44+08:00">2019-09-28</time>
+                <time title="Modified: 2019-12-19 11:11:35" itemprop="dateModified" datetime="2019-12-19T11:11:35+08:00">2019-12-19</time>
               
             
           </span>
@@ -468,8 +655,8 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                   <i class="fa fa-comment-o"></i>
                 </span>
             
-                <a href="/2019/08/23/my-nginx-src-read-note/#comments" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2019/08/23/my-nginx-src-read-note/" itemprop="commentCount"></span>
+                <a href="/2019/08/23/my-nginx-src-reading-notes/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2019/08/23/my-nginx-src-reading-notes/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -508,7 +695,7 @@ nginx中除了master需要跟worker通过管道进行通信，worker之间不需
           <!--noindex-->
           
             <div class="post-button text-center">
-              <a class="btn" href="/2019/08/23/my-nginx-src-read-note/#more" rel="contents">
+              <a class="btn" href="/2019/08/23/my-nginx-src-reading-notes/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1448,7 +1635,7 @@ Linearizability states that: Each operation should appear to take effect instant
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-09-28 14:36:15" itemprop="dateModified" datetime="2019-09-28T14:36:15+08:00">2019-09-28</time>
+                <time title="Modified: 2019-10-03 20:13:55" itemprop="dateModified" datetime="2019-10-03T20:13:55+08:00">2019-10-03</time>
               
             
           </span>
@@ -1645,7 +1832,7 @@ linux内核设计与实现第4章
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-08-16 13:13:31" itemprop="dateModified" datetime="2019-08-16T13:13:31+08:00">2019-08-16</time>
+                <time title="Modified: 2019-10-03 10:22:20" itemprop="dateModified" datetime="2019-10-03T10:22:20+08:00">2019-10-03</time>
               
             
           </span>
@@ -1840,7 +2027,7 @@ linux内核设计与实现第4章
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-09-21 16:25:18" itemprop="dateModified" datetime="2019-09-21T16:25:18+08:00">2019-09-21</time>
+                <time title="Modified: 2019-12-18 11:06:24" itemprop="dateModified" datetime="2019-12-18T11:06:24+08:00">2019-12-18</time>
               
             
           </span>
@@ -2183,203 +2370,6 @@ linux内核设计与实现第4章
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://h-zex.github.io/2019/03/20/construct-a-thread-safe-threadpool/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="H-ZeX"/>
-      <meta itemprop="description" content=""/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="H-ZeX"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/20/construct-a-thread-safe-threadpool/" class="post-title-link" itemprop="url">Construct a Thread-Safe ThreadPool</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-03-20 09:58:41" itemprop="dateCreated datePublished" datetime="2019-03-20T09:58:41+08:00">2019-03-20</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-07-02 23:43:52" itemprop="dateModified" datetime="2019-07-02T23:43:52+08:00">2019-07-02</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/并发编程/" itemprop="url" rel="index"><span itemprop="name">并发编程</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <a href="/2019/03/20/construct-a-thread-safe-threadpool/#comments" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2019/03/20/construct-a-thread-safe-threadpool/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>
-              代码
-链接：https://github.com/H-ZeX/FTP-Implement/blob/master/src/main/tools/ThreadPool.hpp
-测试代码链接：https://github.com/H-ZeX/FTP-Implement/blob/master/src/t
-              ...
-            </p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/03/20/construct-a-thread-safe-threadpool/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2428,7 +2418,7 @@ linux内核设计与实现第4章
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">38</span>
+                    <span class="site-state-item-count">39</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2642,7 +2632,9 @@ linux内核设计与实现第4章
                     
                       
                     
-                    <span class="site-state-item-count">68</span>
+                      
+                    
+                    <span class="site-state-item-count">69</span>
                     <span class="site-state-item-name">tags</span>
                   
                 </div>

@@ -124,7 +124,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="以下大部分是java Concurrency in Practice的笔记，以JCIP简称之  对象的状态 （非正式意义上），对象的状态是指存储在状态变量中的数据，可能包括其他依赖对象的域（例如HashMap的Map.Entry对象） 对象的状态中包含了任何可能影响其外部可见行为的数据  线程安全性的定义 正确性的含义  某个类的行为与其规范完全一致。在良好的规范中通常会定义各种不变性条件（In">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-09-21T08:25:18.496Z">
+<meta property="og:updated_time" content="2019-12-18T03:06:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My Java Concurrent Note(1)">
 <meta name="twitter:description" content="以下大部分是java Concurrency in Practice的笔记，以JCIP简称之  对象的状态 （非正式意义上），对象的状态是指存储在状态变量中的数据，可能包括其他依赖对象的域（例如HashMap的Map.Entry对象） 对象的状态中包含了任何可能影响其外部可见行为的数据  线程安全性的定义 正确性的含义  某个类的行为与其规范完全一致。在良好的规范中通常会定义各种不变性条件（In">
@@ -434,7 +434,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-09-21 16:25:18" itemprop="dateModified" datetime="2019-09-21T16:25:18+08:00">2019-09-21</time>
+                <time title="Modified: 2019-12-18 11:06:24" itemprop="dateModified" datetime="2019-12-18T11:06:24+08:00">2019-12-18</time>
               
             
           </span>
@@ -641,6 +641,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </ul>
 </li>
 <li>可以通过使用<code>start</code>函数来启动线程、使用工厂方法和私有构造函数（即不要再构造函数启动，而是在工厂方法中，构造函数返回后才启动）</li>
+<li>通过避免在构造函数启动新线程，可以使得使用该对象的对象可以把该对象作为<code>final</code>的<code>field</code>（因为这需要在构造函数等 <code>new</code> 该对象，从而其要求被构造的对象不触发新线程启动）</li>
 </ul>
 <h3 id="Final域"><a href="#Final域" class="headerlink" title="Final域"></a>Final域</h3><ul>
 <li><p>还有一种情况可以安全地访问一个共享域， 即这个域声明为 final 时</p>
@@ -1003,7 +1004,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">38</span>
+                    <span class="site-state-item-count">39</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -1217,7 +1218,9 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                     
                       
                     
-                    <span class="site-state-item-count">68</span>
+                      
+                    
+                    <span class="site-state-item-count">69</span>
                     <span class="site-state-item-name">tags</span>
                   
                 </div>
