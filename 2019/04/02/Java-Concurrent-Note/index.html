@@ -124,7 +124,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <meta property="og:site_name" content="H-ZeX">
 <meta property="og:description" content="以下大部分是java Concurrency in Practice的笔记，以JCIP简称之  对象的状态 （非正式意义上），对象的状态是指存储在状态变量中的数据，可能包括其他依赖对象的域（例如HashMap的Map.Entry对象） 对象的状态中包含了任何可能影响其外部可见行为的数据  线程安全性的定义 正确性的含义  某个类的行为与其规范完全一致。在良好的规范中通常会定义各种不变性条件（In">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-12-18T03:06:24.000Z">
+<meta property="og:updated_time" content="2019-12-19T06:49:10.305Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My Java Concurrent Note(1)">
 <meta name="twitter:description" content="以下大部分是java Concurrency in Practice的笔记，以JCIP简称之  对象的状态 （非正式意义上），对象的状态是指存储在状态变量中的数据，可能包括其他依赖对象的域（例如HashMap的Map.Entry对象） 对象的状态中包含了任何可能影响其外部可见行为的数据  线程安全性的定义 正确性的含义  某个类的行为与其规范完全一致。在良好的规范中通常会定义各种不变性条件（In">
@@ -434,7 +434,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-12-18 11:06:24" itemprop="dateModified" datetime="2019-12-18T11:06:24+08:00">2019-12-18</time>
+                <time title="Modified: 2019-12-19 14:49:10" itemprop="dateModified" datetime="2019-12-19T14:49:10+08:00">2019-12-19</time>
               
             
           </span>
@@ -722,6 +722,20 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li>某个线程没有同步情况下读取变量，可能会得到一个失效值，但这个值至少是之前某个线程设置的，而不是随机的</li>
 <li>Java内存模型要求，变量的读取和写入必须是原子操作，但是非<code>volatile</code>的<code>long</code>，<code>double</code>例外</li>
 <li>JVM允许将64bit的读或写操作分解为两个32bit的操作，因此可能无法满足最低安全性（除非用<code>volatile</code>声明或是用锁保护）</li>
+</ul>
+</li>
+<li><p><a href="http://jeremymanson.blogspot.com/2009/06/volatile-arrays-in-java.html" target="_blank" rel="noopener">Volatile Arrays in Java</a></p>
+<ul>
+<li>对于<code>volatile int[] arr = new int[len]</code>，<code>arr[i] = x</code>这个操作没有volatile地写入<code>arr</code>这个变量，只是写入了<code>arr[i]</code>这个非volatile的变量，从而，即使<code>x=arr[i]</code>有volatile地读取<code>arr</code>这个volatile变量，也无法构成acquire-release关系</li>
+<li><code>arr = arr</code>, <code>int x = arr[0]</code>, <code>arr[0] = 1</code>这些都有volatile地read<code>arr</code>本身。其中，第三个需要先读<code>arr</code>，然后再写入0th位置</li>
+<li><p>如下代码提供对<code>arr</code>元素的volatile读写</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">// I wouldn't do this if I were you.</span></span><br><span class="line"><span class="keyword">volatile</span> <span class="keyword">int</span> [] arr = <span class="keyword">new</span> <span class="keyword">int</span>[SIZE];</span><br><span class="line"></span><br><span class="line">arr[<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">arr = arr;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>以上代码的问题在于</p>
+<blockquote>
+<p>The virtue of a volatile write is that a corresponding read can detect that it happened, and do something based on the new value. In this case, you can’t actually detect that another thread performed the write, because it is writing the same value to the variable.<br> 不过我认为，如果我们只需要保证arr里的元素的更新被及时传播，那么完全可以使用这个方案，因为我们并不需要等待一个flag的变更再动作，而只是期望读到最新的值</p>
+</blockquote>
+</li>
 </ul>
 </li>
 </ul>
