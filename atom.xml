@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://h-zex.github.io/"/>
-  <updated>2019-12-15T09:16:58.429Z</updated>
+  <updated>2019-12-19T03:11:35.035Z</updated>
   <id>https://h-zex.github.io/</id>
   
   <author>
@@ -15,33 +15,6 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>写一个RPC框架</title>
-    <link href="https://h-zex.github.io/2019/12/15/write-rpc-framework/"/>
-    <id>https://h-zex.github.io/2019/12/15/write-rpc-framework/</id>
-    <published>2019-12-15T08:20:38.000Z</published>
-    <updated>2019-12-15T09:16:58.429Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h3><ul><li>TCP是字节流，所以我们需要把对象序列化成字节流。</li><li>为了成功extract出该段数据，所以需要在TCP连接中写入这段数据之前，写入size。</li><li>有多种方法<ul><li>在<code>CanEncodeDecode</code>中添加一个<code>getEncodedDataSize</code>的方法、且<code>encode</code>方法的参数是<code>OutputStream</code>，无返回值。这个方案容易出现，变更了<code>encode</code>方法，但是忘记变更<code>getEncodedDataSize</code>方法，从而导致bug。并且存在race condition，无法保证调用<code>getEncodedDataSize</code>时获得的size就是调用<code>encode</code>时的正确size。还有另一个问题，比如String，通过<code>String.getBytes()</code>方法获得byte数组，这个是很昂贵的，而这两个函数调用都需要这个byte数组，从而又会导致不安全。</li><li>要求对象实现<code>encode</code>（<code>encode</code>方法的参数是<code>OutputStream</code>，无返回值）时，先写入该<code>encodeDataSize</code>，即要求对象完全负责extract，这种方法一旦某对象extract出错，导致对该字节流的offset错误设置，则其余对象都会extract出错，无法做错误隔离</li><li>要求<code>encode</code>方法返回一个<code>byte[]</code>数组（无参数），这个方案多了一次拷贝，不过有利于错误隔离，且不易出问题。</li></ul></li></ul>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h3 id=&quot;序列化&quot;&gt;&lt;a href=&quot;#序列化&quot; class=&quot;headerlink&quot; title=&quot;序列化&quot;&gt;&lt;/a&gt;序列化&lt;/h3&gt;&lt;ul&gt;
-&lt;li&gt;TCP是字节流，所以我们需要把对象序列化成字节流。&lt;/li&gt;
-&lt;li&gt;为了成功extract出该段数据，所以需要在TCP
-      
-    
-    </summary>
-    
-      <category term="工程" scheme="https://h-zex.github.io/categories/%E5%B7%A5%E7%A8%8B/"/>
-    
-    
-      <category term="RPC" scheme="https://h-zex.github.io/tags/RPC/"/>
-    
-  </entry>
   
   <entry>
     <title>My Nginx Src Reading Notes</title>
@@ -92,9 +65,9 @@
       <category term="工程" scheme="https://h-zex.github.io/categories/%E5%B7%A5%E7%A8%8B/"/>
     
     
-      <category term="TopN" scheme="https://h-zex.github.io/tags/TopN/"/>
-    
       <category term="高并发" scheme="https://h-zex.github.io/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/"/>
+    
+      <category term="TopN" scheme="https://h-zex.github.io/tags/TopN/"/>
     
   </entry>
   
@@ -300,9 +273,9 @@
       <category term="并发编程" scheme="https://h-zex.github.io/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"/>
     
     
-      <category term="高并发" scheme="https://h-zex.github.io/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/"/>
-    
       <category term="FTP 服务器" scheme="https://h-zex.github.io/tags/FTP-%E6%9C%8D%E5%8A%A1%E5%99%A8/"/>
+    
+      <category term="高并发" scheme="https://h-zex.github.io/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/"/>
     
   </entry>
   
