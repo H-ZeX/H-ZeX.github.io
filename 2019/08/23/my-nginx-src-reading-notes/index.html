@@ -117,18 +117,18 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
 
 
-  <meta name="description" content="Overviewthread_poolngx_thread_pool_init 创建的是detached类型的线程 有一段类似于注释掉的代码，把thread的栈大小设置为PTHREAD_STACK_MIN 线程中运行的函数是ngx_thread_pool_cycle 要注意的是pthread中，main函数退出，那么即使还有线程没有结束，依然是程序退出。而这里并没有去等待这些线程。另外，这里不能使">
+  <meta name="description" content="Overviewthread_poolngx_thread_pool_init 创建的是detached类型的线程 有一段类似于注释掉的代码，把thread的栈大小设置为PTHREAD_STACK_MIN 线程中运行的函数是ngx_thread_pool_cycle 要注意的是pthread中，main函数退出(不是通过pthread_exit结束，而是通过exit或直接return结束)，那么即">
 <meta name="keywords" content="nginx">
 <meta property="og:type" content="article">
 <meta property="og:title" content="My Nginx Src Reading Notes">
 <meta property="og:url" content="https://h-zex.github.io/2019/08/23/my-nginx-src-reading-notes/index.html">
 <meta property="og:site_name" content="H-ZeX">
-<meta property="og:description" content="Overviewthread_poolngx_thread_pool_init 创建的是detached类型的线程 有一段类似于注释掉的代码，把thread的栈大小设置为PTHREAD_STACK_MIN 线程中运行的函数是ngx_thread_pool_cycle 要注意的是pthread中，main函数退出，那么即使还有线程没有结束，依然是程序退出。而这里并没有去等待这些线程。另外，这里不能使">
+<meta property="og:description" content="Overviewthread_poolngx_thread_pool_init 创建的是detached类型的线程 有一段类似于注释掉的代码，把thread的栈大小设置为PTHREAD_STACK_MIN 线程中运行的函数是ngx_thread_pool_cycle 要注意的是pthread中，main函数退出(不是通过pthread_exit结束，而是通过exit或直接return结束)，那么即">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-12-19T11:20:50.282Z">
+<meta property="og:updated_time" content="2019-12-23T05:04:04.310Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My Nginx Src Reading Notes">
-<meta name="twitter:description" content="Overviewthread_poolngx_thread_pool_init 创建的是detached类型的线程 有一段类似于注释掉的代码，把thread的栈大小设置为PTHREAD_STACK_MIN 线程中运行的函数是ngx_thread_pool_cycle 要注意的是pthread中，main函数退出，那么即使还有线程没有结束，依然是程序退出。而这里并没有去等待这些线程。另外，这里不能使">
+<meta name="twitter:description" content="Overviewthread_poolngx_thread_pool_init 创建的是detached类型的线程 有一段类似于注释掉的代码，把thread的栈大小设置为PTHREAD_STACK_MIN 线程中运行的函数是ngx_thread_pool_cycle 要注意的是pthread中，main函数退出(不是通过pthread_exit结束，而是通过exit或直接return结束)，那么即">
 
 
 
@@ -435,7 +435,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-12-19 19:20:50" itemprop="dateModified" datetime="2019-12-19T19:20:50+08:00">2019-12-19</time>
+                <time title="Modified: 2019-12-23 13:04:04" itemprop="dateModified" datetime="2019-12-23T13:04:04+08:00">2019-12-23</time>
               
             
           </span>
@@ -503,8 +503,9 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li>创建的是detached类型的线程</li>
 <li>有一段类似于注释掉的代码，把thread的栈大小设置为<code>PTHREAD_STACK_MIN</code></li>
 <li>线程中运行的函数是<code>ngx_thread_pool_cycle</code></li>
-<li>要注意的是pthread中，main函数退出，那么即使还有线程没有结束，依然是程序退出。而这里并没有去等待这些线程。另外，这里不能使用join去等待，因为这是detached的线程</li>
-<li>这是一个确定大小的线程池，并且没有线程复活的机制——似乎也并不会出现线程失败而进程还活着的情况？所以并不需要线程复活的机制</li>
+<li>要注意的是pthread中，<code>main</code>函数退出(不是通过<code>pthread_exit</code>结束，而是通过<code>exit</code>或直接<code>return</code>结束)，那么即使还有线程没有结束，依然是程序退出。而这里并没有在main函数去等待这些线程，另一方面，这些线程是<code>detached</code>线程，即无法被<code>join</code></li>
+<li>这里不能使用join去等待，因为这是detached的线程</li>
+<li>这是一个确定大小的线程池，并且没有线程复活的机制——似乎在C中，只要不 “调用<code>pthread_exit</code>” 或者 “从<code>pthread_create</code>运行的<code>start_routine</code> return”，就不会出现线程失败而进程还活着的情况？所以并不需要线程复活的机制？</li>
 </ul>
 <h3 id="ngx-thread-pool-destroy"><a href="#ngx-thread-pool-destroy" class="headerlink" title="ngx_thread_pool_destroy"></a><code>ngx_thread_pool_destroy</code></h3><ul>
 <li><p>代码</p>
@@ -588,7 +589,6 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <li>线程池中需要同步的变量很少很少，并且对这些变量的操作也非常少，从而同步开销小</li>
 </ul>
 </li>
-<li></li>
 </ul>
 <h2 id="spin-lock"><a href="#spin-lock" class="headerlink" title="spin_lock"></a><code>spin_lock</code></h2><ul>
 <li><p>主要代码如下</p>
@@ -598,15 +598,21 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 <blockquote>
 <p>“memory”</p>
 <ul>
-<li>The “memory” clobber tells the compiler that <strong>the assembly code performs memory reads or writes to items other than those listed in the input and output operands</strong> (for example, accessing the memory pointed to by one of the input parameters). </li>
-<li>To ensure memory contains correct values, GCC <strong>may need to flush specific register values to memory before executing the asm</strong>. </li>
-<li>Further, <strong>the compiler does not assume that any values read from memory before an asm remain unchanged after that asm; it reloads them as needed.</strong> </li>
-<li><strong>Using the “memory” clobber effectively forms a read/write memory barrier for the compiler.</strong></li>
-<li><strong>Note that this clobber does not prevent the processor from doing speculative reads past the asm statement. To prevent that, you need processor-specific fence instructions</strong>.</li>
-<li>flush to memory代价很高，gcc还允许一些细致的优化，见原文</li>
+<li><p>The “memory” clobber tells the compiler that <strong>the assembly code performs memory reads or writes to items other than those listed in the input and output operands</strong> (for example, accessing the memory pointed to by one of the input parameters). </p>
+</li>
+<li><p>To ensure memory contains correct values, GCC <strong>may need to flush specific register values to memory before executing the asm</strong>. </p>
+</li>
+<li><p>Further, <strong>the compiler does not assume that any values read from memory before an asm remain unchanged after that asm; it reloads them as needed.</strong> </p>
+</li>
+<li><p><strong>Using the “memory” clobber effectively forms a read/write memory barrier for the compiler.</strong></p>
+</li>
+<li><p><strong>Note that this clobber does not prevent the processor from doing speculative reads past the asm statement. To prevent that, you need processor-specific fence instructions</strong>.</p>
+</li>
+<li><p>flush to memory代价很高，gcc还允许一些细致的优化，见原文</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt;       __asm__ volatile (</span><br><span class="line">&gt;   </span><br><span class="line">&gt;            NGX_SMP_LOCK</span><br><span class="line">&gt;       &quot;    cmpxchgq  %3, %1;   &quot;</span><br><span class="line">&gt;       &quot;    sete      %0;       &quot;</span><br><span class="line">&gt;   </span><br><span class="line">&gt;       // 按照GCC内联汇编的文档，受影响列表中的`memory`会导致`Using the &quot;memory&quot; clobber effectively forms a read/write memory barrier for the compiler.`</span><br><span class="line">&gt;       : &quot;=a&quot; (res) : &quot;m&quot; (*lock), &quot;a&quot; (old), &quot;r&quot; (set) : &quot;cc&quot;, &quot;memory&quot;);</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </blockquote>
- <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">__<span class="function">asm__ <span class="title">volatile</span> <span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">     NGX_SMP_LOCK</span></span></span><br><span class="line"><span class="function"><span class="params"><span class="string">"    cmpxchgq  %3, %1;   "</span></span></span></span><br><span class="line"><span class="function"><span class="params"><span class="string">"    sete      %0;       "</span></span></span></span><br><span class="line"><span class="function"><span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params"><span class="comment">// 按照GCC内联汇编的文档，受影响列表中的`memory`会导致`Using the "memory" clobber effectively forms a read/write memory barrier for the compiler.`</span></span></span></span><br><span class="line">: "=a" (res) : "m" (*lock), "a" (old), "r" (set) : "cc", "memory");</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>spin lock除非拿到锁，否则不会返回</p>
 </li>
@@ -660,10 +666,6 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 </blockquote>
 </li>
 </ul>
-<h3 id="Overview-1"><a href="#Overview-1" class="headerlink" title="Overview"></a>Overview</h3><ul>
-<li>对于小块内存，直接在<code>ngx_pool_s</code>的<code>ngx_pool_data_t</code>上获取，如果不足，会新分配<code>ngx_pool_data_t</code>及对应的内存</li>
-<li></li>
-</ul>
 <h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><ul>
 <li><p>以下引用自<a href="https://zhuanlan.zhihu.com/p/77246009" target="_blank" rel="noopener">OceanBase内存管理原理解析</a></p>
 <blockquote>
@@ -712,8 +714,8 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/08/14/how-to-make-real-time-top-n-list/" rel="next" title="在高并发情况下，如何实时构建TopN list">
-                <i class="fa fa-chevron-left"></i> 在高并发情况下，如何实时构建TopN list
+              <a href="/2019/03/20/开发一个高并发的FTP服务器/" rel="next" title="开发一个高并发的FTP服务器">
+                <i class="fa fa-chevron-left"></i> 开发一个高并发的FTP服务器
               </a>
             
           </div>
@@ -795,7 +797,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">38</span>
+                    <span class="site-state-item-count">25</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -844,13 +846,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                     
                       
                     
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-count">12</span>
                     <span class="site-state-item-name">categories</span>
                   
                 </div>
@@ -1001,17 +997,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
                     
                       
                     
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">68</span>
+                    <span class="site-state-item-count">53</span>
                     <span class="site-state-item-name">tags</span>
                   
                 </div>
@@ -1080,7 +1066,7 @@ MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Overview"><span class="nav-text">Overview</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#thread-pool"><span class="nav-text">thread_pool</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-pool-init"><span class="nav-text">ngx_thread_pool_init</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-pool-destroy"><span class="nav-text">ngx_thread_pool_destroy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-pool-queue-t"><span class="nav-text">ngx_thread_pool_queue_t</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-pool-cycle"><span class="nav-text">ngx_thread_pool_cycle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-task-alloc"><span class="nav-text">ngx_thread_task_alloc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-thread-task-post"><span class="nav-text">ngx_thread_task_post</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与我自己的线程池的对比"><span class="nav-text">与我自己的线程池的对比</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#spin-lock"><span class="nav-text">spin_lock</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存池"><span class="nav-text">内存池</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ngx-memalign"><span class="nav-text">ngx_memalign</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Overview-1"><span class="nav-text">Overview</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他"><span class="nav-text">其他</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Overview"><span class="nav-text">Overview</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#thread-pool"><span class="nav-text">thread_pool</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#spin-lock"><span class="nav-text">spin_lock</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存池"><span class="nav-text">内存池</span></a></li></ol></div>
             
 
           </div>
