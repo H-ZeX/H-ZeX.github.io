@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://h-zex.github.io/"/>
-  <updated>2019-12-23T05:04:04.310Z</updated>
+  <updated>2020-02-27T08:28:49.956Z</updated>
   <id>https://h-zex.github.io/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Java使用lambda调用参数为callable或runnable的重载函数时可能存在坑</title>
+    <link href="https://h-zex.github.io/2020/02/27/java-runnable-callable-potential-problem/"/>
+    <id>https://h-zex.github.io/2020/02/27/java-runnable-callable-potential-problem/</id>
+    <published>2020-02-27T08:19:09.000Z</published>
+    <updated>2020-02-27T08:28:49.956Z</updated>
+    
+    <content type="html"><![CDATA[<p>Java使用lambda且未显式指明lambda类型时，调用参数为callable与runnable的重载函数时可能存在坑，例子如下，基于<code>jdk-11.0.1</code><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">b</span><span class="params">(Callable&lt;?&gt; c)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">10</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">b</span><span class="params">(Runnable r)</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    b(() -&gt; &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p><p>如果没有<code>int b(Callable&lt;?&gt; c)</code>函数，那么肯定是调用<code>void b(Runnable r)</code>函数，而如果有<code>int b(Callable&lt;?&gt; c)</code>函数，默认是调用<code>int b(Callable&lt;?&gt; c)</code>函数。<br>从而如果一个lib第一版只有<code>runnable</code>的版本，并且第二版增加了<code>callable</code>的版本，而客户在第一版时这样去使用，就会导致，客户升级版本时，很难得知所调用的函数发生了变化，从而容易导致bug。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;Java使用lambda且未显式指明lambda类型时，调用参数为callable与runnable的重载函数时可能存在坑，例子如下，基于&lt;code&gt;jdk-11.0.1&lt;/code&gt;&lt;br&gt;&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr
+      
+    
+    </summary>
+    
+      <category term="JAVA" scheme="https://h-zex.github.io/categories/JAVA/"/>
+    
+    
+      <category term="java类型系统" scheme="https://h-zex.github.io/tags/java%E7%B1%BB%E5%9E%8B%E7%B3%BB%E7%BB%9F/"/>
+    
+      <category term="lambda函数" scheme="https://h-zex.github.io/tags/lambda%E5%87%BD%E6%95%B0/"/>
+    
+  </entry>
   
   <entry>
     <title>My Nginx Src Reading Notes</title>
